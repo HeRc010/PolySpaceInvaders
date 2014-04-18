@@ -76,10 +76,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Fighter.cpp" />
     <ClCompile Include="PolycodeTemplate.cpp" />
     <ClCompile Include="PolycodeTemplateApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Fighter.h" />
     <ClInclude Include="PolycodeTemplateApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
