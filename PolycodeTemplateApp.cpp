@@ -1,9 +1,6 @@
 #include "PolycodeTemplateApp.h"
 
-//
-#include "Fighter.h"
-
-PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) {
+PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	// GUI parameters
 	int screen_width = 640;
 	int screen_height = 480;
@@ -18,7 +15,7 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) {
 	CoreServices::getInstance()->getResourceManager()->addDirResource("default", false);
 	
 	// Create screen
-	Screen *main_screen = new Screen();
+	main_screen = new Screen();
 
 	// add background
 	ScreenImage *background = new ScreenImage("Resources/background.png");
@@ -34,8 +31,12 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) {
 	Vector3 location( float( screen_width/2 ), float( screen_height - ( player_sprite->getHeight() * sprite_yscale + offset ) ), 0 );
 	player_sprite->setPosition( location );
 
-	Fighter *player = new Fighter( player_sprite );
+	player = new Fighter( player_sprite );
 	main_screen->addChild( player->fighter_sprite );
+
+	// listen for input
+	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEDOWN );
+	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEUP );
 }
 PolycodeTemplateApp::~PolycodeTemplateApp() {
     
@@ -43,4 +44,25 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 
 bool PolycodeTemplateApp::Update() {
 	return core->updateAndRender();
+}
+
+void PolycodeTemplateApp::handleEvent( Event *e ) {
+	// test
+	ScreenLabel *test_label;
+
+	//
+	if ( e->getDispatcher() == core->getInput() ) {
+		//
+		switch ( e->getEventCode() )
+		{
+		default:
+			break;
+		case InputEvent::EVENT_MOUSEDOWN:
+			main_screen->removeChild( player->fighter_sprite );
+			break;
+		case InputEvent::EVENT_MOUSEUP:
+			main_screen->addChild( player->fighter_sprite );
+			break;
+		}
+	}
 }
