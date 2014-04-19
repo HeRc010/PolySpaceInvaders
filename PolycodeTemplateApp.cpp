@@ -48,6 +48,9 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 		aliens->push_back( next_alien );
 	}
 
+	// assign current direction
+	current_dir = PolycodeTemplateApp::direction::right;
+
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEDOWN );
 	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEUP );
@@ -58,8 +61,7 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 
 bool PolycodeTemplateApp::Update() {
 	// translate the row of aliens - to the right to test
-	translateAliens( aliens, PolycodeTemplateApp::direction::right );
-	//aliens->at(0)->getSprite()->setPosition( Vector3( screen_width/2, screen_height/2, 0 ) );
+	translateAliens( aliens );
 
 	return core->updateAndRender();
 }
@@ -92,7 +94,7 @@ SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
 	return alien;
 }
 
-void PolycodeTemplateApp::translateAliens( vector<SpaceInvadersEntity*> *alien_list, PolycodeTemplateApp::direction dir ) {
+void PolycodeTemplateApp::translateAliens( vector<SpaceInvadersEntity*> *alien_list ) {
 	// factor to reverse the delta direction if need be
 	unsigned reverse = 1;
 
@@ -101,7 +103,7 @@ void PolycodeTemplateApp::translateAliens( vector<SpaceInvadersEntity*> *alien_l
 	SpaceInvadersEntity *front_entity;
 
 	// alter parameters based on direction
-	switch( dir ) {
+	switch( current_dir ) {
 	default:
 		break;
 	case PolycodeTemplateApp::direction::left:
@@ -113,8 +115,34 @@ void PolycodeTemplateApp::translateAliens( vector<SpaceInvadersEntity*> *alien_l
 		break;
 	}
 
+	// delta vector
+	Vector3 *delta_vec = new Vector3( delta * reverse, 0, 0 );
+
+	// check if the front element will escape the bound(s) if incremented
+	// by the offset, if so, reverse the direction
+	Vector3 next_position = front_entity->getPosition() + *delta_vec;
+	if ( next_position.x > (screen_width - offset) ) {
+		reverse *= -1;
+
+		switch( current_dir ) {
+		default:
+			break;
+		case PolycodeTemplateApp::direction::right:
+			current_dir = left;
+			front_entity = alien_list->at(0);
+			break;
+		case PolycodeTemplateApp::direction::left:
+			current_dir = right;
+			front_entity = alien_list->at( alien_list->size() - 1 );
+			break;
+		}
+	}
+
+	// may be a memory leak?...
+	delta_vec = new Vector3( delta * reverse, 0, 0 );
+	
 	for ( unsigned i = 0; i < alien_list->size(); ++i ) {
 		//
-		alien_list->at(i)->translate( Vector3( delta * reverse, 0, 0 ) );
+		alien_list->at(i)->translate( *delta_vec );
 	}
 }
