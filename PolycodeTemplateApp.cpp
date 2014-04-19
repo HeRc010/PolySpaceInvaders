@@ -30,9 +30,9 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	main_screen->addChild( player->getSprite() );
 
 	// SPAWN a row of aliens
-	vector<SpaceInvadersEntity*> *aliens = new vector<SpaceInvadersEntity*>( 0 );
+	aliens = new vector<SpaceInvadersEntity*>( 0 );
 	
-	Vector3 start_pos(0, 0, 0);
+	Vector3 start_pos(offset, float(screen_height/2), 0);
 	const unsigned NUM_ROW_ALIENS = 5;
 	for ( unsigned i = 0; i < NUM_ROW_ALIENS; ++i ) {
 		// create new alien
@@ -59,18 +59,9 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 bool PolycodeTemplateApp::Update() {
 	return core->updateAndRender();
 
-	// translate the row of aliens
-	//...
-}
-
-SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
-	//
-	ScreenImage * alien_sprite = new ScreenImage("Resources/alien.png");
-	alien_sprite->setScale( *sprite_scale );
-	
-	SpaceInvadersEntity *alien = new SpaceInvadersEntity( alien_sprite, new Vector3(0, 0, 0), initial_HP );
-
-	return alien;
+	// translate the row of aliens - to the right to test
+	//translateAliens( aliens, PolycodeTemplateApp::direction::right );
+	aliens->at(0)->getSprite()->setPosition( Vector3( screen_width/2, screen_height/2, 0 ) );
 }
 
 void PolycodeTemplateApp::handleEvent( Event *e ) {
@@ -88,5 +79,42 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			main_screen->addChild( player->getSprite() );
 			break;
 		}
+	}
+}
+
+SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
+	//
+	ScreenImage * alien_sprite = new ScreenImage("Resources/alien.png");
+	alien_sprite->setScale( *sprite_scale );
+	
+	SpaceInvadersEntity *alien = new SpaceInvadersEntity( alien_sprite, new Vector3(0, 0, 0), initial_HP );
+
+	return alien;
+}
+
+void PolycodeTemplateApp::translateAliens( vector<SpaceInvadersEntity*> *alien_list, PolycodeTemplateApp::direction dir ) {
+	// factor to reverse the delta direction if need be
+	unsigned reverse = 1;
+
+	// a pointer to the entity at the front of the list
+	// with respect to the direction the row is moving
+	SpaceInvadersEntity *front_entity;
+
+	// alter parameters based on direction
+	switch( dir ) {
+	default:
+		break;
+	case PolycodeTemplateApp::direction::left:
+		reverse *= -1;
+		front_entity = alien_list->at(0);
+		break;
+	case PolycodeTemplateApp::direction::right:
+		front_entity = alien_list->at( alien_list->size() - 1 );
+		break;
+	}
+
+	for ( unsigned i = 0; i < alien_list->size(); ++i ) {
+		//
+		alien_list->at(i)->translate( Vector3( delta * reverse, 0, 0 ) );
 	}
 }

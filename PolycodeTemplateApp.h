@@ -17,8 +17,14 @@ public:
 	//
 	void handleEvent( Event *e );
     
-	// test
+	// create a particular alien, more or less hard-coded right now
 	SpaceInvadersEntity * createAlien();
+
+	// direction values
+	enum direction { left, right };
+
+	// translate a row of aliens in a particluar direction
+	void translateAliens( vector<SpaceInvadersEntity*> *alien_list, direction dir);
 
 private:
     Core *core;
@@ -41,4 +47,10 @@ private:
 
 	// player initial HP
 	static const unsigned initial_HP = 100;
+
+	// row of aliens
+	vector<SpaceInvadersEntity*> *aliens;
+
+	// delta for alien translation
+	static const unsigned delta = 50;
 };
