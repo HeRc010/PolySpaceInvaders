@@ -79,9 +79,13 @@
     <ClCompile Include="Fighter.cpp" />
     <ClCompile Include="PolycodeTemplate.cpp" />
     <ClCompile Include="PolycodeTemplateApp.cpp" />
+    <ClCompile Include="Alien.cpp" />
+    <ClCompile Include="SpaceInvadersEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Alien.h" />
     <ClInclude Include="Fighter.h" />
+    <ClInclude Include="SpaceInvadersEntity.h" />
     <ClInclude Include="PolycodeTemplateApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

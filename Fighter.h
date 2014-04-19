@@ -1,16 +1,11 @@
-#include "PolycodeView.h"
-#include "Polycode.h"
+#include "SpaceInvadersEntity.h"
 
-class Fighter
+class Fighter : public SpaceInvadersEntity
 {
 public:
-	// data
-	ScreenImage *fighter_sprite;
-
-	// fn
-	Fighter( ScreenImage *sprite );
+	Fighter( ScreenImage *sprite, Vector3 *position, const unsigned &initial_HP );
 	~Fighter();
 
 private:
-
+	
 };
