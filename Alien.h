@@ -1,3 +1,7 @@
+/*
+	May be a depricated class
+*/
+
 #include "SpaceInvadersEntity.h"
 
 class Alien : public SpaceInvadersEntity
