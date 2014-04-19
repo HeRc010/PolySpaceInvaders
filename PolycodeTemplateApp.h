@@ -18,7 +18,7 @@ public:
 	void handleEvent( Event *e );
     
 	// test
-	void test();
+	SpaceInvadersEntity * createAlien();
 
 private:
     Core *core;

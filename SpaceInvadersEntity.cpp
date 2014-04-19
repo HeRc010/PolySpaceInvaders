@@ -24,6 +24,7 @@ Vector3 SpaceInvadersEntity::getPosition() const {
 void SpaceInvadersEntity::translate( const Vector3 &delta ) {
 	//
 	*_position += delta;
+	_sprite->setPosition( _sprite->getPosition() + delta );
 }
 
 unsigned SpaceInvadersEntity::getHP() const {
