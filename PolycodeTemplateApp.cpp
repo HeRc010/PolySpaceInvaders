@@ -57,11 +57,11 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 }
 
 bool PolycodeTemplateApp::Update() {
-	return core->updateAndRender();
-
 	// translate the row of aliens - to the right to test
-	//translateAliens( aliens, PolycodeTemplateApp::direction::right );
-	aliens->at(0)->getSprite()->setPosition( Vector3( screen_width/2, screen_height/2, 0 ) );
+	translateAliens( aliens, PolycodeTemplateApp::direction::right );
+	//aliens->at(0)->getSprite()->setPosition( Vector3( screen_width/2, screen_height/2, 0 ) );
+
+	return core->updateAndRender();
 }
 
 void PolycodeTemplateApp::handleEvent( Event *e ) {
