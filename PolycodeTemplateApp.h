@@ -1,8 +1,7 @@
 #include "PolycodeView.h"
 #include "Polycode.h"
-
-//
 #include "SpaceInvadersEntity.h"
+#include "AlienRow.h"
 
 using namespace Polycode;
 

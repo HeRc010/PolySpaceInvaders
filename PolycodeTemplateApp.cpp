@@ -1,5 +1,5 @@
 /*
-	The main template file.
+	The main template file/runtime file.
 */
 
 #include "PolycodeTemplateApp.h"
@@ -30,7 +30,7 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	main_screen->addChild( player->getSprite() );
 
 	// SPAWN a row of aliens
-	aliens = new vector<SpaceInvadersEntity*>( 0 );
+	/* aliens = new vector<SpaceInvadersEntity*>( 0 );
 	
 	Vector3 start_pos(offset, float(screen_height/2), 0);
 	const unsigned NUM_ROW_ALIENS = 5;
@@ -46,10 +46,21 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 
 		main_screen->addChild( next_alien->getSprite() );
 		aliens->push_back( next_alien );
-	}
+	} */
 
 	// assign current direction
-	current_dir = PolycodeTemplateApp::direction::right;
+	//current_dir = PolycodeTemplateApp::direction::right;
+
+	// test
+	AlienRow *test_row = new AlienRow( *( createAlien() ), Vector3( 40, 40, 0 ), 5, 10 );
+
+	// add the aliens to the screen 
+	vector<SpaceInvadersEntity*> list;
+	test_row->getAliens( list );
+	for ( int i = 0; i < list.size(); ++i ) {
+		//
+		main_screen->addChild( list[i]->getSprite() );
+	}
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEDOWN );
@@ -61,7 +72,7 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 
 bool PolycodeTemplateApp::Update() {
 	// translate the row of aliens - to the right to test
-	translateAliens( aliens );
+	//translateAliens( aliens );
 
 	return core->updateAndRender();
 }

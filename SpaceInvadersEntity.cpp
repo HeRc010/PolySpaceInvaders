@@ -1,14 +1,18 @@
 #include "SpaceInvadersEntity.h"
 
-SpaceInvadersEntity::SpaceInvadersEntity( ScreenImage *sprite, Vector3 *position, const unsigned &initial_HP ) 
+SpaceInvadersEntity::SpaceInvadersEntity( ScreenImage *sprite, Vector3 *position, unsigned initial_HP )
 	: _sprite(sprite), _position(position), _HP(initial_HP)
 {
 	//
 	_sprite->setPosition( *_position );
+	_alive = true;
 }
 
 SpaceInvadersEntity::~SpaceInvadersEntity()
 {
+	//
+	delete _sprite;
+	delete _position;
 }
 
 ScreenImage * SpaceInvadersEntity::getSprite() {
@@ -37,5 +41,13 @@ void SpaceInvadersEntity::decHP( unsigned damage ) {
 	_HP -= damage;
 
 	// if < 0 -> equals zero
-	_HP = MAX( 0, _HP );
+	if ( _HP < 0 ) {
+		_HP = 0;
+		_alive = false;
+	}
+}
+
+bool SpaceInvadersEntity::stillAlive() {
+	//
+	return _alive;
 }

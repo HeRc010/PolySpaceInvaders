@@ -5,6 +5,9 @@
 		- HP; can be hit by a missile in-game
 */
 
+#ifndef SPACE_INVADERS_ENTITY_H
+#define SPACE_INVADERS_ENTITY_H
+
 #include "Polycode.h"
 #include "PolycodeView.h"
 #include "PolyGlobals.h"
@@ -12,7 +15,7 @@
 class SpaceInvadersEntity
 {
 public:
-	SpaceInvadersEntity( ScreenImage *sprite, Vector3 *position, const unsigned &initial_HP );
+	SpaceInvadersEntity( ScreenImage *sprite, Vector3 *position = new Vector3(0,0,0), unsigned initial_HP = 0 );
 	~SpaceInvadersEntity();
 
 	// get the sprite
@@ -30,6 +33,9 @@ public:
 	// decrement HP?...
 	void decHP( unsigned damage );
 
+	// is the entity still alive?
+	bool stillAlive();
+
 private:
 	// sprite associated with the entity
 	ScreenImage * _sprite;
@@ -39,4 +45,9 @@ private:
 
 	// the entity's hit points
 	unsigned _HP;
+
+	// still alive?
+	bool _alive;
 };
+
+#endif SPACE_INVADERS_ENTITY_H
