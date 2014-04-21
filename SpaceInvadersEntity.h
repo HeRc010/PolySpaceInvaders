@@ -16,10 +16,14 @@ class SpaceInvadersEntity
 {
 public:
 	SpaceInvadersEntity( ScreenImage *sprite, Vector3 *position = new Vector3(0,0,0), unsigned initial_HP = 0 );
+	
+	// copy constructor
+	SpaceInvadersEntity( const SpaceInvadersEntity &rhs );
+
 	~SpaceInvadersEntity();
 
 	// get the sprite
-	ScreenImage * getSprite();
+	ScreenImage * getSprite() const;
 
 	// get the position
 	Vector3 getPosition() const;
@@ -34,7 +38,7 @@ public:
 	void decHP( unsigned damage );
 
 	// is the entity still alive?
-	bool stillAlive();
+	bool stillAlive() const;
 
 private:
 	// sprite associated with the entity

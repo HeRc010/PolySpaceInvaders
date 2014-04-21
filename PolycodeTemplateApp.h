@@ -23,7 +23,7 @@ public:
 	enum direction { left, right };
 
 	// translate a row of aliens in a particluar direction
-	void translateAliens( vector<SpaceInvadersEntity*> *alien_list );
+	void translateAliens( AlienRow *row );//vector<SpaceInvadersEntity*> *alien_list );
 
 private:
     Core *core;

@@ -19,7 +19,7 @@ public:
 	~AlienRow();
 
 	// translate the row by a certain delta-movement
-	void translate( Vector3 delta );
+	void translate( const Vector3 &delta );
 
 	// get the number of aliens in the row - do they need to be alive?... for now no
 	unsigned numAliens();

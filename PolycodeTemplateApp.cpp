@@ -51,10 +51,10 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	// assign current direction
 	//current_dir = PolycodeTemplateApp::direction::right;
 
-	// test
-	AlienRow *test_row = new AlienRow( *( createAlien() ), Vector3( 40, 40, 0 ), 5, 10 );
+	// spawn row of aliens
+	AlienRow *test_row = new AlienRow( *( createAlien() ), Vector3( 40, 40, 0 ), 10, 30 );
 
-	// add the aliens to the screen 
+	// add the aliens to the screen
 	vector<SpaceInvadersEntity*> list;
 	test_row->getAliens( list );
 	for ( int i = 0; i < list.size(); ++i ) {
@@ -105,9 +105,13 @@ SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
 	return alien;
 }
 
-void PolycodeTemplateApp::translateAliens( vector<SpaceInvadersEntity*> *alien_list ) {
+void PolycodeTemplateApp::translateAliens( AlienRow *row ) { //vector<SpaceInvadersEntity*> *alien_list ) {
 	// factor to reverse the delta direction if need be
 	int reverse = 1;
+
+	// list reference
+	vector<SpaceInvadersEntity*> *alien_list;
+	row->getAliens( *( alien_list ) );
 
 	// a pointer to the entity at the front of the list
 	// with respect to the direction the row is moving
@@ -149,11 +153,6 @@ void PolycodeTemplateApp::translateAliens( vector<SpaceInvadersEntity*> *alien_l
 		}
 	}
 
-	// may be a memory leak?...
-	delta_vec = new Vector3( delta * reverse, 0, 0 );
-	
-	for ( unsigned i = 0; i < alien_list->size(); ++i ) {
-		//
-		alien_list->at(i)->translate( *delta_vec );
-	}
+	// translate
+	row->translate( Vector3( delta * reverse, 0, 0 ) );
 }

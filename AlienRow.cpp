@@ -12,12 +12,12 @@ AlienRow::AlienRow( const SpaceInvadersEntity &clone, const Vector3 &initial_pos
 	for ( int i = 0; i < num_aliens; ++i ) {
 		//
 		SpaceInvadersEntity* next = new SpaceInvadersEntity( clone );
-		
+
 		// move to the initial position
 		next->translate( initial_pos - next->getPosition() );
 		
-		// shift by offset
-		next->translate( Vector3( 0, i * spacing, 0 ) );
+		// shift by spacing amount
+		next->translate( Vector3( i * spacing, 0, 0 ) );
 
 		_aliens.push_back( next );
 	}
@@ -40,4 +40,12 @@ unsigned AlienRow::numAliens() {
 void AlienRow::getAliens( vector<SpaceInvadersEntity*> &list ) const {
 	//
 	list = _aliens;
+}
+
+void AlienRow::translate( const Vector3 &delta ) {
+	// translate every alien by delta
+	for ( int i = 0; i < _aliens.size(); ++i ) {
+		//
+		_aliens[i]->translate( delta );
+	}
 }

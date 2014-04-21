@@ -8,6 +8,16 @@ SpaceInvadersEntity::SpaceInvadersEntity( ScreenImage *sprite, Vector3 *position
 	_alive = true;
 }
 
+// CC
+SpaceInvadersEntity::SpaceInvadersEntity( const SpaceInvadersEntity &rhs ) {
+	// create new instances of the pointer content
+	_sprite = new ScreenImage( *( rhs.getSprite() ) );
+	_position = new Vector3( rhs.getPosition() );
+
+	_HP = rhs.getHP();
+	_alive = rhs.stillAlive();
+}
+
 SpaceInvadersEntity::~SpaceInvadersEntity()
 {
 	//
@@ -15,7 +25,7 @@ SpaceInvadersEntity::~SpaceInvadersEntity()
 	delete _position;
 }
 
-ScreenImage * SpaceInvadersEntity::getSprite() {
+ScreenImage * SpaceInvadersEntity::getSprite() const {
 	//
 	return _sprite;
 }
@@ -47,7 +57,7 @@ void SpaceInvadersEntity::decHP( unsigned damage ) {
 	}
 }
 
-bool SpaceInvadersEntity::stillAlive() {
+bool SpaceInvadersEntity::stillAlive() const {
 	//
 	return _alive;
 }
