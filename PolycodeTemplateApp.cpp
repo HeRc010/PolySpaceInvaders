@@ -96,7 +96,7 @@ SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
 
 void PolycodeTemplateApp::translateAliens( vector<SpaceInvadersEntity*> *alien_list ) {
 	// factor to reverse the delta direction if need be
-	unsigned reverse = 1;
+	int reverse = 1;
 
 	// a pointer to the entity at the front of the list
 	// with respect to the direction the row is moving
@@ -121,7 +121,7 @@ void PolycodeTemplateApp::translateAliens( vector<SpaceInvadersEntity*> *alien_l
 	// check if the front element will escape the bound(s) if incremented
 	// by the offset, if so, reverse the direction
 	Vector3 next_position = front_entity->getPosition() + *delta_vec;
-	if ( next_position.x > (screen_width - offset) ) {
+	if ( ( next_position.x > (screen_width - offset) ) || ( next_position.x < offset ) ) {
 		reverse *= -1;
 
 		switch( current_dir ) {

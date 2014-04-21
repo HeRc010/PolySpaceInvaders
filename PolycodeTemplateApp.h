@@ -52,7 +52,7 @@ private:
 	vector<SpaceInvadersEntity*> *aliens;
 
 	// delta for alien translation
-	static const unsigned delta = 50;
+	static const int delta = 50;
 
 	// current direction for row
 	direction current_dir;
