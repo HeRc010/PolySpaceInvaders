@@ -1,5 +1,11 @@
 /*
 	The main template file/runtime file.
+
+	TODO(high level stuffs):
+	- ***high priority*** add multiple rows of aliens & get translation mech. down :)
+	- add lives for the fighter
+	- general death-by-missle mechanics
+	- add the red ufo going accross the top
 */
 
 #include "PolycodeTemplateApp.h"
@@ -49,14 +55,15 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	} */
 
 	// assign current direction
-	//current_dir = PolycodeTemplateApp::direction::right;
+	current_dir = PolycodeTemplateApp::direction::right;
 
 	// spawn row of aliens
-	AlienRow *test_row = new AlienRow( *( createAlien() ), Vector3( 40, 40, 0 ), 10, 30 );
+	//AlienRow * 
+	alien_row = new AlienRow( *( createAlien() ), Vector3( 40, 40, 0 ), 10, 30 );
 
 	// add the aliens to the screen
 	vector<SpaceInvadersEntity*> list;
-	test_row->getAliens( list );
+	alien_row->getAliens( list );
 	for ( int i = 0; i < list.size(); ++i ) {
 		//
 		main_screen->addChild( list[i]->getSprite() );
@@ -70,13 +77,27 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
     
 }
 
+/*
+	TODO:
+	- translation functionality for the alien row
+		- need to incorporate a current direction
+		- awareness of the left-most/right-most entity for consistency in movement
+		- if the left-most/right-most entity is at it's respective edge; reverse direction
+	- add timer to control how long it takes before the row shifts
+	- sound for when the space invaders move
+		-> there also needs to be sound for the red ufo that comes accross the top every once in a while
+*/
 bool PolycodeTemplateApp::Update() {
 	// translate the row of aliens - to the right to test
-	//translateAliens( aliens );
+	translateAlienRow( alien_row );
 
 	return core->updateAndRender();
 }
 
+/*
+	TODO:
+	- add translation functionality for the fighter
+*/
 void PolycodeTemplateApp::handleEvent( Event *e ) {
 	//
 	if ( e->getDispatcher() == core->getInput() ) {
@@ -105,13 +126,13 @@ SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
 	return alien;
 }
 
-void PolycodeTemplateApp::translateAliens( AlienRow *row ) { //vector<SpaceInvadersEntity*> *alien_list ) {
+void PolycodeTemplateApp::translateAlienRow( AlienRow *row ) {
 	// factor to reverse the delta direction if need be
 	int reverse = 1;
 
 	// list reference
-	vector<SpaceInvadersEntity*> *alien_list;
-	row->getAliens( *( alien_list ) );
+	vector<SpaceInvadersEntity*> alien_list;
+	row->getAliens( alien_list );
 
 	// a pointer to the entity at the front of the list
 	// with respect to the direction the row is moving
@@ -123,10 +144,10 @@ void PolycodeTemplateApp::translateAliens( AlienRow *row ) { //vector<SpaceInvad
 		break;
 	case PolycodeTemplateApp::direction::left:
 		reverse *= -1;
-		front_entity = alien_list->at(0);
+		front_entity = alien_list.at(0);
 		break;
 	case PolycodeTemplateApp::direction::right:
-		front_entity = alien_list->at( alien_list->size() - 1 );
+		front_entity = alien_list.at( alien_list.size() - 1 );
 		break;
 	}
 
@@ -144,11 +165,11 @@ void PolycodeTemplateApp::translateAliens( AlienRow *row ) { //vector<SpaceInvad
 			break;
 		case PolycodeTemplateApp::direction::right:
 			current_dir = left;
-			front_entity = alien_list->at(0);
+			front_entity = alien_list.at(0);
 			break;
 		case PolycodeTemplateApp::direction::left:
 			current_dir = right;
-			front_entity = alien_list->at( alien_list->size() - 1 );
+			front_entity = alien_list.at( alien_list.size() - 1 );
 			break;
 		}
 	}
