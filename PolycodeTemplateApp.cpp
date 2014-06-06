@@ -283,19 +283,20 @@ void PolycodeTemplateApp::playerFireMissile() {
 
 /*
 	translate each missile; as long as it is still within the screen - otherwise... DESTROY IT!!!
-
-	use the size() method in the for loop - not as efficient, but might prevent bugs where an access of an erased element is attempted
 */
 void PolycodeTemplateApp::updatePlayerMissles( vector<SpaceInvadersEntity*> player_missles, int player_missile_speed ) {
 	//
-	//const unsigned num_missles = player_missles.size();
-	for ( unsigned i = 0; i < player_missles.size(); ++i ) {
+	unsigned num_missiles = player_missles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
 		//
 		player_missles[i]->translate( Vector3( 0, -player_missile_speed, 0 ) );
 
 		if ( player_missiles[i]->getSprite()->getPosition().y < 0 ) {
-			//
+			// remove from the screen
+			main_screen->removeChild( player_missiles[i]->getSprite() );
+
 			player_missiles.erase( player_missiles.begin() + i );
+			--num_missiles;
 		}
 	}
 }
