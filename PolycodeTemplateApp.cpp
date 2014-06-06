@@ -2,22 +2,33 @@
 	The main template file/runtime file.
 
 	TODO(high level stuffs):
-	- ***high priority*** add multiple rows of aliens & get translation mech. down :)
+	- ***high priority*** add missile functionality - and death mechanics
+		-> for fighter
+		-> for aliens
+	- clean up fire-by-event process; it's a little finiky(?) if you press two buttons at once...
 	- add lives for the fighter
-	- general death-by-missle mechanics
 	- add the red ufo going accross the top
+	- sound for when the space invaders move
+		-> there also needs to be sound for the red ufo that comes accross the top every once in a while
 */
 
 #include "PolycodeTemplateApp.h"
 
 PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	// initialization
-	core = new Win32Core(view, screen_width,screen_height,false, false, 0, 0,60);
+	core = new Win32Core(view, screen_width,screen_height,false, false, 0, 0, 60);
 	CoreServices::getInstance()->getResourceManager()->addArchive("default.pak");
 	CoreServices::getInstance()->getResourceManager()->addDirResource("default", false);
 	
 	// assign GUI parameters
 	sprite_scale = new Vector3( sprite_xscale, sprite_yscale, 0 );
+	player_missile_scale = new Vector3( pmissile_sprite_xscale, pmissile_sprite_yscale, 0 );
+
+	// initialize timer
+	timer = new Timer( false, 0 );
+
+	// initialize player delta
+	player_delta = Vector3( 0, 0, 0 );
 
 	// Create screen
 	main_screen = new Screen();
@@ -39,10 +50,12 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	current_dir = PolycodeTemplateApp::direction::right;
 
 	// spawn aliens and add to screen
-	aliens = createAliens( Vector3( 40, 40, 0 ), 3, 100, 10, 30 );
+	aliens = createAliens( Vector3( 40, 40, 0 ), 3, 50, 10, 30 );
 	addAliensToScreen( aliens );
 
 	// listen for input
+	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
+	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYUP );
 	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEDOWN );
 	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEUP );
 }
@@ -56,28 +69,57 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 		- need to incorporate a current direction
 		- awareness of the left-most/right-most entity for consistency in movement
 		- if the left-most/right-most entity is at it's respective edge; reverse direction
-	- add timer to control how long it takes before the row shifts
-	- sound for when the space invaders move
-		-> there also needs to be sound for the red ufo that comes accross the top every once in a while
 */
 bool PolycodeTemplateApp::Update() {
-	// translate the row of aliens - to the right to test
-	translateAliens( aliens );
+	// translate the aliens - if the necessary time has elapsed
+	if ( (timer->getElapsedf() * 1000) >= duration ) {
+		translateAliens( aliens );
+		timer->Reset();
+	}
+
+	// translate player
+	player->translate( player_delta );
+
+	// update player missiles
+	updatePlayerMissles( player_missiles, player_missile_speed );
 
 	return core->updateAndRender();
 }
 
 /*
 	TODO:
-	- add translation functionality for the fighter
+	- add missile firing functionality for fighter
 */
 void PolycodeTemplateApp::handleEvent( Event *e ) {
 	//
+	
 	if ( e->getDispatcher() == core->getInput() ) {
 		//
+		InputEvent *ie = (InputEvent*) e;
 		switch ( e->getEventCode() )
 		{
-		default:
+		case InputEvent::EVENT_KEYDOWN:
+			switch( ie->keyCode() ) {
+			case KEY_a:
+				player_delta.x = -player_delta_x;
+				break;
+			case KEY_d:
+				player_delta.x = player_delta_x;
+				break;
+			case KEY_SPACE:
+				playerFireMissile();
+				break;
+			}
+			break;
+		case InputEvent::EVENT_KEYUP:
+			switch ( ie->keyCode() ) {
+			case KEY_a:
+				player_delta.x = 0;
+				break;
+			case KEY_d:
+				player_delta.x = 0;
+				break;
+			}
 			break;
 		case InputEvent::EVENT_MOUSEDOWN:
 			main_screen->removeChild( player->getSprite() );
@@ -89,14 +131,23 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 	}
 }
 
+/*
+	Memory leak here? not deleting the pointers?... of the sprites?...
+*/
 SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
 	//
 	ScreenImage * alien_sprite = new ScreenImage("Resources/alien.png");
 	alien_sprite->setScale( *sprite_scale );
-	
-	SpaceInvadersEntity *alien = new SpaceInvadersEntity( alien_sprite, new Vector3(0, 0, 0), initial_HP );
 
-	return alien;
+	return new SpaceInvadersEntity( alien_sprite, new Vector3(0, 0, 0), initial_HP );
+}
+
+SpaceInvadersEntity * PolycodeTemplateApp::createPlayerMissile() {
+	//
+	ScreenImage * player_missile_sprite = new ScreenImage("Resources/player_missile.png");
+	player_missile_sprite->setScale( *player_missile_scale );
+
+	return new SpaceInvadersEntity( player_missile_sprite, new Vector3(0, 0, 0), initial_HP );
 }
 
 AlienRow * PolycodeTemplateApp::createAlienRow( Vector3 &start_pos, unsigned num_aliens, unsigned spacing ) {
@@ -192,9 +243,9 @@ void PolycodeTemplateApp::translateAlienRow( AlienRow *row ) {
 
 /*
 	Translate all the alien rows. Continue until the left-most/right-most element is at the edge of the screen.
-
+	
 	TODO:
-	- get it working...
+	- there currently isn't functionality for all rows(of different lengths) moving in sync
 */
 void PolycodeTemplateApp::translateAliens( vector<AlienRow*> &aliens ) {
 	//
@@ -202,5 +253,30 @@ void PolycodeTemplateApp::translateAliens( vector<AlienRow*> &aliens ) {
 	for ( unsigned i = 0; i < num_rows; ++i ) {
 		//
 		translateAlienRow( aliens[i] );
+	}
+}
+
+/*
+	fire a missile from the players location; create a missile at the players location and add it to the player-missile array
+*/
+void PolycodeTemplateApp::playerFireMissile() {
+	//
+	SpaceInvadersEntity *new_missile = createPlayerMissile();
+	new_missile->translate( player->getPosition() );
+
+	main_screen->addChild( new_missile->getSprite() );
+
+	player_missiles.push_back( new_missile );
+}
+
+/*
+	translate each missile; as long as it is still within the screen - otherwise... DESTROY IT!!!
+*/
+void PolycodeTemplateApp::updatePlayerMissles( vector<SpaceInvadersEntity*> player_missles, int player_missile_speed ) {
+	//
+	const unsigned num_missles = player_missles.size();
+	for ( unsigned i = 0; i < num_missles; ++i ) {
+		//
+		player_missles[i]->translate( Vector3( 0, -player_missile_speed, 0 ) );
 	}
 }
