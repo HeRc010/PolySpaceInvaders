@@ -35,39 +35,12 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	player = new SpaceInvadersEntity( player_sprite, location, initial_HP );
 	main_screen->addChild( player->getSprite() );
 
-	// SPAWN a row of aliens
-	/* aliens = new vector<SpaceInvadersEntity*>( 0 );
-	
-	Vector3 start_pos(offset, float(screen_height/2), 0);
-	const unsigned NUM_ROW_ALIENS = 5;
-	for ( unsigned i = 0; i < NUM_ROW_ALIENS; ++i ) {
-		// create new alien
-		SpaceInvadersEntity *next_alien = createAlien();
-
-		// next position
-		Vector3 next_pos(start_pos);
-		next_pos += Vector3( i * next_alien->getSprite()->getWidth() * sprite_xscale, 0, 0 );
-
-		next_alien->translate( next_pos );
-
-		main_screen->addChild( next_alien->getSprite() );
-		aliens->push_back( next_alien );
-	} */
-
 	// assign current direction
 	current_dir = PolycodeTemplateApp::direction::right;
 
-	// spawn row of aliens
-	//AlienRow * 
-	alien_row = new AlienRow( *( createAlien() ), Vector3( 40, 40, 0 ), 10, 30 );
-
-	// add the aliens to the screen
-	vector<SpaceInvadersEntity*> list;
-	alien_row->getAliens( list );
-	for ( int i = 0; i < list.size(); ++i ) {
-		//
-		main_screen->addChild( list[i]->getSprite() );
-	}
+	// spawn aliens and add to screen
+	aliens = createAliens( Vector3( 40, 40, 0 ), 3, 100, 10, 30 );
+	addAliensToScreen( aliens );
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEDOWN );
@@ -89,7 +62,7 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 */
 bool PolycodeTemplateApp::Update() {
 	// translate the row of aliens - to the right to test
-	translateAlienRow( alien_row );
+	translateAliens( aliens );
 
 	return core->updateAndRender();
 }
@@ -126,11 +99,50 @@ SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
 	return alien;
 }
 
+AlienRow * PolycodeTemplateApp::createAlienRow( Vector3 &start_pos, unsigned num_aliens, unsigned spacing ) {
+	//
+	return new AlienRow( *( createAlien() ), start_pos, num_aliens, spacing );
+}
+
+void PolycodeTemplateApp::addAlienRowToScreen( AlienRow * row ) {
+	//
+	const unsigned num_aliens = row->numAliens();
+	vector<SpaceInvadersEntity*> aliens;
+	row->getAliens( aliens );
+	for ( unsigned i = 0; i < num_aliens; ++i ) {
+		//
+		main_screen->addChild( aliens[i]->getSprite() );
+	}
+}
+
+void PolycodeTemplateApp::addAliensToScreen( vector<AlienRow*> aliens ) {
+	//
+	const unsigned num_rows = aliens.size();
+	for ( unsigned i = 0; i < num_rows; ++i ) {
+		//
+		addAlienRowToScreen( aliens[i] );
+	}
+}
+
+vector<AlienRow*> PolycodeTemplateApp::createAliens( Vector3 &start_pos, unsigned num_rows, unsigned row_spacing, unsigned num_aliens_per_row, unsigned sprite_spacing ) {
+	//
+	vector<AlienRow*> result;
+	Vector3 row_offset( start_pos );
+	for ( unsigned i = 0; i < num_rows; ++i ) {
+		//
+		result.push_back( createAlienRow( row_offset, num_aliens_per_row, sprite_spacing ) );
+
+		row_offset += Vector3( 0, row_spacing, 0 );
+	}
+
+	return result;
+}
+
 void PolycodeTemplateApp::translateAlienRow( AlienRow *row ) {
-	// factor to reverse the delta direction if need be
+	// variable to reverse the delta direction if need be
 	int reverse = 1;
 
-	// list reference
+	// list for retrieval
 	vector<SpaceInvadersEntity*> alien_list;
 	row->getAliens( alien_list );
 
@@ -176,4 +188,19 @@ void PolycodeTemplateApp::translateAlienRow( AlienRow *row ) {
 
 	// translate
 	row->translate( Vector3( delta * reverse, 0, 0 ) );
+}
+
+/*
+	Translate all the alien rows. Continue until the left-most/right-most element is at the edge of the screen.
+
+	TODO:
+	- get it working...
+*/
+void PolycodeTemplateApp::translateAliens( vector<AlienRow*> &aliens ) {
+	//
+	const unsigned num_rows = aliens.size();
+	for ( unsigned i = 0; i < num_rows; ++i ) {
+		//
+		translateAlienRow( aliens[i] );
+	}
 }
