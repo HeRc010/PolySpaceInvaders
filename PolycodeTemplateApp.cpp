@@ -3,9 +3,9 @@
 
 	TODO(high level stuffs):
 	- ***high priority*** add missile functionality - and death mechanics
-		-> for fighter
-		-> for aliens
+		-> for now death mech.; get aliens to die when hit by a missile
 	- clean up fire-by-event process; it's a little finiky(?) if you press two buttons at once...
+	- need to keep the fighter from going off the screen
 	- add lives for the fighter
 	- add the red ufo going accross the top
 	- sound for when the space invaders move
@@ -31,7 +31,7 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	player_delta = Vector3( 0, 0, 0 );
 
 	// Create screen
-	main_screen = new Screen();
+	main_screen = new PhysicsScreen( 10, 50 );
 
 	// add background
 	ScreenImage *background = new ScreenImage("Resources/background.png");
@@ -41,13 +41,13 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	ScreenImage *player_sprite = new ScreenImage("Resources/fighter.png");
 	player_sprite->setScale( *sprite_scale );
 	
-	Vector3 *location = new Vector3( float( screen_width/2 ), float( screen_height - ( player_sprite->getHeight() * sprite_yscale + offset ) ), 0 );
+	Vector3 *location = new Vector3( float( screen_width/2 ) - (player_sprite->getImageWidth() * sprite_xscale / 2), float( screen_height - ( player_sprite->getHeight() * sprite_yscale + offset ) ), 0 );
 
 	player = new SpaceInvadersEntity( player_sprite, location, initial_HP );
-	main_screen->addChild( player->getSprite() );
+	main_screen->addCollisionChild( player->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
 
 	// assign current direction
-	current_dir = PolycodeTemplateApp::direction::right;
+	current_dir = direction::right;
 
 	// spawn aliens and add to screen
 	aliens = createAliens( Vector3( 40, 40, 0 ), 3, 50, 10, 30 );
@@ -58,6 +58,9 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYUP );
 	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEDOWN );
 	core->getInput()->addEventListener( this, InputEvent::EVENT_MOUSEUP );
+
+	// listen for collisions
+	main_screen->addEventListener( this, PhysicsScreenEvent::EVENT_NEW_SHAPE_COLLISION );
 }
 PolycodeTemplateApp::~PolycodeTemplateApp() {
     
@@ -126,6 +129,14 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			break;
 		case InputEvent::EVENT_MOUSEUP:
 			main_screen->addChild( player->getSprite() );
+			break;
+		}
+	} else if ( e->getDispatcher() == main_screen ) {
+		//
+		PhysicsScreenEvent * pe = (PhysicsScreenEvent*) e;
+		switch ( pe->getEventCode() ) {
+		case PhysicsScreenEvent::EVENT_NEW_SHAPE_COLLISION:
+
 			break;
 		}
 	}
@@ -257,26 +268,34 @@ void PolycodeTemplateApp::translateAliens( vector<AlienRow*> &aliens ) {
 }
 
 /*
-	fire a missile from the players location; create a missile at the players location and add it to the player-missile array
+	fire a missile from above the players location; create a missile at the players location and add it to the player-missile array
 */
 void PolycodeTemplateApp::playerFireMissile() {
 	//
 	SpaceInvadersEntity *new_missile = createPlayerMissile();
-	new_missile->translate( player->getPosition() );
+	new_missile->translate( player->getPosition() + Vector3( -(new_missile->getSprite()->getImageWidth() * pmissile_sprite_xscale / 2), -( ((player->getSprite()->getImageHeight()/2) * sprite_yscale) + (new_missile->getSprite()->getImageHeight() * pmissile_sprite_yscale) ), 0 ) );
 
-	main_screen->addChild( new_missile->getSprite() );
+	main_screen->addCollisionChild( new_missile->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
+	//main_screen->addChild( new_missile->getSprite() );
 
 	player_missiles.push_back( new_missile );
 }
 
 /*
 	translate each missile; as long as it is still within the screen - otherwise... DESTROY IT!!!
+
+	use the size() method in the for loop - not as efficient, but might prevent bugs where an access of an erased element is attempted
 */
 void PolycodeTemplateApp::updatePlayerMissles( vector<SpaceInvadersEntity*> player_missles, int player_missile_speed ) {
 	//
-	const unsigned num_missles = player_missles.size();
-	for ( unsigned i = 0; i < num_missles; ++i ) {
+	//const unsigned num_missles = player_missles.size();
+	for ( unsigned i = 0; i < player_missles.size(); ++i ) {
 		//
 		player_missles[i]->translate( Vector3( 0, -player_missile_speed, 0 ) );
+
+		if ( player_missiles[i]->getSprite()->getPosition().y < 0 ) {
+			//
+			player_missiles.erase( player_missiles.begin() + i );
+		}
 	}
 }

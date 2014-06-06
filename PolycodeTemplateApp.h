@@ -3,6 +3,9 @@
 #include "SpaceInvadersEntity.h"
 #include "AlienRow.h"
 
+// for physics screen
+#include "Polycode2DPhysics.h"
+
 using namespace Polycode;
 
 class PolycodeTemplateApp : public EventHandler {
@@ -70,7 +73,7 @@ private:
 	Timer *timer;
 
 	// main screen
-	Screen *main_screen;
+	PhysicsScreen *main_screen;
 	
 	// entity initial HP
 	static const unsigned initial_HP = 100;
