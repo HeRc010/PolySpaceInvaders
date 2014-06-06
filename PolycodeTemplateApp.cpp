@@ -24,7 +24,12 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	CoreServices::getInstance()->getResourceManager()->addDirResource("default", false);
 	
 	// assign GUI parameters
-	sprite_scale = new Vector3( sprite_xscale, sprite_yscale, 0 );
+	alien_sprite_scale = new Vector3( alien_sprite_xscale, alien_sprite_yscale, 0 );
+
+	player_width = 85;
+	player_height = 53;
+	player_sprite_scale = new Vector3( player_sprite_xscale, player_sprite_yscale, 0 );
+
 	player_missile_scale = new Vector3( pmissile_sprite_xscale, pmissile_sprite_yscale, 0 );
 
 	// initialize timers
@@ -38,24 +43,27 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	main_screen = new PhysicsScreen( 10, 50 );
 
 	// add background
-	ScreenImage *background = new ScreenImage("Resources/background.png");
+	ScreenSprite *background = ScreenSprite::ScreenSpriteFromImageFile("Resources/background.png", screen_width*2, screen_height*2 ); //new ScreenSprite("Resources/background.png");
+
 	main_screen->addChild( background );
 
 	// initialize fighter/player entity
-	ScreenImage *player_sprite = new ScreenImage("Resources/fighter.png");
-	player_sprite->setScale( *sprite_scale );
+	ScreenSprite *player_sprite = ScreenSprite::ScreenSpriteFromImageFile("Resources/fighter_1.png", player_width*2, player_width*2 ); //new ScreenSprite("Resources/fighter_1.png");
+	player_sprite->setScale( *player_sprite_scale );
 	
-	Vector3 *location = new Vector3( float( screen_width/2 ) - (player_sprite->getImageWidth() * sprite_xscale / 2), float( screen_height - ( player_sprite->getHeight() * sprite_yscale + offset ) ), 0 );
+	Vector3 *location = new Vector3( float( screen_width/2 ) - (player_sprite->getWidth() * player_sprite_xscale / 2), float( screen_height - ( player_sprite->getHeight() * player_sprite_yscale + offset ) ), 0 );
 
 	player = new SpaceInvadersEntity( player_sprite, location, initial_HP );
 	main_screen->addCollisionChild( player->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
+
+	return;
 
 	// assign current direction
 	current_dir = direction::right;
 
 	// spawn aliens and add to screen
-	aliens = createAliens( Vector3( 40, 40, 0 ), 3, 50, 10, 30 );
-	addAliensToScreen( aliens );
+	//aliens = createAliens( Vector3( 40, 40, 0 ), 3, 50, 10, 30 );
+	//addAliensToScreen( aliens );
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
@@ -79,7 +87,7 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 */
 bool PolycodeTemplateApp::Update() {
 	// translate the aliens - if the necessary time has elapsed
-	if ( (timer->getElapsedf() * 1000) >= duration ) {
+	/* if ( (timer->getElapsedf() * 1000) >= duration ) {
 		translateAliens( aliens );
 		timer->Reset();
 	}
@@ -88,7 +96,7 @@ bool PolycodeTemplateApp::Update() {
 	player->translate( player_delta );
 
 	// update player missiles
-	updatePlayerMissles( player_missiles, player_missile_speed );
+	updatePlayerMissles( player_missiles, player_missile_speed ); */
 
 	return core->updateAndRender();
 }
@@ -164,15 +172,15 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 */
 SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
 	//
-	ScreenImage * alien_sprite = new ScreenImage("Resources/alien.png");
-	alien_sprite->setScale( *sprite_scale );
+	ScreenSprite * alien_sprite = new ScreenSprite("Resources/alien_1.png");
+	alien_sprite->setScale( *alien_sprite_scale );
 
 	return new SpaceInvadersEntity( alien_sprite, new Vector3(0, 0, 0), initial_HP );
 }
 
 SpaceInvadersEntity * PolycodeTemplateApp::createPlayerMissile() {
 	//
-	ScreenImage * player_missile_sprite = new ScreenImage("Resources/player_missile.png");
+	ScreenSprite * player_missile_sprite = new ScreenSprite("Resources/player_missile.png");
 	player_missile_sprite->setScale( *player_missile_scale );
 
 	return new SpaceInvadersEntity( player_missile_sprite, new Vector3(0, 0, 0), initial_HP );
@@ -296,7 +304,7 @@ void PolycodeTemplateApp::translateAliens( vector<AlienRow*> &aliens ) {
 void PolycodeTemplateApp::playerFireMissile() {
 	//
 	SpaceInvadersEntity *new_missile = createPlayerMissile();
-	new_missile->translate( player->getPosition() + Vector3( -(new_missile->getSprite()->getImageWidth() * pmissile_sprite_xscale / 2), -( ((player->getSprite()->getImageHeight()/2) * sprite_yscale) + (new_missile->getSprite()->getImageHeight() * pmissile_sprite_yscale) ), 0 ) );
+	new_missile->translate( player->getPosition() + Vector3( -(new_missile->getSprite()->getWidth() * pmissile_sprite_xscale / 2), -( ((player->getSprite()->getHeight()/2) * player_sprite_yscale) + (new_missile->getSprite()->getHeight() * pmissile_sprite_yscale) ), 0 ) );
 
 	main_screen->addCollisionChild( new_missile->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
 	

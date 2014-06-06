@@ -1,6 +1,6 @@
 #include "SpaceInvadersEntity.h"
 
-SpaceInvadersEntity::SpaceInvadersEntity( ScreenImage *sprite, Vector3 *position, unsigned initial_HP )
+SpaceInvadersEntity::SpaceInvadersEntity( ScreenSprite *sprite, Vector3 *position, unsigned initial_HP )
 	: _sprite(sprite), _position(position), _HP(initial_HP)
 {
 	//
@@ -11,7 +11,7 @@ SpaceInvadersEntity::SpaceInvadersEntity( ScreenImage *sprite, Vector3 *position
 // CC
 SpaceInvadersEntity::SpaceInvadersEntity( const SpaceInvadersEntity &rhs ) {
 	// create new instances of the pointer content
-	_sprite = new ScreenImage( *( rhs.getSprite() ) );
+	_sprite = new ScreenSprite( *( rhs.getSprite() ) );
 	_position = new Vector3( rhs.getPosition() );
 
 	_HP = rhs.getHP();
@@ -25,7 +25,7 @@ SpaceInvadersEntity::~SpaceInvadersEntity()
 	delete _position;
 }
 
-ScreenImage * SpaceInvadersEntity::getSprite() const {
+ScreenSprite * SpaceInvadersEntity::getSprite() const {
 	//
 	return _sprite;
 }

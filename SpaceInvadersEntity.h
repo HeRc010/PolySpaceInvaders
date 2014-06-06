@@ -15,7 +15,7 @@
 class SpaceInvadersEntity
 {
 public:
-	SpaceInvadersEntity( ScreenImage *sprite, Vector3 *position = new Vector3(0,0,0), unsigned initial_HP = 0 );
+	SpaceInvadersEntity( ScreenSprite *sprite, Vector3 *position = new Vector3(0,0,0), unsigned initial_HP = 0 );
 	
 	// copy constructor
 	SpaceInvadersEntity( const SpaceInvadersEntity &rhs );
@@ -23,7 +23,7 @@ public:
 	~SpaceInvadersEntity();
 
 	// get the sprite
-	ScreenImage * getSprite() const;
+	ScreenSprite * getSprite() const;
 
 	// get the position
 	Vector3 getPosition() const;
@@ -42,7 +42,7 @@ public:
 
 private:
 	// sprite associated with the entity
-	ScreenImage * _sprite;
+	ScreenSprite * _sprite;
 
 	// the position of the entity
 	Vector3 * _position;

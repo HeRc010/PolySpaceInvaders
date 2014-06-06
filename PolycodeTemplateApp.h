@@ -69,13 +69,19 @@ private:
     Core *core;
 
 	// GUI parameters
-	static const unsigned screen_width = 640;
-	static const unsigned screen_height = 480;
+	static const unsigned screen_width = 1580;
+	static const unsigned screen_height = 800;
 
-	static const unsigned sprite_xscale = 2;
-	static const unsigned sprite_yscale = 2;
-	Vector3 *sprite_scale;
+	static const unsigned alien_sprite_xscale = 1;
+	static const unsigned alien_sprite_yscale = 1;
+	Vector3 *alien_sprite_scale;
 	
+	unsigned player_width;
+	unsigned player_height;
+	static const unsigned player_sprite_xscale = 1;
+	static const unsigned player_sprite_yscale = 1;
+	Vector3 *player_sprite_scale;
+
 	static const unsigned pmissile_sprite_xscale = 1;
 	static const unsigned pmissile_sprite_yscale = 1;
 	Vector3 *player_missile_scale;

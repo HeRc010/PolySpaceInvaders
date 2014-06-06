@@ -7,7 +7,7 @@
 class Alien : public SpaceInvadersEntity
 {
 public:
-	Alien( ScreenImage *sprite, Vector3 *position, const unsigned &initial_HP );
+	Alien( ScreenSprite *sprite, Vector3 *position, const unsigned &initial_HP );
 	~Alien();
 
 private:
