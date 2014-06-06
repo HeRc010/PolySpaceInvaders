@@ -82,8 +82,9 @@ private:
 
 	static const unsigned offset = 10;
 
-	// timer
+	// timers
 	Timer *timer;
+	Timer *weapon_cooldown;
 
 	// main screen
 	PhysicsScreen *main_screen;
@@ -117,6 +118,9 @@ private:
 
 	// duration parameter between alien row translations - in milliseconds
 	static const unsigned duration = 1000;
+
+	// duration parameter for weapon cooldown - in milliseconds
+	static const unsigned weapon_cooldown_time = 700;
 
 	// a list of the missiles fired by the aliens
 	vector<SpaceInvadersEntity*> alien_missles;

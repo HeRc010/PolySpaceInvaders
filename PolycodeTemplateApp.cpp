@@ -2,14 +2,17 @@
 	The main template file/runtime file.
 
 	TODO(high level stuffs):
-	- ***high priority*** add missile functionality - and death mechanics
-		-> for now death mech.; get aliens to die when hit by a missile
+	- need to fix the occasional problem where rows pretend like the fallen guy on the far side is still alive; in their translation :S
+	- add missile functionality - and death mechanics
+		-> need to get the aliens shooting back; and the player killed if hit
 	- clean up fire-by-event process; it's a little finiky(?) if you press two buttons at once...
 	- need to keep the fighter from going off the screen
+	- add explosion animations for the aliens
+	- add different types of aliens
 	- add lives for the fighter
 	- add the red ufo going accross the top
 	- sound for when the space invaders move
-		-> there also needs to be sound for the red ufo that comes accross the top every once in a while
+		-> there also needs to be sound for the red ufo
 */
 
 #include "PolycodeTemplateApp.h"
@@ -24,8 +27,9 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	sprite_scale = new Vector3( sprite_xscale, sprite_yscale, 0 );
 	player_missile_scale = new Vector3( pmissile_sprite_xscale, pmissile_sprite_yscale, 0 );
 
-	// initialize timer
+	// initialize timers
 	timer = new Timer( false, 0 );
+	weapon_cooldown = new Timer( false, 0 );
 
 	// initialize player delta
 	player_delta = Vector3( 0, 0, 0 );
@@ -110,7 +114,10 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 				player_delta.x = player_delta_x;
 				break;
 			case KEY_SPACE:
-				playerFireMissile();
+				if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
+					playerFireMissile();
+					weapon_cooldown->Reset();
+				}
 				break;
 			}
 			break;
