@@ -212,6 +212,9 @@ void PolycodeTemplateApp::addAliensToScreen( vector<AlienRow*> aliens ) {
 }
 
 void PolycodeTemplateApp::translateAlienRow( AlienRow *row ) {
+	// if there are now aliens in the row; return
+	if ( row->getNumAliens() == 0 ) return;
+	
 	// variable to reverse the delta direction if need be
 	int reverse = 1;
 
@@ -356,6 +359,8 @@ bool PolycodeTemplateApp::isAlien( ScreenEntity * entity ) {
 		//
 		if ( aliens[i]->containsAlien( entity ) ) return true;
 	}
+
+	return false;
 }
 
 void PolycodeTemplateApp::removeAlien( ScreenEntity * to_remove ) {

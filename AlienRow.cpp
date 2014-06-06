@@ -83,4 +83,5 @@ void AlienRow::removeAlien( ScreenEntity * to_remove ) {
 void AlienRow::removeAlien( unsigned i ) {
 	//
 	_aliens.erase( _aliens.begin() + i );
+	--_num_aliens;
 }
