@@ -52,6 +52,19 @@ public:
 	// update the player's missiles
 	void updatePlayerMissles( vector<SpaceInvadersEntity*> missiles, int missile_speed );
 
+	// is the sprite one of the player missiles?
+	bool isPlayerMissile( ScreenEntity * entity );
+
+	// remove a player missile from the screen and the array
+	void removePlayerMissile( ScreenEntity * to_remove );
+
+	// is the entity and alien?
+	bool isAlien( ScreenEntity * entity );
+
+	// remove an alien from the screen and the array
+	void removeAlien( ScreenEntity * to_remove );
+
+
 private:
     Core *core;
 

@@ -136,8 +136,18 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		PhysicsScreenEvent * pe = (PhysicsScreenEvent*) e;
 		switch ( pe->getEventCode() ) {
 		case PhysicsScreenEvent::EVENT_NEW_SHAPE_COLLISION:
+			if ( isPlayerMissile( pe->entity1 ) ) {
+				removePlayerMissile( pe->entity1 );
+			} else if ( isPlayerMissile( pe->entity2 ) ) {
+				removePlayerMissile( pe->entity2 );
+			}
 
-			break;
+			if ( isAlien( pe->entity1 ) ) {
+				removeAlien( pe->entity1 );
+			} else if ( isAlien( pe->entity2 ) ) {
+				removeAlien( pe->entity2 );
+			}
+			break; 
 		}
 	}
 }
@@ -166,26 +176,6 @@ AlienRow * PolycodeTemplateApp::createAlienRow( Vector3 &start_pos, unsigned num
 	return new AlienRow( *( createAlien() ), start_pos, num_aliens, spacing );
 }
 
-void PolycodeTemplateApp::addAlienRowToScreen( AlienRow * row ) {
-	//
-	const unsigned num_aliens = row->numAliens();
-	vector<SpaceInvadersEntity*> aliens;
-	row->getAliens( aliens );
-	for ( unsigned i = 0; i < num_aliens; ++i ) {
-		//
-		main_screen->addChild( aliens[i]->getSprite() );
-	}
-}
-
-void PolycodeTemplateApp::addAliensToScreen( vector<AlienRow*> aliens ) {
-	//
-	const unsigned num_rows = aliens.size();
-	for ( unsigned i = 0; i < num_rows; ++i ) {
-		//
-		addAlienRowToScreen( aliens[i] );
-	}
-}
-
 vector<AlienRow*> PolycodeTemplateApp::createAliens( Vector3 &start_pos, unsigned num_rows, unsigned row_spacing, unsigned num_aliens_per_row, unsigned sprite_spacing ) {
 	//
 	vector<AlienRow*> result;
@@ -198,6 +188,27 @@ vector<AlienRow*> PolycodeTemplateApp::createAliens( Vector3 &start_pos, unsigne
 	}
 
 	return result;
+}
+
+void PolycodeTemplateApp::addAlienRowToScreen( AlienRow * row ) {
+	//
+	const unsigned num_aliens = row->getNumAliens();
+	vector<SpaceInvadersEntity*> aliens;
+	row->getAliens( aliens );
+	for ( unsigned i = 0; i < num_aliens; ++i ) {
+		//
+		main_screen->addCollisionChild( aliens[i]->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
+		//main_screen->addChild( aliens[i]->getSprite() );
+	}
+}
+
+void PolycodeTemplateApp::addAliensToScreen( vector<AlienRow*> aliens ) {
+	//
+	const unsigned num_rows = aliens.size();
+	for ( unsigned i = 0; i < num_rows; ++i ) {
+		//
+		addAlienRowToScreen( aliens[i] );
+	}
 }
 
 void PolycodeTemplateApp::translateAlienRow( AlienRow *row ) {
@@ -269,6 +280,8 @@ void PolycodeTemplateApp::translateAliens( vector<AlienRow*> &aliens ) {
 
 /*
 	fire a missile from above the players location; create a missile at the players location and add it to the player-missile array
+
+	Issue: adding the sprite as a collision child shifts it's position slightly; in a manner not see when adding as a normal child
 */
 void PolycodeTemplateApp::playerFireMissile() {
 	//
@@ -276,6 +289,8 @@ void PolycodeTemplateApp::playerFireMissile() {
 	new_missile->translate( player->getPosition() + Vector3( -(new_missile->getSprite()->getImageWidth() * pmissile_sprite_xscale / 2), -( ((player->getSprite()->getImageHeight()/2) * sprite_yscale) + (new_missile->getSprite()->getImageHeight() * pmissile_sprite_yscale) ), 0 ) );
 
 	main_screen->addCollisionChild( new_missile->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
+	
+	// see issue above
 	//main_screen->addChild( new_missile->getSprite() );
 
 	player_missiles.push_back( new_missile );
@@ -297,6 +312,64 @@ void PolycodeTemplateApp::updatePlayerMissles( vector<SpaceInvadersEntity*> play
 
 			player_missiles.erase( player_missiles.begin() + i );
 			--num_missiles;
+		}
+	}
+}
+
+bool PolycodeTemplateApp::isPlayerMissile( ScreenEntity * entity  ) {
+	//
+	const unsigned num_missiles = player_missiles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
+		//
+		if ( player_missiles[i]->getSprite() == entity  ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*
+	if they're collision entities, do you need to use remove physics child when removing from the screen?
+
+	Note: INEFFICIENT
+	- currently search through the list for the appropriate missile; then delete
+*/
+void PolycodeTemplateApp::removePlayerMissile( ScreenEntity * to_remove ) {
+	//
+	main_screen->removeChild( to_remove );
+
+	const unsigned num_missiles = player_missiles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
+		//
+		if ( to_remove == player_missiles[i]->getSprite() ) {
+			player_missiles.erase( player_missiles.begin() + i );
+			break;
+		}
+	}
+}
+
+bool PolycodeTemplateApp::isAlien( ScreenEntity * entity ) {
+	//
+	const unsigned num_rows = aliens.size();
+	for ( unsigned i = 0; i < num_rows; ++i ) {
+		//
+		if ( aliens[i]->containsAlien( entity ) ) return true;
+	}
+}
+
+void PolycodeTemplateApp::removeAlien( ScreenEntity * to_remove ) {
+	//
+	assert( isAlien( to_remove ) );
+
+	main_screen->removeChild( to_remove );
+
+	const unsigned num_rows = aliens.size();
+	for ( unsigned i = 0; i < num_rows; ++i ) {
+		//
+		if ( aliens[i]->containsAlien( to_remove ) ) {
+			aliens[i]->removeAlien( to_remove );
+			break;
 		}
 	}
 }

@@ -22,12 +22,24 @@ public:
 	void translate( const Vector3 &delta );
 
 	// get the number of aliens in the row - do they need to be alive?... for now no
-	unsigned numAliens();
+	unsigned getNumAliens();
 
 	// get a reference to the current state of the aliens
 	void getAliens( vector<SpaceInvadersEntity*> &list ) const;
 
+	// does this row contain the alien?
+	bool containsAlien( ScreenEntity * entity ) const;
+
+	// remove an alien from the row
+	void removeAlien( ScreenEntity * to_remove );
+
+	// remove an alien specified by index
+	void removeAlien( unsigned i );
+
 private:
+	// the number of aliens in the row
+	unsigned _num_aliens;
+
 	// list of aliens
 	vector<SpaceInvadersEntity*> _aliens;
 };
