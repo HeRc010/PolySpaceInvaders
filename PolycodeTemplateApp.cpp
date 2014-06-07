@@ -24,17 +24,37 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	CoreServices::getInstance()->getResourceManager()->addDirResource("default", false);
 	
 	// assign GUI parameters
+	alien_width_1 = 168;
+	alien_height_1 = 53;
+
+	alien_width_2 = 154;
+	alien_height_2 = 52;
+
+	alien_width_2 = 132;
+	alien_height_2 = 53;
+
+	alien_sprite_xscale = 0.5;
+	alien_sprite_yscale = 0.5;
 	alien_sprite_scale = new Vector3( alien_sprite_xscale, alien_sprite_yscale, 0 );
 
 	player_width = 85;
 	player_height = 53;
+	player_sprite_xscale = 0.5;
+	player_sprite_yscale = 0.5;
 	player_sprite_scale = new Vector3( player_sprite_xscale, player_sprite_yscale, 0 );
 
+	pmissile_width = 3;
+	pmissile_height = 15;
 	player_missile_scale = new Vector3( pmissile_sprite_xscale, pmissile_sprite_yscale, 0 );
 
-	// initialize timers
+	player_xoffset = 50;
+	player_yoffset = 50;
+
+	// initialize timers/timer parameters
 	timer = new Timer( false, 0 );
 	weapon_cooldown = new Timer( false, 0 );
+
+	duration = 500;
 
 	// initialize player delta
 	player_delta = Vector3( 0, 0, 0 );
@@ -43,27 +63,25 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	main_screen = new PhysicsScreen( 10, 50 );
 
 	// add background
-	ScreenSprite *background = ScreenSprite::ScreenSpriteFromImageFile("Resources/background.png", screen_width*2, screen_height*2 ); //new ScreenSprite("Resources/background.png");
+	ScreenSprite *background = ScreenSprite::ScreenSpriteFromImageFile("Resources/background.png", Number(screen_width*2), Number(screen_height*2) ); //new ScreenSprite("Resources/background.png");
 
 	main_screen->addChild( background );
 
 	// initialize fighter/player entity
-	ScreenSprite *player_sprite = ScreenSprite::ScreenSpriteFromImageFile("Resources/fighter_1.png", player_width*2, player_width*2 ); //new ScreenSprite("Resources/fighter_1.png");
+	ScreenSprite *player_sprite = ScreenSprite::ScreenSpriteFromImageFile("Resources/fighter_1.png", Number(player_width*2), Number(player_height*2) ); //new ScreenSprite("Resources/fighter_1.png");
 	player_sprite->setScale( *player_sprite_scale );
 	
-	Vector3 *location = new Vector3( float( screen_width/2 ) - (player_sprite->getWidth() * player_sprite_xscale / 2), float( screen_height - ( player_sprite->getHeight() * player_sprite_yscale + offset ) ), 0 );
+	Vector3 *location = new Vector3( float( screen_width/2 ) - (player_sprite->getWidth() * player_sprite_xscale / 2), float( screen_height - ( (player_sprite->getHeight()/2) * player_sprite_yscale ) ) - player_yoffset, 0 );
 
 	player = new SpaceInvadersEntity( player_sprite, location, initial_HP );
 	main_screen->addCollisionChild( player->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
-
-	return;
 
 	// assign current direction
 	current_dir = direction::right;
 
 	// spawn aliens and add to screen
-	//aliens = createAliens( Vector3( 40, 40, 0 ), 3, 50, 10, 30 );
-	//addAliensToScreen( aliens );
+	aliens = createAliens( Vector3( 100, 100, 0 ), 1, 50, 10, 50 );
+	addAliensToScreen( aliens );
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
@@ -87,16 +105,16 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 */
 bool PolycodeTemplateApp::Update() {
 	// translate the aliens - if the necessary time has elapsed
-	/* if ( (timer->getElapsedf() * 1000) >= duration ) {
+	if ( (timer->getElapsedf() * 1000) >= duration ) {
 		translateAliens( aliens );
 		timer->Reset();
 	}
 
-	// translate player
-	player->translate( player_delta );
+	// process translation input
+	processPlayerInput();
 
 	// update player missiles
-	updatePlayerMissles( player_missiles, player_missile_speed ); */
+	updatePlayerMissles( player_missiles, player_missile_speed );
 
 	return core->updateAndRender();
 }
@@ -115,12 +133,20 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		{
 		case InputEvent::EVENT_KEYDOWN:
 			switch( ie->keyCode() ) {
-			case KEY_a:
-				player_delta.x = -player_delta_x;
+			/*case KEY_a:
+				if ( player->getPosition().x >= player_xoffset ) {
+					player_delta.x = -player_delta_x;
+				} else {
+					player_delta.x = 0;
+				}
 				break;
 			case KEY_d:
-				player_delta.x = player_delta_x;
-				break;
+				if ( player->getPosition().x <= (screen_width/2 - player_xoffset) ) {
+					player_delta.x = player_delta_x;
+				} else {
+					player_delta.x = 0;
+				}
+				break;*/
 			case KEY_SPACE:
 				if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
 					playerFireMissile();
@@ -167,20 +193,39 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 	}
 }
 
+void PolycodeTemplateApp::processPlayerInput() {
+	//
+	bool key_a = core->getInput()->getKeyState( KEY_a );
+	bool key_d = core->getInput()->getKeyState( KEY_d );
+
+	if ( key_a ) {
+		//
+		if ( player->getPosition().x >= (player_xoffset) ) player->translate( Vector3( -player_delta_x, 0, 0 ) );
+	}
+	if ( key_d ) {
+		if ( player->getPosition().x <= (screen_width - player_xoffset) ) player->translate( Vector3( player_delta_x, 0, 0 ) );
+	}
+}
+
 /*
 	Memory leak here? not deleting the pointers?... of the sprites?...
 */
-SpaceInvadersEntity * PolycodeTemplateApp::createAlien() {
-	//
-	ScreenSprite * alien_sprite = new ScreenSprite("Resources/alien_1.png");
+SpaceInvadersEntity * PolycodeTemplateApp::createAlienOne() {
+	// only take half the width; the other half is the second anim. frame
+	ScreenSprite * alien_sprite = ScreenSprite::ScreenSpriteFromImageFile( "Resources/Alien_1.png", Number(alien_width_1/2), Number(alien_height_1) );
 	alien_sprite->setScale( *alien_sprite_scale );
+
+	// add animations
+	alien_sprite->addAnimation( "frame_1", "0", 1 );
+	alien_sprite->addAnimation( "frame_2", "1", 1 );
+	alien_sprite->playAnimation( "frame_1", 0, false );
 
 	return new SpaceInvadersEntity( alien_sprite, new Vector3(0, 0, 0), initial_HP );
 }
 
 SpaceInvadersEntity * PolycodeTemplateApp::createPlayerMissile() {
 	//
-	ScreenSprite * player_missile_sprite = new ScreenSprite("Resources/player_missile.png");
+	ScreenSprite * player_missile_sprite = ScreenSprite::ScreenSpriteFromImageFile( "Resources/alien_1.png", pmissile_width*2, pmissile_height*2 );
 	player_missile_sprite->setScale( *player_missile_scale );
 
 	return new SpaceInvadersEntity( player_missile_sprite, new Vector3(0, 0, 0), initial_HP );
@@ -188,7 +233,7 @@ SpaceInvadersEntity * PolycodeTemplateApp::createPlayerMissile() {
 
 AlienRow * PolycodeTemplateApp::createAlienRow( Vector3 &start_pos, unsigned num_aliens, unsigned spacing ) {
 	//
-	return new AlienRow( *( createAlien() ), start_pos, num_aliens, spacing );
+	return new AlienRow( *( createAlienOne() ), start_pos, num_aliens, spacing );
 }
 
 vector<AlienRow*> PolycodeTemplateApp::createAliens( Vector3 &start_pos, unsigned num_rows, unsigned row_spacing, unsigned num_aliens_per_row, unsigned sprite_spacing ) {

@@ -19,11 +19,11 @@ public:
 	//
 	void handleEvent( Event *e );
     
-	// create a particular alien, more or less hard-coded right now
-	SpaceInvadersEntity * createAlien();
-
 	// create a player missile
 	SpaceInvadersEntity * createPlayerMissile();
+
+	// create a particular alien, more or less hard-coded right now
+	SpaceInvadersEntity * createAlienOne();
 
 	// create a row of aliens
 	AlienRow * createAlienRow( Vector3 &start_pos, unsigned num_aliens, unsigned spacing );
@@ -39,6 +39,9 @@ public:
 
 	// direction values
 	enum direction { left, right };
+
+	// process translation input for the player/fighter
+	void processPlayerInput();
 
 	// translate a row of aliens in a particluar direction
 	void translateAlienRow( AlienRow *row );
@@ -72,21 +75,34 @@ private:
 	static const unsigned screen_width = 1580;
 	static const unsigned screen_height = 800;
 
-	static const unsigned alien_sprite_xscale = 1;
-	static const unsigned alien_sprite_yscale = 1;
+	unsigned alien_width_1;
+	unsigned alien_height_1;
+
+	unsigned alien_width_2;
+	unsigned alien_height_2;
+
+	unsigned alien_width_3;
+	unsigned alien_height_3;
+
+	float alien_sprite_xscale;
+	float alien_sprite_yscale;
 	Vector3 *alien_sprite_scale;
 	
 	unsigned player_width;
 	unsigned player_height;
-	static const unsigned player_sprite_xscale = 1;
-	static const unsigned player_sprite_yscale = 1;
+	float player_sprite_xscale;
+	float player_sprite_yscale;
 	Vector3 *player_sprite_scale;
 
+	unsigned pmissile_width;
+	unsigned pmissile_height;
 	static const unsigned pmissile_sprite_xscale = 1;
 	static const unsigned pmissile_sprite_yscale = 1;
 	Vector3 *player_missile_scale;
 
 	static const unsigned offset = 10;
+	unsigned player_xoffset;
+	unsigned player_yoffset;
 
 	// timers
 	Timer *timer;
@@ -123,7 +139,7 @@ private:
 	static const int delta = 50;
 
 	// duration parameter between alien row translations - in milliseconds
-	static const unsigned duration = 1000;
+	unsigned duration;
 
 	// duration parameter for weapon cooldown - in milliseconds
 	static const unsigned weapon_cooldown_time = 700;
