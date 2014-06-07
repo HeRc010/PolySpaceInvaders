@@ -47,7 +47,6 @@ protected:
 	// sprite associated with the entity
 	ScreenSprite * _sprite;
 
-private:
 	// the position of the entity
 	Vector3 * _position;
 

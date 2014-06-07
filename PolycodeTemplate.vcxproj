@@ -78,6 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Alien.cpp" />
     <ClCompile Include="AlienRow.cpp" />
     <ClCompile Include="Fighter.cpp" />
     <ClCompile Include="PolycodeTemplate.cpp" />
@@ -86,6 +87,7 @@
     <ClCompile Include="SpaceInvadersEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Alien.h" />
     <ClInclude Include="AlienOne.h" />
     <ClInclude Include="AlienRow.h" />
     <ClInclude Include="Fighter.h" />

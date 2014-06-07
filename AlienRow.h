@@ -11,10 +11,10 @@ class AlienRow
 {
 public:
 	
-	AlienRow( const vector<SpaceInvadersEntity*> &initial_list );
+	AlienRow( const vector<Alien*> &initial_list );
 
 	// alternatively pass in an alien object to clone for the entire row, the starting position and the space between aliens
-	AlienRow( const SpaceInvadersEntity &clone, const Vector3 &initial_pos, unsigned num_aliens, unsigned spacing );
+	AlienRow( const Alien &clone, const Vector3 &initial_pos, unsigned num_aliens, unsigned spacing );
 
 	~AlienRow();
 
@@ -25,7 +25,7 @@ public:
 	unsigned getNumAliens() const;
 
 	// get a reference to the current state of the aliens
-	void getAliens( vector<SpaceInvadersEntity*> &list ) const;
+	void getAliens( vector<Alien*> &list ) const;
 
 	// does this row contain the alien?
 	bool containsAlien( ScreenEntity * entity ) const;

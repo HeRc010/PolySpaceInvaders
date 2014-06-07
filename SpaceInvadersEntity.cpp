@@ -25,6 +25,11 @@ SpaceInvadersEntity::~SpaceInvadersEntity()
 	delete _position;
 }
 
+void SpaceInvadersEntity::update() {
+	//
+
+}
+
 ScreenSprite * SpaceInvadersEntity::getSprite() const {
 	//
 	return _sprite;
@@ -48,13 +53,7 @@ unsigned SpaceInvadersEntity::getHP() const {
 
 void SpaceInvadersEntity::decHP( unsigned damage ) {
 	//
-	_HP -= damage;
-
-	// if < 0 -> equals zero
-	if ( _HP < 0 ) {
-		_HP = 0;
-		_alive = false;
-	}
+	if ( (_HP - damage) >= 0 ) _HP -= damage;
 }
 
 bool SpaceInvadersEntity::stillAlive() const {

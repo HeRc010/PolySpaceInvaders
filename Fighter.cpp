@@ -11,3 +11,8 @@ Fighter::~Fighter()
 	//
 
 }
+
+void Fighter::update() {
+	//
+
+}

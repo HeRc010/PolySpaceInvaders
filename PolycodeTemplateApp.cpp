@@ -84,9 +84,22 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	// assign current direction
 	current_dir = direction::right;
 
+	// test
+	AlienOne *test_alien_one = new AlienOne( new Vector3( 0, 0, 0 ), 100, 600 );
+
+	AlienRow *test_row = new AlienRow( *( test_alien_one ), Vector3( 100, 100, 0 ), 5, 100 );
+
+	const unsigned num_aliens = test_row->getNumAliens();
+	vector<Alien*> alien_list;
+	test_row->getAliens( alien_list );
+	for ( unsigned i = 0; i < num_aliens; ++i ) {
+		//
+		main_screen->addChild( alien_list[i]->getSprite() );
+	}
+
 	// spawn aliens and add to screen
-	aliens = createAliens( Vector3( 100, 100, 0 ), 3, 100, 10, 100 );
-	addAliensToScreen( aliens );
+	//aliens = createAliens( Vector3( 100, 100, 0 ), 3, 100, 10, 100 );
+	//addAliensToScreen( aliens );
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
@@ -111,7 +124,7 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 */
 bool PolycodeTemplateApp::Update() {
 	// translate the aliens - if the necessary time has elapsed
-	if ( (timer->getElapsedf() * 1000) >= duration ) {
+	/* if ( (timer->getElapsedf() * 1000) >= duration ) {
 		translateAliens( aliens );
 		
 		// change the current frame
@@ -120,13 +133,13 @@ bool PolycodeTemplateApp::Update() {
 		changeAlienFrame( cur_alien_frame );
 
 		timer->Reset();
-	}
+	} */
 
 	// process translation input
 	processPlayerInput();
 
 	// update player missiles
-	updatePlayerMissles( player_missiles, player_missile_speed );
+	//updatePlayerMissles( player_missiles, player_missile_speed );
 
 	return core->updateAndRender();
 }
@@ -147,7 +160,7 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			switch( ie->keyCode() ) {
 			case KEY_SPACE:
 				if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
-					playerFireMissile();
+					//playerFireMissile();
 					weapon_cooldown->Reset();
 				}
 				break;
@@ -175,7 +188,7 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		PhysicsScreenEvent * pe = (PhysicsScreenEvent*) e;
 		switch ( pe->getEventCode() ) {
 		case PhysicsScreenEvent::EVENT_NEW_SHAPE_COLLISION:
-			if ( isPlayerMissile( pe->entity1 ) ) {
+			/* if ( isPlayerMissile( pe->entity1 ) ) {
 				removePlayerMissile( pe->entity1 );
 			} else if ( isPlayerMissile( pe->entity2 ) ) {
 				removePlayerMissile( pe->entity2 );
@@ -207,7 +220,7 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 
 				main_screen->addChild( explosion );
 				//main_screen->removeChild( explosion );
-			}
+			} */
 			break; 
 		}
 	}
@@ -230,7 +243,7 @@ void PolycodeTemplateApp::processPlayerInput() {
 /*
 	Memory leak here? not deleting the pointers?... of the sprites?...
 */
-SpaceInvadersEntity * PolycodeTemplateApp::createAlienOne() {
+/* SpaceInvadersEntity * PolycodeTemplateApp::createAlienOne() {
 	// only take half the width; the other half is the second anim. frame
 	ScreenSprite * alien_sprite = ScreenSprite::ScreenSpriteFromImageFile( "Resources/Alien_1.png", Number(alien_width_1/2), Number(alien_height_1) );
 	alien_sprite->setScale( *alien_sprite_scale );
@@ -374,12 +387,7 @@ void PolycodeTemplateApp::translateAlienRow( AlienRow *row ) {
 	row->translate( Vector3( delta * reverse, 0, 0 ) );
 }
 
-/*
-	Translate all the alien rows. Continue until the left-most/right-most element is at the edge of the screen.
-	
-	TODO:
-	- there currently isn't functionality for all rows(of different lengths) moving in sync
-*/
+
 void PolycodeTemplateApp::translateAliens( vector<AlienRow*> &aliens ) {
 	//
 	const unsigned num_rows = aliens.size();
@@ -389,11 +397,7 @@ void PolycodeTemplateApp::translateAliens( vector<AlienRow*> &aliens ) {
 	}
 }
 
-/*
-	fire a missile from above the players location; create a missile at the players location and add it to the player-missile array
-
-	Issue: adding the sprite as a collision child shifts it's position slightly; in a manner not see when adding as a normal child
-*/
+// Issue: adding the sprite as a collision child shifts it's position slightly; in a manner not see when adding as a normal child
 void PolycodeTemplateApp::playerFireMissile() {
 	//
 	SpaceInvadersEntity *new_missile = createPlayerMissile();
@@ -407,9 +411,6 @@ void PolycodeTemplateApp::playerFireMissile() {
 	player_missiles.push_back( new_missile );
 }
 
-/*
-	translate each missile; as long as it is still within the screen - otherwise... DESTROY IT!!!
-*/
 void PolycodeTemplateApp::updatePlayerMissles( vector<SpaceInvadersEntity*> player_missles, int player_missile_speed ) {
 	//
 	unsigned num_missiles = player_missles.size();
@@ -440,12 +441,6 @@ bool PolycodeTemplateApp::isPlayerMissile( ScreenEntity * entity  ) {
 	return false;
 }
 
-/*
-	if they're collision entities, do you need to use remove physics child when removing from the screen?
-
-	Note: INEFFICIENT
-	- currently search through the list for the appropriate missile; then delete
-*/
 void PolycodeTemplateApp::removePlayerMissile( ScreenEntity * to_remove ) {
 	//
 	main_screen->removeChild( to_remove );
@@ -485,4 +480,4 @@ void PolycodeTemplateApp::removeAlien( ScreenEntity * to_remove ) {
 			break;
 		}
 	}
-}
+} */

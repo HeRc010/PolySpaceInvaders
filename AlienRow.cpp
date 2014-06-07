@@ -3,18 +3,18 @@
 /*
 	May be depricated.
 */
-AlienRow::AlienRow( const vector<SpaceInvadersEntity*> &initial_list ) : _aliens( initial_list )
+AlienRow::AlienRow( const vector<Alien*> &initial_list ) : _aliens( initial_list )
 {
 	//
 
 }
 
 // alternative constructor - pass in a reference of the alien to clone
-AlienRow::AlienRow( const SpaceInvadersEntity &clone, const Vector3 &initial_pos, unsigned num_aliens, unsigned spacing ) : _num_aliens( num_aliens ) {
+AlienRow::AlienRow( const Alien &clone, const Vector3 &initial_pos, unsigned num_aliens, unsigned spacing ) : _num_aliens( num_aliens ) {
 	//
 	for ( int i = 0; i < num_aliens; ++i ) {
 		//
-		SpaceInvadersEntity* next = new SpaceInvadersEntity( clone );
+		Alien* next = new Alien( clone );
 
 		// move to the initial position
 		next->translate( initial_pos - next->getPosition() );
@@ -40,7 +40,7 @@ unsigned AlienRow::getNumAliens() const {
 	return _num_aliens;
 }
 
-void AlienRow::getAliens( vector<SpaceInvadersEntity*> &list ) const {
+void AlienRow::getAliens( vector<Alien*> &list ) const {
 	//
 	list = _aliens;
 }

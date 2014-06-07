@@ -2,6 +2,7 @@
 #include "Polycode.h"
 #include "SpaceInvadersEntity.h"
 #include "AlienRow.h"
+#include "AlienOne.h"
 
 // for physics screen
 #include "Polycode2DPhysics.h"
