@@ -2,17 +2,14 @@
 	The main template file/runtime file.
 
 	TODO(high level stuffs):
-	- get the alien scaling right; scaling up does weird things
-	- add multiple rows of aliens
-		-> after that, different types of aliens per row
+	- add explosion animations for the aliens
+	- add different types of aliens per row
+		-> need to add different types in general
 	- need to fix the occasional problem where rows pretend like the fallen guy on the far side is still alive; in their translation :S
-		-> is this still(was ever) a problem?
+		-> is this still(was ever?) a problem?
 	- add missile functionality - and death mechanics
 		-> need to get the aliens shooting back; and the player killed if hit
-	- clean up fire-by-event process; it's a little finiky(?) if you press two buttons at once...
-	- need to keep the fighter from going off the screen
-	- add explosion animations for the aliens
-	- add different types of aliens
+	- general(a lot of it) refactoring; significant redesign of architecture to minimize code in this file :S
 	- add lives for the fighter
 	- add the red ufo going accross the top
 	- sound for when the space invaders move
@@ -186,8 +183,30 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 
 			if ( isAlien( pe->entity1 ) ) {
 				removeAlien( pe->entity1 );
+
+				// display an explosion sprite at the alien's location
+				Vector3 loc( pe->entity1->getPosition() );
+
+				ScreenImage *explosion = new ScreenImage("Resources/alien_explosion.png");
+				loc.x += -explosion->getImageWidth();
+				loc.y += -explosion->getImageHeight();
+				explosion->Translate( loc );
+
+				main_screen->addChild( explosion );
+				//main_screen->removeChild( explosion );
 			} else if ( isAlien( pe->entity2 ) ) {
 				removeAlien( pe->entity2 );
+
+				// display an explosion sprite at the alien's location
+				Vector3 loc( pe->entity1->getPosition() );
+
+				ScreenImage *explosion = new ScreenImage("Resources/alien_explosion.png");
+				loc.x += -explosion->getImageWidth();
+				loc.y += -explosion->getImageHeight();
+				explosion->Translate( loc );
+
+				main_screen->addChild( explosion );
+				//main_screen->removeChild( explosion );
 			}
 			break; 
 		}

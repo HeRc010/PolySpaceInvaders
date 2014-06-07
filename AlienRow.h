@@ -5,7 +5,7 @@
 
 #include "Polycode.h"
 #include <vector>
-#include "SpaceInvadersEntity.h"
+#include "Alien.h"
 
 class AlienRow
 {
@@ -22,7 +22,7 @@ public:
 	void translate( const Vector3 &delta );
 
 	// get the number of aliens in the row - do they need to be alive?... for now no
-	unsigned getNumAliens();
+	unsigned getNumAliens() const;
 
 	// get a reference to the current state of the aliens
 	void getAliens( vector<SpaceInvadersEntity*> &list ) const;
@@ -41,5 +41,5 @@ private:
 	unsigned _num_aliens;
 
 	// list of aliens
-	vector<SpaceInvadersEntity*> _aliens;
+	vector<Alien*> _aliens;
 };

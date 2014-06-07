@@ -82,11 +82,11 @@
     <ClCompile Include="Fighter.cpp" />
     <ClCompile Include="PolycodeTemplate.cpp" />
     <ClCompile Include="PolycodeTemplateApp.cpp" />
-    <ClCompile Include="Alien.cpp" />
+    <ClCompile Include="AlienOne.cpp" />
     <ClCompile Include="SpaceInvadersEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Alien.h" />
+    <ClInclude Include="AlienOne.h" />
     <ClInclude Include="AlienRow.h" />
     <ClInclude Include="Fighter.h" />
     <ClInclude Include="SpaceInvadersEntity.h" />

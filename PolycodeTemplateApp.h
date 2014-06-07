@@ -70,7 +70,6 @@ public:
 	// remove an alien from the screen and the array
 	void removeAlien( ScreenEntity * to_remove );
 
-
 private:
     Core *core;
 

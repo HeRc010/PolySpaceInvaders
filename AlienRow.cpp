@@ -35,7 +35,7 @@ AlienRow::~AlienRow()
 	}
 }
 
-unsigned AlienRow::getNumAliens() {
+unsigned AlienRow::getNumAliens() const {
 	//
 	return _num_aliens;
 }

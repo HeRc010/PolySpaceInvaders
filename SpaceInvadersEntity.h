@@ -22,6 +22,9 @@ public:
 
 	~SpaceInvadersEntity();
 
+	// update method
+	virtual void update();
+
 	// get the sprite
 	ScreenSprite * getSprite() const;
 
@@ -40,10 +43,11 @@ public:
 	// is the entity still alive?
 	bool stillAlive() const;
 
-private:
+protected:
 	// sprite associated with the entity
 	ScreenSprite * _sprite;
 
+private:
 	// the position of the entity
 	Vector3 * _position;
 
