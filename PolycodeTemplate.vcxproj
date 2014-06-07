@@ -81,6 +81,7 @@
     <ClCompile Include="Alien.cpp" />
     <ClCompile Include="AlienRow.cpp" />
     <ClCompile Include="Fighter.cpp" />
+    <ClCompile Include="PlayerMissile.cpp" />
     <ClCompile Include="PolycodeTemplate.cpp" />
     <ClCompile Include="PolycodeTemplateApp.cpp" />
     <ClCompile Include="AlienOne.cpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="AlienOne.h" />
     <ClInclude Include="AlienRow.h" />
     <ClInclude Include="Fighter.h" />
+    <ClInclude Include="PlayerMissile.h" />
     <ClInclude Include="SpaceInvadersEntity.h" />
     <ClInclude Include="PolycodeTemplateApp.h" />
   </ItemGroup>

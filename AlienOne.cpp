@@ -1,10 +1,12 @@
 #include "AlienOne.h"
 
-AlienOne::AlienOne( Vector3 *position, const unsigned &initial_HP, const float &explosion_duration, const Vector3 &scale, ScreenSprite *sprite ) : Alien( sprite, position, initial_HP, explosion_duration  ) {
+AlienOne::AlienOne( const String &file_name, const unsigned &sprite_width, const unsigned &sprite_height )
+	: Alien( file_name, sprite_width, sprite_height ) 
+{
 	//
-	_sprite->setScale( scale );
 }
 
-AlienOne::~AlienOne() {
-	
+AlienOne::~AlienOne() 
+{
+	//
 }

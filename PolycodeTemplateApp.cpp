@@ -18,38 +18,16 @@
 
 #include "PolycodeTemplateApp.h"
 
-PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
-	// initialization
-	core = new Win32Core(view, screen_width,screen_height,false, false, 0, 0, 60);
-	CoreServices::getInstance()->getResourceManager()->addArchive("default.pak");
-	CoreServices::getInstance()->getResourceManager()->addDirResource("default", false);
-	
+void PolycodeTemplateApp::initializeGUIParameters() {
 	// assign GUI parameters
-	alien_width_1 = 168;
-	alien_height_1 = 53;
-
-	alien_width_2 = 154;
-	alien_height_2 = 52;
-
-	alien_width_2 = 132;
-	alien_height_2 = 53;
-
 	alien_sprite_xscale = 1;
 	alien_sprite_yscale = 1;
 	alien_sprite_scale = new Vector3( alien_sprite_xscale, alien_sprite_yscale, 0 );
 
-	alien_offset = 50;
-
-	cur_alien_frame = 0;
-
-	player_width = 85;
-	player_height = 53;
 	player_sprite_xscale = 0.5;
 	player_sprite_yscale = 0.5;
 	player_sprite_scale = new Vector3( player_sprite_xscale, player_sprite_yscale, 0 );
 
-	pmissile_width = 3;
-	pmissile_height = 15;
 	player_missile_scale = new Vector3( pmissile_sprite_xscale, pmissile_sprite_yscale, 0 );
 
 	player_xoffset = 50;
@@ -64,6 +42,18 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	// initialize player delta
 	player_delta = Vector3( 0, 0, 0 );
 
+	// assign current direction
+	current_dir = direction::right;
+}
+
+PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
+	// initialization
+	core = new Win32Core(view, screen_width,screen_height,false, false, 0, 0, 60);
+	CoreServices::getInstance()->getResourceManager()->addArchive("default.pak");
+	CoreServices::getInstance()->getResourceManager()->addDirResource("default", false);
+
+	initializeGUIParameters();
+
 	// Create screen
 	main_screen = new PhysicsScreen( 10, 50 );
 
@@ -73,35 +63,10 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	main_screen->addChild( background );
 
 	// initialize fighter/player entity
-	ScreenSprite *player_sprite = ScreenSprite::ScreenSpriteFromImageFile("Resources/fighter_1.png", Number(player_width*2), Number(player_height*2) ); //new ScreenSprite("Resources/fighter_1.png");
-	player_sprite->setScale( *player_sprite_scale );
-	
-	Vector3 *location = new Vector3( float( screen_width/2 ) - (player_sprite->getWidth() * player_sprite_xscale / 2), float( screen_height - ( (player_sprite->getHeight()/2) * player_sprite_yscale ) ) - player_yoffset, 0 );
+	player = new Fighter( "Resources/fighter_1.png", 85, 53, player_missile_speed );
+	player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
 
-	player = new Fighter( player_sprite, location, initial_HP, player_missile_speed );
-	main_screen->addCollisionChild( player->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
-
-	// assign current direction
-	current_dir = direction::right;
-
-	// test
-	//AlienOne *test_alien_one = new AlienOne( new Vector3( 0, 0, 0 ), 100, 600 );
-
-	AlienRow *test_row = new AlienRow( *( new AlienOne( new Vector3( 0, 0, 0 ), 100, 600, *( alien_sprite_scale ) ) ), Vector3( 100, 100, 0 ), 5, 100 );
-
-	const unsigned num_aliens = test_row->getNumAliens();
-	vector<Alien*> alien_list;
-	test_row->getAliens( alien_list );
-	for ( unsigned i = 0; i < num_aliens; ++i ) {
-		//
-		main_screen->addChild( alien_list[i]->getSprite() );
-	}
-
-	aliens.push_back( test_row );
-
-	// spawn aliens and add to screen
-	//aliens = createAliens( Vector3( 100, 100, 0 ), 3, 100, 10, 100 );
-	//addAliensToScreen( aliens );
+	main_screen->addChild( player );
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
@@ -125,6 +90,9 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 		- if the left-most/right-most entity is at it's respective edge; reverse direction
 */
 bool PolycodeTemplateApp::Update() {
+	// process translation input
+	processPlayerInput();
+
 	// translate the aliens - if the necessary time has elapsed
 	/* if ( (timer->getElapsedf() * 1000) >= duration ) {
 		translateAliens( aliens );
@@ -147,9 +115,6 @@ bool PolycodeTemplateApp::Update() {
 		//
 		alien_list[i]->update();
 	}
-
-	// process translation input
-	processPlayerInput();
 
 	// clean-up player missile list
 	cleanPlayerMissiles(); */
@@ -175,7 +140,7 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		case InputEvent::EVENT_KEYDOWN:
 			switch( ie->keyCode() ) {
 			case KEY_SPACE:
-				if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
+				/* if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
 					ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
 					new_missile->setScale( *( player_missile_scale ) );
 					new_missile->Translate( player->getPosition() );
@@ -185,7 +150,7 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 					SpaceInvadersEntity *missile_entitiy = new SpaceInvadersEntity( new_missile, &player->getPosition(), initial_HP );
 					player->addMissile( missile_entitiy );
 					weapon_cooldown->Reset();
-				}
+				} */
 				break;
 			}
 			break;
@@ -200,10 +165,10 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			}
 			break;
 		case InputEvent::EVENT_MOUSEDOWN:
-			main_screen->removeChild( player->getSprite() );
+			main_screen->removeChild( player );
 			break;
 		case InputEvent::EVENT_MOUSEUP:
-			main_screen->addChild( player->getSprite() );
+			main_screen->addChild( player );
 			break;
 		}
 	} else if ( e->getDispatcher() == main_screen ) {
@@ -256,10 +221,10 @@ void PolycodeTemplateApp::processPlayerInput() {
 
 	if ( key_a ) {
 		//
-		if ( player->getPosition().x >= (player_xoffset) ) player->translate( Vector3( -player_delta_x, 0, 0 ) );
+		if ( player->getPosition().x >= (player_xoffset) ) player->Translate( Vector3( -player_delta_x, 0, 0 ) );
 	}
 	if ( key_d ) {
-		if ( player->getPosition().x <= (screen_width - player_xoffset) ) player->translate( Vector3( player_delta_x, 0, 0 ) );
+		if ( player->getPosition().x <= (screen_width - player_xoffset) ) player->Translate( Vector3( player_delta_x, 0, 0 ) );
 	}
 }
 

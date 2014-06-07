@@ -17,10 +17,10 @@ AlienRow::AlienRow( const Alien &clone, const Vector3 &initial_pos, unsigned num
 		Alien* next = new Alien( clone );
 
 		// move to the initial position
-		next->translate( initial_pos - next->getPosition() );
+		next->Translate( initial_pos - next->getPosition() );
 		
 		// shift by spacing amount
-		next->translate( Vector3( i * spacing, 0, 0 ) );
+		next->Translate( Vector3( i * spacing, 0, 0 ) );
 
 		_aliens.push_back( next );
 	}
@@ -49,7 +49,7 @@ void AlienRow::translate( const Vector3 &delta ) {
 	// translate every alien by delta
 	for ( int i = 0; i < _aliens.size(); ++i ) {
 		//
-		_aliens[i]->translate( delta );
+		_aliens[i]->Translate( delta );
 	}
 }
 
@@ -57,7 +57,7 @@ bool AlienRow::containsAlien( ScreenEntity * entity ) const {
 	//
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
 		//
-		if ( entity == _aliens[i]->getSprite() ) return true;
+		if ( entity == _aliens[i] ) return true;
 	}
 
 	return false;
@@ -72,7 +72,7 @@ void AlienRow::removeAlien( ScreenEntity * to_remove ) {
 
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
 		//
-		if ( to_remove == _aliens[i]->getSprite() ) {
+		if ( to_remove == _aliens[i] ) {
 			_aliens.erase( _aliens.begin() + i );
 			--_num_aliens;
 			break;

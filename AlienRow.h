@@ -10,7 +10,7 @@
 class AlienRow
 {
 public:
-	
+	// default constructor
 	AlienRow( const vector<Alien*> &initial_list );
 
 	// alternatively pass in an alien object to clone for the entire row, the starting position and the space between aliens
