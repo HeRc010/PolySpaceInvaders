@@ -1,3 +1,7 @@
+/*
+	The main app class
+*/
+
 #include "PolycodeView.h"
 #include "Polycode.h"
 #include "SpaceInvadersEntity.h"
@@ -21,6 +25,12 @@ public:
 	//
 	void handleEvent( Event *e );
     
+	// process translation input for the player/fighter
+	void processPlayerInput();
+
+	// clean player missiles - kill the ones that have gone out of bounds
+	void cleanPlayerMissiles();
+
 	// create a player missile
 	SpaceInvadersEntity * createPlayerMissile();
 
@@ -44,9 +54,6 @@ public:
 
 	// direction values
 	enum direction { left, right };
-
-	// process translation input for the player/fighter
-	void processPlayerInput();
 
 	// translate a row of aliens in a particluar direction
 	void translateAlienRow( AlienRow *row );

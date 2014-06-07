@@ -12,7 +12,7 @@
 #include "PolycodeView.h"
 #include "PolyGlobals.h"
 
-class SpaceInvadersEntity
+class SpaceInvadersEntity : public ScreenSprite
 {
 public:
 	SpaceInvadersEntity( ScreenSprite *sprite, Vector3 *position = new Vector3(0,0,0), unsigned initial_HP = 0 );
@@ -45,6 +45,9 @@ public:
 
 	// is the entity still alive?
 	bool stillAlive() const;
+
+	// set the alive parameter to false
+	void kill();
 
 protected:
 	// sprite associated with the entity

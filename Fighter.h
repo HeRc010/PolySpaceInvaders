@@ -1,5 +1,5 @@
 /*
-	May be a depricated class...
+	A specific entity subclass for the player/fighter
 */
 
 #include "SpaceInvadersEntity.h"
@@ -17,18 +17,18 @@ public:
 	unsigned getNumberOfMissiles() const;
 
 	// get the missiles' list
-	vector<SpaceInvadersEntity*> getMissiles();
+	void getMissiles( vector<SpaceInvadersEntity*> &list ) const;
 
 	// add a missile to the missile array
 	void addMissile( SpaceInvadersEntity * new_missile );
 
-private:
 	// remove the missile provided
 	void removeMissile( SpaceInvadersEntity * to_remove );
 
 	// remove missile by index
 	void removeMissile( const unsigned &index );
 
+private:
 	// remove all the dead missiles from the missile list
 	void removeDeadMissiles();
 

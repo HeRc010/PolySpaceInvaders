@@ -138,7 +138,7 @@ bool PolycodeTemplateApp::Update() {
 	} */
 
 	// update the player
-	player->update();
+	/* player->update();
 
 	// update the aliens
 	vector<Alien*> alien_list;
@@ -150,6 +150,9 @@ bool PolycodeTemplateApp::Update() {
 
 	// process translation input
 	processPlayerInput();
+
+	// clean-up player missile list
+	cleanPlayerMissiles(); */
 
 	// update player missiles
 	//updatePlayerMissles( player_missiles, player_missile_speed );
@@ -173,7 +176,6 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			switch( ie->keyCode() ) {
 			case KEY_SPACE:
 				if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
-					//playerFireMissile();
 					ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
 					new_missile->setScale( *( player_missile_scale ) );
 					new_missile->Translate( player->getPosition() );
@@ -260,6 +262,22 @@ void PolycodeTemplateApp::processPlayerInput() {
 		if ( player->getPosition().x <= (screen_width - player_xoffset) ) player->translate( Vector3( player_delta_x, 0, 0 ) );
 	}
 }
+
+/* void PolycodeTemplateApp::cleanPlayerMissiles() {
+	//
+	const unsigned num_missiles = player->getNumberOfMissiles();
+	vector<SpaceInvadersEntity*> missile_list;
+	player->getMissiles( missile_list );
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
+		//
+		Vector3 pos( missile_list[i]->getPosition() );
+		if ( (pos.y <= 0) ) { //|| (pos.y >= screen_height) ) {
+			//
+			player->removeMissile( i );
+			main_screen->removeChild( missile_list[i]->getSprite() );
+		}
+	}
+} */
 
 /*
 	Memory leak here? not deleting the pointers?... of the sprites?...

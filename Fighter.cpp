@@ -19,13 +19,25 @@ void Fighter::update() {
 	//
 	for ( unsigned i = 0; i < _num_missiles; ++i ) {
 		//
+		/*if ( _missiles[i]->getHP() == 0 ) {
+			//
+			_missiles[i]->kill();
+		} */
+
 		_missiles[ i ]->translate( Vector3( 0, -_missile_speed, 0 ) );
 	}
+
+	//removeDeadMissiles();
 }
 
 unsigned Fighter::getNumberOfMissiles() const {
 	//
 	return _num_missiles;
+}
+
+void Fighter::getMissiles( vector<SpaceInvadersEntity*> &list ) const {
+	//
+	list = _missiles;
 }
 
 void Fighter::removeMissile( SpaceInvadersEntity * to_remove ) {

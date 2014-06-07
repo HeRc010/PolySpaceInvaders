@@ -65,3 +65,8 @@ bool SpaceInvadersEntity::stillAlive() const {
 	//
 	return _alive;
 }
+
+void SpaceInvadersEntity::kill() {
+	//
+	_alive = false;
+}
