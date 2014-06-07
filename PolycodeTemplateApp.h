@@ -91,6 +91,8 @@ private:
 	float alien_sprite_yscale;
 	Vector3 *alien_sprite_scale;
 	
+	unsigned alien_offset;
+
 	unsigned player_width;
 	unsigned player_height;
 	float player_sprite_xscale;
@@ -103,7 +105,6 @@ private:
 	static const unsigned pmissile_sprite_yscale = 1;
 	Vector3 *player_missile_scale;
 
-	static const unsigned offset = 10;
 	unsigned player_xoffset;
 	unsigned player_yoffset;
 

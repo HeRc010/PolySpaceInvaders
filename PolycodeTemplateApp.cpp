@@ -2,7 +2,11 @@
 	The main template file/runtime file.
 
 	TODO(high level stuffs):
+	- get the alien scaling right; scaling up does weird things
+	- add multiple rows of aliens
+		-> after that, different types of aliens per row
 	- need to fix the occasional problem where rows pretend like the fallen guy on the far side is still alive; in their translation :S
+		-> is this still(was ever) a problem?
 	- add missile functionality - and death mechanics
 		-> need to get the aliens shooting back; and the player killed if hit
 	- clean up fire-by-event process; it's a little finiky(?) if you press two buttons at once...
@@ -33,9 +37,11 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	alien_width_2 = 132;
 	alien_height_2 = 53;
 
-	alien_sprite_xscale = 0.5;
-	alien_sprite_yscale = 0.5;
+	alien_sprite_xscale = 1;
+	alien_sprite_yscale = 1;
 	alien_sprite_scale = new Vector3( alien_sprite_xscale, alien_sprite_yscale, 0 );
+
+	alien_offset = 50;
 
 	cur_alien_frame = 0;
 
@@ -82,7 +88,7 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	current_dir = direction::right;
 
 	// spawn aliens and add to screen
-	aliens = createAliens( Vector3( 100, 100, 0 ), 1, 50, 10, 50 );
+	aliens = createAliens( Vector3( 100, 100, 0 ), 3, 100, 10, 100 );
 	addAliensToScreen( aliens );
 
 	// listen for input
@@ -94,6 +100,7 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	// listen for collisions
 	main_screen->addEventListener( this, PhysicsScreenEvent::EVENT_NEW_SHAPE_COLLISION );
 }
+
 PolycodeTemplateApp::~PolycodeTemplateApp() {
     
 }
@@ -102,7 +109,7 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 	TODO:
 	- translation functionality for the alien row
 		- need to incorporate a current direction
-		- awareness of the left-most/right-most entity for consistency in movement
+		- awareness of the left-most/right-most entity for consistency in movement - this might be in there already...
 		- if the left-most/right-most entity is at it's respective edge; reverse direction
 */
 bool PolycodeTemplateApp::Update() {
@@ -327,7 +334,7 @@ void PolycodeTemplateApp::translateAlienRow( AlienRow *row ) {
 	// check if the front element will escape the bound(s) if incremented
 	// by the offset, if so, reverse the direction
 	Vector3 next_position = front_entity->getPosition() + *delta_vec;
-	if ( ( next_position.x > (screen_width - offset) ) || ( next_position.x < offset ) ) {
+	if ( ( next_position.x > (screen_width - alien_offset) ) || ( next_position.x < alien_offset ) ) {
 		reverse *= -1;
 
 		switch( current_dir ) {
