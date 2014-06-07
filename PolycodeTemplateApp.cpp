@@ -78,16 +78,16 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	
 	Vector3 *location = new Vector3( float( screen_width/2 ) - (player_sprite->getWidth() * player_sprite_xscale / 2), float( screen_height - ( (player_sprite->getHeight()/2) * player_sprite_yscale ) ) - player_yoffset, 0 );
 
-	player = new SpaceInvadersEntity( player_sprite, location, initial_HP );
+	player = new Fighter( player_sprite, location, initial_HP, player_missile_speed );
 	main_screen->addCollisionChild( player->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
 
 	// assign current direction
 	current_dir = direction::right;
 
 	// test
-	AlienOne *test_alien_one = new AlienOne( new Vector3( 0, 0, 0 ), 100, 600 );
+	//AlienOne *test_alien_one = new AlienOne( new Vector3( 0, 0, 0 ), 100, 600 );
 
-	AlienRow *test_row = new AlienRow( *( test_alien_one ), Vector3( 100, 100, 0 ), 5, 100 );
+	AlienRow *test_row = new AlienRow( *( new AlienOne( new Vector3( 0, 0, 0 ), 100, 600, *( alien_sprite_scale ) ) ), Vector3( 100, 100, 0 ), 5, 100 );
 
 	const unsigned num_aliens = test_row->getNumAliens();
 	vector<Alien*> alien_list;
@@ -96,6 +96,8 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 		//
 		main_screen->addChild( alien_list[i]->getSprite() );
 	}
+
+	aliens.push_back( test_row );
 
 	// spawn aliens and add to screen
 	//aliens = createAliens( Vector3( 100, 100, 0 ), 3, 100, 10, 100 );
@@ -135,6 +137,17 @@ bool PolycodeTemplateApp::Update() {
 		timer->Reset();
 	} */
 
+	// update the player
+	player->update();
+
+	// update the aliens
+	vector<Alien*> alien_list;
+	aliens[0]->getAliens( alien_list );
+	for ( unsigned i = 0; i < aliens[0]->getNumAliens(); ++i ) {
+		//
+		alien_list[i]->update();
+	}
+
 	// process translation input
 	processPlayerInput();
 
@@ -161,6 +174,14 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			case KEY_SPACE:
 				if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
 					//playerFireMissile();
+					ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
+					new_missile->setScale( *( player_missile_scale ) );
+					new_missile->Translate( player->getPosition() );
+
+					main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
+
+					SpaceInvadersEntity *missile_entitiy = new SpaceInvadersEntity( new_missile, &player->getPosition(), initial_HP );
+					player->addMissile( missile_entitiy );
 					weapon_cooldown->Reset();
 				}
 				break;

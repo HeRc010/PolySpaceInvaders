@@ -33,6 +33,9 @@ public:
 
 	// translate
 	void translate( const Vector3 &delta );
+	
+	// set the scale of the sprite - THIS MAY NOT BE NEEDED
+	void setScale( const Vector3 &scale );
 
 	// get HP
 	unsigned getHP() const;

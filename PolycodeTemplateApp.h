@@ -1,6 +1,7 @@
 #include "PolycodeView.h"
 #include "Polycode.h"
 #include "SpaceInvadersEntity.h"
+#include "Fighter.h"
 #include "AlienRow.h"
 #include "AlienOne.h"
 
@@ -122,7 +123,7 @@ private:
 	static const int player_missile_speed = 10;
 
 	// the fighter/player
-	SpaceInvadersEntity *player;
+	Fighter *player;
 
 	// the player delta amount when translating
 	static const int player_delta_x = 5;

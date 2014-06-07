@@ -8,6 +8,9 @@ Alien::Alien( ScreenSprite *sprite, Vector3 *position, const unsigned &initial_H
 	_sprite->addAnimation( "explosion", "2", 1 );
 	_sprite->playAnimation( "frame_0", 0, false );
 
+	// add a tag
+	_sprite->addTag( "alien" );
+
 	// initialize parameters
 	_cur_frame = 0;
 	_explosion_duration = explosion_duration;
@@ -34,7 +37,7 @@ void Alien::changeAnimationFrame() {
 	char buffer[256];
 	itoa( _cur_frame, buffer, 10 );
 
-	_sprite->playAnimation( String( "frame_" ) + String( buffer ), _cur_frame, true );
+	_sprite->playAnimation( String( "frame_" ) + String( buffer ), _cur_frame, false );
 }
 
 unsigned Alien::getCurrentFrame() const {

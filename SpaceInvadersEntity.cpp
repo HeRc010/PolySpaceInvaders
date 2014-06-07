@@ -46,6 +46,11 @@ void SpaceInvadersEntity::translate( const Vector3 &delta ) {
 	_sprite->setPosition( _sprite->getPosition() + delta );
 }
 
+void SpaceInvadersEntity::setScale( const Vector3 &scale ) {
+	//
+	_sprite->setScale( scale );
+}
+
 unsigned SpaceInvadersEntity::getHP() const {
 	//
 	return _HP;
