@@ -37,6 +37,8 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	alien_sprite_yscale = 0.5;
 	alien_sprite_scale = new Vector3( alien_sprite_xscale, alien_sprite_yscale, 0 );
 
+	cur_alien_frame = 0;
+
 	player_width = 85;
 	player_height = 53;
 	player_sprite_xscale = 0.5;
@@ -107,6 +109,12 @@ bool PolycodeTemplateApp::Update() {
 	// translate the aliens - if the necessary time has elapsed
 	if ( (timer->getElapsedf() * 1000) >= duration ) {
 		translateAliens( aliens );
+		
+		// change the current frame
+		++cur_alien_frame;
+		cur_alien_frame %= 2;
+		changeAlienFrame( cur_alien_frame );
+
 		timer->Reset();
 	}
 
@@ -133,20 +141,6 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		{
 		case InputEvent::EVENT_KEYDOWN:
 			switch( ie->keyCode() ) {
-			/*case KEY_a:
-				if ( player->getPosition().x >= player_xoffset ) {
-					player_delta.x = -player_delta_x;
-				} else {
-					player_delta.x = 0;
-				}
-				break;
-			case KEY_d:
-				if ( player->getPosition().x <= (screen_width/2 - player_xoffset) ) {
-					player_delta.x = player_delta_x;
-				} else {
-					player_delta.x = 0;
-				}
-				break;*/
 			case KEY_SPACE:
 				if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
 					playerFireMissile();
@@ -216,8 +210,8 @@ SpaceInvadersEntity * PolycodeTemplateApp::createAlienOne() {
 	alien_sprite->setScale( *alien_sprite_scale );
 
 	// add animations
-	alien_sprite->addAnimation( "frame_1", "0", 1 );
-	alien_sprite->addAnimation( "frame_2", "1", 1 );
+	alien_sprite->addAnimation( "frame_0", "0", 1 );
+	alien_sprite->addAnimation( "frame_1", "1", 1 );
 	alien_sprite->playAnimation( "frame_1", 0, false );
 
 	return new SpaceInvadersEntity( alien_sprite, new Vector3(0, 0, 0), initial_HP );
@@ -268,6 +262,34 @@ void PolycodeTemplateApp::addAliensToScreen( vector<AlienRow*> aliens ) {
 	for ( unsigned i = 0; i < num_rows; ++i ) {
 		//
 		addAlienRowToScreen( aliens[i] );
+	}
+}
+
+void PolycodeTemplateApp::changeAlienFrame( unsigned next_frame ) {
+	// make sure the frame is either 0 or 1
+	assert( next_frame < 2 );
+
+	// create the frame string
+	Polycode::String str = "frame_";
+	char temp[256];
+
+	itoa(next_frame, temp, 10);
+	Polycode::String *val = new String(temp);
+	
+	Polycode::String res = str + *val;
+	str = res;
+
+	//
+	const unsigned num_rows = aliens.size();
+	for ( unsigned i = 0; i < num_rows; ++i ) {
+		//
+		const unsigned num_aliens = aliens[i]->getNumAliens();
+		vector<SpaceInvadersEntity*> alien_list;
+		aliens[i]->getAliens( alien_list );
+		for ( unsigned i = 0; i < num_aliens; ++i ) {
+			//
+			alien_list[i]->getSprite()->playAnimation( str, next_frame, false );
+		}
 	}
 }
 

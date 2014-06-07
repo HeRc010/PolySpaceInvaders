@@ -37,6 +37,9 @@ public:
 	// add the aliens to the main screen
 	void addAliensToScreen( vector<AlienRow*> aliens );
 
+	// change the animation frame for the aliens
+	void changeAlienFrame( unsigned next_frame );
+
 	// direction values
 	enum direction { left, right };
 
@@ -137,6 +140,9 @@ private:
 
 	// delta for alien translation
 	static const int delta = 50;
+
+	// alien animation frame: [0, 1]
+	unsigned cur_alien_frame;
 
 	// duration parameter between alien row translations - in milliseconds
 	unsigned duration;
