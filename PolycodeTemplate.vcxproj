@@ -79,6 +79,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Alien.cpp" />
+    <ClCompile Include="AlienGroup.cpp" />
     <ClCompile Include="AlienRow.cpp" />
     <ClCompile Include="Fighter.cpp" />
     <ClCompile Include="PlayerMissile.cpp" />
@@ -89,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Alien.h" />
+    <ClInclude Include="AlienGroup.h" />
     <ClInclude Include="AlienOne.h" />
     <ClInclude Include="AlienRow.h" />
     <ClInclude Include="Fighter.h" />

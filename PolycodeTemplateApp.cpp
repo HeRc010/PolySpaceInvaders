@@ -41,9 +41,6 @@ void PolycodeTemplateApp::initializeGUIParameters() {
 
 	// initialize player delta
 	player_delta = Vector3( 0, 0, 0 );
-
-	// assign current direction
-	current_dir = direction::right;
 }
 
 PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
@@ -66,7 +63,11 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	player = new Fighter( "Resources/fighter_1.png", 85, 53, player_missile_speed );
 	player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
 
-	main_screen->addChild( player );
+	main_screen->addCollisionChild( player, PhysicsScreenEntity::ENTITY_RECT );
+
+	aliens = new AlienGroup( Vector3( 200, 200, 0 ), 3, 100, 5, 100, alien_delta );
+
+	addAliensToScreen( aliens );
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
@@ -92,6 +93,22 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 bool PolycodeTemplateApp::Update() {
 	// process translation input
 	processPlayerInput();
+
+	// update the player missiles
+	updatePlayerMissiles();
+	
+	// translate the aliens - if the necessary time has elapsed
+	if ( (timer->getElapsedf() * 1000) >= duration ) {
+		aliens->translate();
+		
+		// change the current frame/translate the rows
+		aliens->translate();
+
+		timer->Reset();
+	}
+
+
+	// update the alien missiles
 
 	// translate the aliens - if the necessary time has elapsed
 	/* if ( (timer->getElapsedf() * 1000) >= duration ) {
@@ -140,17 +157,10 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		case InputEvent::EVENT_KEYDOWN:
 			switch( ie->keyCode() ) {
 			case KEY_SPACE:
-				/* if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
-					ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
-					new_missile->setScale( *( player_missile_scale ) );
-					new_missile->Translate( player->getPosition() );
-
-					main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
-
-					SpaceInvadersEntity *missile_entitiy = new SpaceInvadersEntity( new_missile, &player->getPosition(), initial_HP );
-					player->addMissile( missile_entitiy );
+				if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
+					firePlayerMissile();
 					weapon_cooldown->Reset();
-				} */
+				}
 				break;
 			}
 			break;
@@ -176,6 +186,14 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		PhysicsScreenEvent * pe = (PhysicsScreenEvent*) e;
 		switch ( pe->getEventCode() ) {
 		case PhysicsScreenEvent::EVENT_NEW_SHAPE_COLLISION:
+			if ( pe->entity1->hasTag("alien") ) {
+				//
+				printf("hit alien :)");
+			} else if ( pe->entity2->hasTag("alien") ) {
+				//
+				printf("hit alien :)");
+			}
+
 			/* if ( isPlayerMissile( pe->entity1 ) ) {
 				removePlayerMissile( pe->entity1 );
 			} else if ( isPlayerMissile( pe->entity2 ) ) {
@@ -225,6 +243,61 @@ void PolycodeTemplateApp::processPlayerInput() {
 	}
 	if ( key_d ) {
 		if ( player->getPosition().x <= (screen_width - player_xoffset) ) player->Translate( Vector3( player_delta_x, 0, 0 ) );
+	}
+}
+
+void PolycodeTemplateApp::addAlienRowToScreen( AlienRow * to_add ) {
+	//
+	const unsigned num_aliens = to_add->getNumAliens();
+	vector<Alien*> alien_list;
+	to_add->getAliens( alien_list );
+	for ( unsigned i = 0; i < num_aliens; ++i ) {
+		//
+		main_screen->addCollisionChild( alien_list[i], PhysicsScreenEntity::ENTITY_RECT );
+	}
+}
+
+void PolycodeTemplateApp::addAliensToScreen( AlienGroup * aliens ) {
+	//
+	const unsigned num_rows = aliens->getNumberOfRows();
+	vector<AlienRow*> alien_list;
+	aliens->getAliens( alien_list );
+	for ( unsigned i = 0; i < num_rows; ++i ) {
+		//
+		addAlienRowToScreen( alien_list[i] );
+	}
+}
+
+/* void PolycodeTemplateApp::spawnAliens( const Vector3 &start_pos, const unsigned num_rows, const unsigned row_spacing, const unsigned num_row_aliens, const unsigned sprite_spacing ) {
+	//
+	Vector3 next_pos( start_pos );
+	for ( unsigned r = 0; r < num_rows; ++r ) {
+		//
+		_aliens.push_back( new AlienRow( *( new AlienOne() ), next_pos, num_row_aliens, sprite_spacing, alien_delta ) );
+		
+		addAlienRowToScreen( _aliens[r] );
+
+		next_pos += Vector3( 0, row_spacing, 0 );
+	}
+} */
+
+void PolycodeTemplateApp::firePlayerMissile() {
+	//
+	ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
+	new_missile->setScale( *( player_missile_scale ) );
+	new_missile->Translate( player->getPosition() );
+	new_missile->addTag("p_missile");
+
+	main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
+	player_missiles.push_back( new_missile );
+}
+
+void PolycodeTemplateApp::updatePlayerMissiles() {
+	//
+	const unsigned num_missiles = player_missiles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
+		//
+		player_missiles[i]->Translate( Vector3( 0, -player_missile_speed, 0 ) );
 	}
 }
 

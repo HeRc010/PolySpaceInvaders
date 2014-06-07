@@ -13,9 +13,24 @@ public:
 
 	~Alien();
 
+	// override update function
+	//void Update();
+
+	// change the current animation frame
+	void changeAnimationFrame();
+
+	// get the current animation frame
+	unsigned getFrame() const;
+
+	// get explosion duration
+	float getExplosionDuration() const;
+
 protected:
 	// timer
-	Timer *_timer;
+	//Timer *_timer;
+
+	//
+	unsigned _current_frame;
 
 	// the duration of the explosion frame
 	float _explosion_duration;

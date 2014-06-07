@@ -7,11 +7,11 @@
 #ifndef PLAYER_MISSILE_H
 #define PLAYER_MISSILE_H
 
-class PlayerMissile : public SpaceInvadersEntity 
+class PlayerMissile : public SpaceInvadersEntity
 {
 public:
 	//
-	PlayerMissile( const String &file_name, const unsigned &sprite_width, const unsigned &sprite_height );
+	PlayerMissile( const String &file_name = "Resources/player_missile.png", const unsigned &sprite_width = 3, const unsigned &sprite_height = 15 );
 	~PlayerMissile();
 private:
 	//

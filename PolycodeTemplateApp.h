@@ -4,10 +4,11 @@
 
 #include "PolycodeView.h"
 #include "Polycode.h"
+
+// project files
 #include "SpaceInvadersEntity.h"
 #include "Fighter.h"
-#include "AlienRow.h"
-#include "AlienOne.h"
+#include "AlienGroup.h"
 
 // for physics screen
 #include "Polycode2DPhysics.h"
@@ -31,12 +32,23 @@ public:
 	// process input for player translation
 	void processPlayerInput();
 
-	// direction values
-	enum direction { left, right };
+	// add a row of aliens to the screen
+	void addAlienRowToScreen( AlienRow * to_add );
 
+	// add aliens to screen
+	void addAliensToScreen( AlienGroup * aliens );
+
+	// fire player missile
+	void firePlayerMissile();
+
+	// update the player's missiles
+	void updatePlayerMissiles();
 
 private:
     Core *core;
+
+	// main screen
+	PhysicsScreen *main_screen;
 
 	// GUI parameters
 	static const unsigned screen_width = 1580;
@@ -50,6 +62,10 @@ private:
 
 	// delta for alien translation
 	static const int alien_delta = 50;
+
+	// set of aliens rows
+	//vector<AlienRow*> _aliens;
+	AlienGroup *aliens;
 
 	float player_sprite_xscale;
 	float player_sprite_yscale;
@@ -72,9 +88,6 @@ private:
 	// duration parameter for weapon cooldown - in milliseconds
 	static const unsigned weapon_cooldown_time = 700;
 
-	// main screen
-	PhysicsScreen *main_screen;
-
 	// missile speed
 	static const int player_missile_speed = 10;
 
@@ -87,9 +100,9 @@ private:
 	// the delta vector for the player
 	Vector3 player_delta;
 
+	// a list of the missiles fired by the player
+	vector<ScreenSprite*> player_missiles;
+
 	// a list of the missiles fired by the aliens
 	vector<SpaceInvadersEntity*> alien_missles;
-
-	// current direction for row
-	direction current_dir;
 };

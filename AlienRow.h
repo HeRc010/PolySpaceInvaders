@@ -3,6 +3,9 @@
 	to the constructor.
 */
 
+#ifndef ALIEN_ROW_H
+#define ALIEN_ROW_H
+
 #include "Polycode.h"
 #include <vector>
 #include "Alien.h"
@@ -18,28 +21,30 @@ public:
 
 	~AlienRow();
 
-	// translate the row by a certain delta-movement
-	void translate( const Vector3 &delta );
+	// translate the row
+	void translate( int delta );
 
-	// get the number of aliens in the row - do they need to be alive?... for now no
+	// get the number of aliens in the row
 	unsigned getNumAliens() const;
 
 	// get a reference to the current state of the aliens
 	void getAliens( vector<Alien*> &list ) const;
 
-	// does this row contain the alien?
-	bool containsAlien( ScreenEntity * entity ) const;
+	// get the left-most element of the row
+	Alien * leftMostAlien();
 
-	// remove an alien from the row
-	void removeAlien( ScreenEntity * to_remove );
-
-	// remove an alien specified by index
-	void removeAlien( unsigned i );
+	// get the right-most element of the row
+	Alien * rightMostAlien();
 
 private:
+	// translation speed
+	int _speed;
+
 	// the number of aliens in the row
 	unsigned _num_aliens;
 
 	// list of aliens
 	vector<Alien*> _aliens;
 };
+
+#endif ALIEN_ROW_H
