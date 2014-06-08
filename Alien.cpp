@@ -53,10 +53,8 @@ void Alien::changeAnimationFrame() {
 		// if timer not initialized; do so
 		if ( !_timer ) _timer = new Timer( false, 0 );
 		
-		if ( _timer->getElapsedf() < _explosion_duration ) {
+		if ( (_timer->getElapsedf() * 1000) >= _explosion_duration ) {
 			//
-			playAnimation( "explode", 2, false );
-		} else {
 			_state = dead;
 		}
 	}
