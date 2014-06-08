@@ -3,10 +3,11 @@
 Alien::Alien( const String &file_name, const unsigned &sprite_width, const unsigned &sprite_height, const float &explosion_duration )
 	: SpaceInvadersEntity( file_name, sprite_width, sprite_height )
 {
+	// scale the sprite
+	setScale( Vector3( 0.75, 0.75, 0 ) ); 
+
 	// add a tag
 	addTag( "alien" );
-
-	_explosion_duration = explosion_duration;
 
 	// initialize animations
 	addAnimation( "frame_0", "0", 1 );
@@ -17,6 +18,7 @@ Alien::Alien( const String &file_name, const unsigned &sprite_width, const unsig
 
 	_timer = 0;
 	_current_frame = 0;
+	_explosion_duration = explosion_duration;
 }
 
 // CC

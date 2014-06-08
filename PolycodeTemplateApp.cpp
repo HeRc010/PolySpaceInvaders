@@ -2,7 +2,9 @@
 	The main template file/runtime file.
 
 	TODO(high level stuffs):
-	- get different aliens in each row looking proper
+	primary:
+
+	secondary:
 	- add missile functionality - and death mechanics - missiles for the aliens; death for the player
 		-> need to get the aliens shooting back; and the player killed if hit
 	- add lives for the fighter
@@ -56,19 +58,20 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	main_screen = new PhysicsScreen( 10, 50 );
 
 	// add background
-	ScreenSprite *background = ScreenSprite::ScreenSpriteFromImageFile("Resources/background.png", Number(screen_width*2), Number(screen_height*2) ); //new ScreenSprite("Resources/background.png");
+	ScreenSprite *background = ScreenSprite::ScreenSpriteFromImageFile("Resources/background.png", Number(screen_width*2), Number(screen_height*2) );
 
 	main_screen->addChild( background );
 
 	// initialize fighter/player entity
 	player = new Fighter();
+	player->setScale( Vector3( 0.75, 0.75, 0 ) );
 	player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
 
 	main_screen->addCollisionChild( player, PhysicsScreenEntity::ENTITY_RECT );
 
-	aliens = new AlienGroup( Vector3( 200, 200, 0 ), 3, 100, 5, 100, alien_delta );
-
-	addAliensToScreen( aliens );
+	// initialize aliens
+	aliens = new AlienGroup( Vector3( 100, 100, 0 ), 5, 75, 11, 75, alien_delta );
+	addAliensToScreen();
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
@@ -100,7 +103,7 @@ bool PolycodeTemplateApp::Update() {
 		timer->Reset();
 	}
 
-	updateAliens( aliens );
+	updateAliens();
 
 	return core->updateAndRender();
 }
@@ -175,7 +178,7 @@ void PolycodeTemplateApp::processPlayerInput() {
 	}
 }
 
-void PolycodeTemplateApp::addAliensToScreen( AlienGroup * aliens ) {
+void PolycodeTemplateApp::addAliensToScreen() {
 	//
 	vector<Alien*> alien_list;
 	aliens->getAliens( alien_list );
@@ -213,7 +216,7 @@ void PolycodeTemplateApp::updatePlayerMissiles() {
 	}
 }
 
-void PolycodeTemplateApp::updateAliens( AlienGroup * aliens ) {
+void PolycodeTemplateApp::updateAliens() {
 	// ensure the alien group does not exit the screen bounds
 	Alien * bound_alien = 0;
 	switch ( aliens->getCurrentDirection() ) {

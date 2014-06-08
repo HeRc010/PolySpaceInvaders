@@ -33,7 +33,7 @@ public:
 	void processPlayerInput();
 
 	// add aliens to screen
-	void addAliensToScreen( AlienGroup * aliens );
+	void addAliensToScreen();
 
 	// fire player missile
 	void firePlayerMissile();
@@ -42,7 +42,7 @@ public:
 	void updatePlayerMissiles();
 
 	// update aliens
-	void updateAliens( AlienGroup * aliens );
+	void updateAliens();
 
 private:
     Core *core;
