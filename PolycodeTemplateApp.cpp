@@ -2,7 +2,6 @@
 	The main template file/runtime file.
 
 	TODO(high level stuffs):
-	- add animations for the aliens
 	- add explosion animations for the aliens
 	- add different types of aliens per row
 		-> need to add different types in general
@@ -99,7 +98,7 @@ bool PolycodeTemplateApp::Update() {
 
 	// update the player missiles
 	updatePlayerMissiles();
-	
+
 	// translate the aliens - if the necessary time has elapsed
 	if ( (timer->getElapsedf() * 1000) >= duration ) {
 		// change the current frame/translate the rows
@@ -108,7 +107,7 @@ bool PolycodeTemplateApp::Update() {
 		timer->Reset();
 	}
 
-	updateAliens( aliens );
+	//updateAliens( aliens );
 
 	return core->updateAndRender();
 }
@@ -147,12 +146,12 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		case PhysicsScreenEvent::EVENT_NEW_SHAPE_COLLISION:
 			if ( pe->entity1->hasTag("alien") ) {
 				//
-				main_screen->removeChild( pe->entity1 );
-				aliens->removeAlien( pe->entity1 );
+				//main_screen->removeChild( pe->entity1 );
+				aliens->killAlien( pe->entity1 );
 			} else if ( pe->entity2->hasTag("alien") ) {
 				//
-				main_screen->removeChild( pe->entity2 );
-				aliens->removeAlien( pe->entity2 );
+				//main_screen->removeChild( pe->entity2 );
+				aliens->killAlien( pe->entity2 );
 			}
 
 			if ( pe->entity1->hasTag("p_missile") ) {
@@ -193,25 +192,15 @@ void PolycodeTemplateApp::processPlayerInput() {
 	}
 }
 
-void PolycodeTemplateApp::addAlienRowToScreen( AlienRow * to_add ) {
+void PolycodeTemplateApp::addAliensToScreen( AlienGroup * aliens ) {
 	//
-	const unsigned num_aliens = to_add->getNumAliens();
 	vector<Alien*> alien_list;
-	to_add->getAliens( alien_list );
+	aliens->getAliens( alien_list );
+
+	const unsigned num_aliens = alien_list.size();
 	for ( unsigned i = 0; i < num_aliens; ++i ) {
 		//
 		main_screen->addCollisionChild( alien_list[i], PhysicsScreenEntity::ENTITY_RECT );
-	}
-}
-
-void PolycodeTemplateApp::addAliensToScreen( AlienGroup * aliens ) {
-	//
-	const unsigned num_rows = aliens->getNumberOfRows();
-	vector<AlienRow*> alien_list;
-	aliens->getAliens( alien_list );
-	for ( unsigned i = 0; i < num_rows; ++i ) {
-		//
-		addAlienRowToScreen( alien_list[i] );
 	}
 }
 
@@ -266,4 +255,30 @@ void PolycodeTemplateApp::updateAliens( AlienGroup * aliens ) {
 		}
 		break;
 	}
+
+	// get the dead aliens; remove screen and alien group
+	vector<Alien*> dead_aliens = aliens->getDeadAliens();
+
+	const unsigned num_aliens = dead_aliens.size();
+	if ( num_aliens == 0 ) return;
+
+	for ( unsigned i = 0; i < num_aliens; ++i ) {
+		//
+		main_screen->removeChild( dead_aliens[i] );
+		aliens->removeAlien( dead_aliens[i] );
+	}
 }
+
+// **********************
+// OLD:
+
+/* void PolycodeTemplateApp::addAlienRowToScreen( AlienRow * to_add ) {
+	//
+	const unsigned num_aliens = to_add->getNumAliens();
+	vector<Alien*> alien_list;
+	to_add->getAliens( alien_list );
+	for ( unsigned i = 0; i < num_aliens; ++i ) {
+		//
+		main_screen->addCollisionChild( alien_list[i], PhysicsScreenEntity::ENTITY_RECT );
+	}
+} */
