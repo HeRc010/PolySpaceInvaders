@@ -2,7 +2,7 @@
 
 
 AlienThree::AlienThree(  )
-	: Alien( "Resources/Alien_Three.png", 84, 53 )
+	: Alien( "Resources/Alien_Three.png", 52, 53 )
 {
 	//
 }

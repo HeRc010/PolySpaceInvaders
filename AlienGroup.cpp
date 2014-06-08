@@ -7,17 +7,16 @@ AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const
 	Vector3 next_pos( start_pos );
 	for ( unsigned r = 0; r < num_rows; ++r ) {
 		//
-		//_aliens.push_back( new AlienRow( *( new AlienOne() ), next_pos, num_row_aliens, sprite_spacing ) );
 		vector<Alien*> new_row;
 		for ( unsigned a = 0; a < num_row_aliens; ++a ) {
 			//
-			Alien *next_alien = new AlienOne();
+			/* Alien *next_alien = new AlienOne();
 			next_alien->Translate( next_pos - next_alien->getPosition() );
 			next_alien->Translate( Vector3( a * sprite_spacing, 0, 0 ) );
 			
-			_aliens.push_back( next_alien );
+			_aliens.push_back( next_alien ); */
 
-			/* Alien * next_alien = 0;
+			Alien * next_alien = 0;
 			if ( r < 1 ) {
 				//
 				next_alien = new AlienThree();
@@ -32,7 +31,7 @@ AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const
 			next_alien->Translate( next_pos - next_alien->getPosition() );
 			next_alien->Translate( Vector3( a * sprite_spacing, 0, 0 ) );
 			
-			_aliens.push_back( next_alien ); */
+			_aliens.push_back( next_alien );
 		}
 
 		next_pos += Vector3( 0, row_spacing, 0 );

@@ -2,7 +2,11 @@
 	The main template file/runtime file.
 
 	TODO(high level stuffs):
+	primary:
 	- get different aliens in each row looking proper
+	- add the approprite number of rows, and number of aliens in each row
+
+	secondary:
 	- add missile functionality - and death mechanics - missiles for the aliens; death for the player
 		-> need to get the aliens shooting back; and the player killed if hit
 	- add lives for the fighter
@@ -66,7 +70,7 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 
 	main_screen->addCollisionChild( player, PhysicsScreenEntity::ENTITY_RECT );
 
-	aliens = new AlienGroup( Vector3( 200, 200, 0 ), 3, 100, 5, 100, alien_delta );
+	aliens = new AlienGroup( Vector3( 200, 200, 0 ), 5, 100, 5, 100, alien_delta );
 
 	addAliensToScreen( aliens );
 
