@@ -31,10 +31,10 @@ public:
 	void getAliens( vector<Alien*> &list ) const;
 
 	// get the left-most element of the row
-	Alien * leftMostAlien();
+	Alien * getLeftMostAlien();
 
 	// get the right-most element of the row
-	Alien * rightMostAlien();
+	Alien * getRightMostAlien();
 
 private:
 	// translation speed

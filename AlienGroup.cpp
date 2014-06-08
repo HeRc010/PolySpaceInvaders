@@ -71,10 +71,40 @@ void AlienGroup::reverseDirection() {
 
 Alien * AlienGroup::getLeftMostAlien() {
 	//
-	return 0;
+	if ( _num_rows == 0 ) return 0;
+
+	Alien * result = _aliens[0]->getLeftMostAlien();
+
+	Alien * temp;
+	for ( unsigned i = 1; i < _num_rows; ++i ) {
+		//
+		temp = _aliens[i]->getLeftMostAlien();
+
+		if ( temp->getPosition().x < result->getPosition().x ) {
+			//
+			result = temp;
+		}
+	}
+
+	return result;
 }
 
 Alien * AlienGroup::getRightMostAlien() {
 	//
-	return 0;
+	if ( _num_rows == 0 ) return 0;
+
+	Alien * result = _aliens[0]->getRightMostAlien();
+
+	Alien * temp;
+	for ( unsigned i = 1; i < _num_rows; ++i ) {
+		//
+		temp = _aliens[i]->getRightMostAlien();
+
+		if ( temp->getPosition().x > result->getPosition().x ) {
+			//
+			result = temp;
+		}
+	}
+
+	return result;
 }

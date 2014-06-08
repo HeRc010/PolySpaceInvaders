@@ -44,6 +44,9 @@ public:
 	// update the player's missiles
 	void updatePlayerMissiles();
 
+	// update aliens
+	void updateAliens( AlienGroup * aliens );
+
 private:
     Core *core;
 
@@ -58,7 +61,7 @@ private:
 	float alien_sprite_yscale;
 	Vector3 *alien_sprite_scale;
 	
-	unsigned alien_xoffset;
+	int alien_xoffset;
 
 	// delta for alien translation
 	static const int alien_delta = 50;

@@ -54,3 +54,31 @@ void AlienRow::getAliens( vector<Alien*> &list ) const {
 	//
 	list = _aliens;
 }
+
+Alien * AlienRow::getLeftMostAlien() {
+	//
+	Alien * result = _aliens[0];
+	for ( unsigned i = 1; i < _num_aliens; ++i ) {
+		//
+		if ( _aliens[i]->getPosition().x < result->getPosition().x ) {
+			//
+			result = _aliens[i];
+		}
+	}
+
+	return result;
+}
+
+Alien * AlienRow::getRightMostAlien() {
+	//
+	Alien * result = _aliens[0];
+	for ( unsigned i = 1; i < _num_aliens; ++i ) {
+		//
+		if ( _aliens[i]->getPosition().x > result->getPosition().x ) {
+			//
+			result = _aliens[i];
+		}
+	}
+
+	return result;
+}

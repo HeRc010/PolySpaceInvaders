@@ -24,6 +24,8 @@ void PolycodeTemplateApp::initializeGUIParameters() {
 	alien_sprite_yscale = 1;
 	alien_sprite_scale = new Vector3( alien_sprite_xscale, alien_sprite_yscale, 0 );
 
+	alien_xoffset = 100;
+
 	player_sprite_xscale = 0.5;
 	player_sprite_yscale = 0.5;
 	player_sprite_scale = new Vector3( player_sprite_xscale, player_sprite_yscale, 0 );
@@ -107,37 +109,7 @@ bool PolycodeTemplateApp::Update() {
 		timer->Reset();
 	}
 
-
-	// update the alien missiles
-
-	// translate the aliens - if the necessary time has elapsed
-	/* if ( (timer->getElapsedf() * 1000) >= duration ) {
-		translateAliens( aliens );
-		
-		// change the current frame
-		++cur_alien_frame;
-		cur_alien_frame %= 2;
-		changeAlienFrame( cur_alien_frame );
-
-		timer->Reset();
-	} */
-
-	// update the player
-	/* player->update();
-
-	// update the aliens
-	vector<Alien*> alien_list;
-	aliens[0]->getAliens( alien_list );
-	for ( unsigned i = 0; i < aliens[0]->getNumAliens(); ++i ) {
-		//
-		alien_list[i]->update();
-	}
-
-	// clean-up player missile list
-	cleanPlayerMissiles(); */
-
-	// update player missiles
-	//updatePlayerMissles( player_missiles, player_missile_speed );
+	updateAliens( aliens );
 
 	return core->updateAndRender();
 }
@@ -268,19 +240,6 @@ void PolycodeTemplateApp::addAliensToScreen( AlienGroup * aliens ) {
 	}
 }
 
-/* void PolycodeTemplateApp::spawnAliens( const Vector3 &start_pos, const unsigned num_rows, const unsigned row_spacing, const unsigned num_row_aliens, const unsigned sprite_spacing ) {
-	//
-	Vector3 next_pos( start_pos );
-	for ( unsigned r = 0; r < num_rows; ++r ) {
-		//
-		_aliens.push_back( new AlienRow( *( new AlienOne() ), next_pos, num_row_aliens, sprite_spacing, alien_delta ) );
-		
-		addAlienRowToScreen( _aliens[r] );
-
-		next_pos += Vector3( 0, row_spacing, 0 );
-	}
-} */
-
 void PolycodeTemplateApp::firePlayerMissile() {
 	//
 	ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
@@ -298,6 +257,27 @@ void PolycodeTemplateApp::updatePlayerMissiles() {
 	for ( unsigned i = 0; i < num_missiles; ++i ) {
 		//
 		player_missiles[i]->Translate( Vector3( 0, -player_missile_speed, 0 ) );
+	}
+}
+
+void PolycodeTemplateApp::updateAliens( AlienGroup * aliens ) {
+	// ensure the alien group does not exit the screen bounds
+	Alien * bound_alien = 0;
+	switch ( aliens->getCurrentDirection() ) {
+	case AlienGroup::Direction::left:
+		bound_alien = aliens->getLeftMostAlien();
+		if ( bound_alien->getPosition().x < (50 + alien_xoffset) ) {
+			//
+			aliens->reverseDirection();
+		}
+		break;
+	case AlienGroup::Direction::right:
+		bound_alien = aliens->getRightMostAlien();
+		if ( bound_alien->getPosition().x > (screen_width - alien_xoffset) ) {
+			//
+			aliens->reverseDirection();
+		}
+		break;
 	}
 }
 
