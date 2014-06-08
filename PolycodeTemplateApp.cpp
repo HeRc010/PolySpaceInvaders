@@ -2,15 +2,14 @@
 	The main template file/runtime file.
 
 	TODO(high level stuffs):
-	- add explosion animations for the aliens
-	- add different types of aliens per row
-		-> need to add different types in general
-	- need to fix the occasional problem where rows pretend like the fallen guy on the far side is still alive; in their translation :S
-		-> is this still(was ever?) a problem?
-	- add missile functionality - and death mechanics
+	- get different aliens in each row looking proper
+	- add missile functionality - and death mechanics - missiles for the aliens; death for the player
 		-> need to get the aliens shooting back; and the player killed if hit
-	- general(a lot of it) refactoring; significant redesign of architecture to minimize code in this file :S
 	- add lives for the fighter
+	- add score mechanics
+		-> win condition(s)
+	- need to add the barriers too :S
+		-> this could be really challenging...
 	- add the red ufo going accross the top
 	- sound for when the space invaders move
 		-> there also needs to be sound for the red ufo
@@ -62,7 +61,7 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	main_screen->addChild( background );
 
 	// initialize fighter/player entity
-	player = new Fighter( "Resources/fighter_1.png", 85, 53, player_missile_speed );
+	player = new Fighter();
 	player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
 
 	main_screen->addCollisionChild( player, PhysicsScreenEntity::ENTITY_RECT );
@@ -85,13 +84,6 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
     
 }
 
-/*
-	TODO:
-	- translation functionality for the alien row
-		- need to incorporate a current direction
-		- awareness of the left-most/right-most entity for consistency in movement - this might be in there already...
-		- if the left-most/right-most entity is at it's respective edge; reverse direction
-*/
 bool PolycodeTemplateApp::Update() {
 	// process translation input
 	processPlayerInput();
@@ -113,10 +105,6 @@ bool PolycodeTemplateApp::Update() {
 	return core->updateAndRender();
 }
 
-/*
-	TODO:
-	- add missile firing functionality for fighter
-*/
 void PolycodeTemplateApp::handleEvent( Event *e ) {
 	//
 	
@@ -263,17 +251,3 @@ void PolycodeTemplateApp::updateAliens( AlienGroup * aliens ) {
 		aliens->removeAlien( dead_aliens[i] );
 	}
 }
-
-// **********************
-// OLD:
-
-/* void PolycodeTemplateApp::addAlienRowToScreen( AlienRow * to_add ) {
-	//
-	const unsigned num_aliens = to_add->getNumAliens();
-	vector<Alien*> alien_list;
-	to_add->getAliens( alien_list );
-	for ( unsigned i = 0; i < num_aliens; ++i ) {
-		//
-		main_screen->addCollisionChild( alien_list[i], PhysicsScreenEntity::ENTITY_RECT );
-	}
-} */

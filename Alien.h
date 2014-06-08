@@ -6,7 +6,7 @@
 class Alien : public SpaceInvadersEntity
 {
 public:
-	Alien( const String &file_name, const unsigned &sprite_width, const unsigned &sprite_height, const float &explosion_duration = 250 );
+	Alien( const String &file_name, const unsigned &sprite_width, const unsigned &sprite_height, const float &explosion_duration = 50 );
 
 	// copy constructor - DEPRECATED
 	Alien( const Alien &rhs );

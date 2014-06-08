@@ -15,16 +15,24 @@ AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const
 			next_alien->Translate( next_pos - next_alien->getPosition() );
 			next_alien->Translate( Vector3( a * sprite_spacing, 0, 0 ) );
 			
-			//new_row.push_back( next_alien );
 			_aliens.push_back( next_alien );
 
-			/* if ( r < 2 ) {
-				new_row.push_back( new AlienOne() );
-			} else if ( r < 4 ) {
-				
+			/* Alien * next_alien = 0;
+			if ( r < 1 ) {
+				//
+				next_alien = new AlienThree();
+			} else if ( r < 3 ) {
+				//
+				next_alien = new AlienTwo();
 			} else {
-				
-			} */
+				//
+				next_alien = new AlienOne();
+			}
+
+			next_alien->Translate( next_pos - next_alien->getPosition() );
+			next_alien->Translate( Vector3( a * sprite_spacing, 0, 0 ) );
+			
+			_aliens.push_back( next_alien ); */
 		}
 
 		next_pos += Vector3( 0, row_spacing, 0 );

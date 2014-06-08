@@ -1,8 +1,9 @@
 #ifndef ALIEN_GROUP_H
 #define ALIEN_GROUP_H
 
-#include "AlienRow.h"
 #include "AlienOne.h"
+#include "AlienTwo.h"
+#include "AlienThree.h"
 
 class AlienGroup
 {

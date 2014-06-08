@@ -1,8 +1,5 @@
 #include "AlienRow.h"
 
-/*
-	May be depricated.
-*/
 AlienRow::AlienRow( const vector<Alien*> &initial_list ) : _aliens( initial_list )
 {
 	//

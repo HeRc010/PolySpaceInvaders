@@ -5,13 +5,13 @@
 #include "PolycodeView.h"
 #include "Polycode.h"
 
+// for physics screen
+#include "Polycode2DPhysics.h"
+
 // project files
 #include "SpaceInvadersEntity.h"
 #include "Fighter.h"
 #include "AlienGroup.h"
-
-// for physics screen
-#include "Polycode2DPhysics.h"
 
 using namespace Polycode;
 
@@ -31,9 +31,6 @@ public:
 
 	// process input for player translation
 	void processPlayerInput();
-
-	// add a row of aliens to the screen
-	void addAlienRowToScreen( AlienRow * to_add );
 
 	// add aliens to screen
 	void addAliensToScreen( AlienGroup * aliens );

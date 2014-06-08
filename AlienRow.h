@@ -1,4 +1,6 @@
 /*
+	DEPRECATED CLASS:
+	
 	This class stores a row of aliens, the specific alien type can be passed as a "clone object" reference
 	to the constructor.
 */
