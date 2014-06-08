@@ -42,6 +42,9 @@ void AlienRow::translate( int delta ) {
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
 		//
 		_aliens[i]->Translate( Vector3( delta, 0, 0 ) );
+
+		// change the animation frame
+		_aliens[i]->changeAnimationFrame();
 	}
 }
 

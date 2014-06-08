@@ -2,6 +2,7 @@
 	The main template file/runtime file.
 
 	TODO(high level stuffs):
+	- add animations for the aliens
 	- add explosion animations for the aliens
 	- add different types of aliens per row
 		-> need to add different types in general
@@ -126,25 +127,9 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		{
 		case InputEvent::EVENT_KEYDOWN:
 			switch( ie->keyCode() ) {
-			case KEY_SPACE:
-				if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
-					firePlayerMissile();
-					weapon_cooldown->Reset();
-				}
-				break;
 			case KEY_BACKSLASH:
 				// this is for debugging
 				int temp = 10;
-				break;
-			}
-			break;
-		case InputEvent::EVENT_KEYUP:
-			switch ( ie->keyCode() ) {
-			case KEY_a:
-				player_delta.x = 0;
-				break;
-			case KEY_d:
-				player_delta.x = 0;
 				break;
 			}
 			break;
@@ -190,6 +175,7 @@ void PolycodeTemplateApp::processPlayerInput() {
 	//
 	bool key_a = core->getInput()->getKeyState( KEY_a );
 	bool key_d = core->getInput()->getKeyState( KEY_d );
+	bool key_space = core->getInput()->getKeyState( KEY_SPACE );
 
 	if ( key_a ) {
 		//
@@ -197,6 +183,13 @@ void PolycodeTemplateApp::processPlayerInput() {
 	}
 	if ( key_d ) {
 		if ( player->getPosition().x <= (screen_width - player_xoffset) ) player->Translate( Vector3( player_delta_x, 0, 0 ) );
+	}
+	if ( key_space ) {
+		//
+		if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
+			firePlayerMissile();
+			weapon_cooldown->Reset();
+		}
 	}
 }
 
