@@ -160,19 +160,19 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		case PhysicsScreenEvent::EVENT_NEW_SHAPE_COLLISION:
 			if ( pe->entity1->hasTag("alien") ) {
 				//
-				printf("hit alien :)");
+				main_screen->removeChild( pe->entity1 );
 			} else if ( pe->entity2->hasTag("alien") ) {
 				//
-				printf("hit alien :)");
+				main_screen->removeChild( pe->entity2 );
 			}
 
-			/* if ( isPlayerMissile( pe->entity1 ) ) {
-				removePlayerMissile( pe->entity1 );
-			} else if ( isPlayerMissile( pe->entity2 ) ) {
-				removePlayerMissile( pe->entity2 );
+			if ( pe->entity1->hasTag("p_missile") ) {
+				main_screen->removeChild( pe->entity1 );
+			} else if ( pe->entity2->hasTag("p_missile") ) {
+				main_screen->removeChild( pe->entity2 );
 			}
 
-			if ( isAlien( pe->entity1 ) ) {
+			/* if ( isAlien( pe->entity1 ) ) {
 				removeAlien( pe->entity1 );
 
 				// display an explosion sprite at the alien's location
@@ -244,7 +244,7 @@ void PolycodeTemplateApp::firePlayerMissile() {
 	//
 	ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
 	new_missile->setScale( *( player_missile_scale ) );
-	new_missile->Translate( player->getPosition() );
+	new_missile->Translate( player->getPosition() + Vector3( 0, - ( (new_missile->getHeight()*2) * new_missile->getScale().y ), 0 ) );
 	new_missile->addTag("p_missile");
 
 	main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
