@@ -1,7 +1,7 @@
 #include "AlienGroup.h"
 
 AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const unsigned row_spacing, const unsigned num_row_aliens, const unsigned sprite_spacing, const int alien_speed )
-	: _num_aliens( num_rows * num_row_aliens ), _speed( alien_speed )
+	: _num_aliens( num_rows * num_row_aliens ), _num_aliens_per_row( num_row_aliens ), _speed( alien_speed )
 {
 	// initialize alien vectors
 	Vector3 next_pos( start_pos );
@@ -10,12 +10,6 @@ AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const
 		vector<Alien*> new_row;
 		for ( unsigned a = 0; a < num_row_aliens; ++a ) {
 			//
-			/* Alien *next_alien = new AlienOne();
-			next_alien->Translate( next_pos - next_alien->getPosition() );
-			next_alien->Translate( Vector3( a * sprite_spacing, 0, 0 ) );
-			
-			_aliens.push_back( next_alien ); */
-
 			Alien * next_alien = 0;
 			if ( r < 1 ) {
 				//
@@ -45,6 +39,23 @@ AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const
 AlienGroup::~AlienGroup(  )
 {
 	//
+}
+
+AlienGroup::Direction AlienGroup::getCurrentDirection() const {
+	//
+	return _current_dir;
+}
+
+void AlienGroup::reverseDirection() {
+	//
+	switch ( _current_dir ) {
+	case left:
+		_current_dir = right;
+		break;
+	case right:
+		_current_dir = left;
+		break;
+	}
 }
 
 unsigned AlienGroup::getNumberOfAliens() const {
@@ -85,37 +96,6 @@ void AlienGroup::changeAnimationFrame() {
 	}
 }
 
-vector<Alien*> AlienGroup::getDeadAliens() {
-	//
-	vector<Alien*> result;
-	for ( unsigned i = 0; i < _num_aliens; ++i ) {
-		//
-		if ( _aliens[i]->getState() == SpaceInvadersEntity::EntityState::dead ) {
-			//
-			result.push_back( _aliens[i] );
-		}
-	}
-
-	return result;
-}
-
-AlienGroup::Direction AlienGroup::getCurrentDirection() const {
-	//
-	return _current_dir;
-}
-
-void AlienGroup::reverseDirection() {
-	//
-	switch ( _current_dir ) {
-	case left:
-		_current_dir = right;
-		break;
-	case right:
-		_current_dir = left;
-		break;
-	}
-}
-
 Alien * AlienGroup::getLeftMostAlien() {
 	//
 	Alien * result = 0;
@@ -144,6 +124,20 @@ Alien * AlienGroup::getRightMostAlien() {
 	return result;
 }
 
+vector<Alien*> AlienGroup::getDeadAliens() {
+	//
+	vector<Alien*> result;
+	for ( unsigned i = 0; i < _num_aliens; ++i ) {
+		//
+		if ( _aliens[i]->getState() == SpaceInvadersEntity::EntityState::dead ) {
+			//
+			result.push_back( _aliens[i] );
+		}
+	}
+
+	return result;
+}
+
 void AlienGroup::killAlien( ScreenEntity * to_kill ) {
 	//
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
@@ -165,4 +159,44 @@ void AlienGroup::removeAlien( ScreenEntity * to_remove ) {
 			--_num_aliens;
 		}
 	}
+}
+
+vector<Alien*> AlienGroup::getLowestAliens() const {
+	//
+	vector<Alien*> result( _num_aliens_per_row, 0 );
+	for ( unsigned i = 0; i < _num_aliens; ++i ) {
+		//
+		unsigned idx = i % _num_aliens_per_row;
+
+		if ( (!result[idx]) || (result[idx]->getPosition().y < _aliens[i]->getPosition().y) ) {
+			//
+			result[idx] = _aliens[i];
+		}
+	}
+
+	return result;
+}
+
+ScreenSprite* AlienGroup::fireMissile() const {
+	//
+	if ( _num_aliens == 0 ) return 0;
+
+	vector<Alien*> lowest_aliens = getLowestAliens();
+
+	// remove any null elements
+	const int num_aliens = lowest_aliens.size();
+	for ( int i = num_aliens - 1; i >= 0; --i ) {
+		//
+		if ( !lowest_aliens[i] ) lowest_aliens.erase( lowest_aliens.begin() + i );
+	}
+
+	// fire a missile from a random alien
+	unsigned idx = rand() % lowest_aliens.size();
+
+	ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/alien_missile.png", 20, 39 );
+	new_missile->setPosition( lowest_aliens[ idx ]->getPosition() );
+	
+	new_missile->addTag("a_missile");
+
+	return new_missile;
 }

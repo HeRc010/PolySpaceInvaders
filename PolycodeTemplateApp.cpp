@@ -3,16 +3,15 @@
 
 	TODO(high level stuffs):
 	primary:
+	- add missile death mechanics - missiles for the aliens; death for the player
 
 	secondary:
-	- add missile functionality - and death mechanics - missiles for the aliens; death for the player
-		-> need to get the aliens shooting back; and the player killed if hit
 	- add lives for the fighter
 	- add score mechanics
-		-> win condition(s)
+		-> win/lose conditions
+	- add the red ufo going accross the top
 	- need to add the barriers too :S
 		-> this could be really challenging...
-	- add the red ufo going accross the top
 	- sound for when the space invaders move
 		-> there also needs to be sound for the red ufo
 */
@@ -38,9 +37,12 @@ void PolycodeTemplateApp::initializeGUIParameters() {
 
 	// initialize timers/timer parameters
 	timer = new Timer( false, 0 );
-	weapon_cooldown = new Timer( false, 0 );
+	player_cooldown = new Timer( false, 0 );
+	alien_cooldown = new Timer( false, 0 );
 
 	duration = 500;
+	player_weapon_cooldown = 700;
+	alien_weapon_cooldown = 2000;
 
 	// initialize player delta
 	player_delta = Vector3( 0, 0, 0 );
@@ -103,7 +105,24 @@ bool PolycodeTemplateApp::Update() {
 		timer->Reset();
 	}
 
+	if ( (alien_cooldown->getElapsedf() * 1000) >= alien_weapon_cooldown ) {
+		//
+		ScreenSprite * new_missile = aliens->fireMissile();
+		
+		if ( new_missile ) {
+			//main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
+			main_screen->addChild( new_missile );
+
+			alien_missiles.push_back( new_missile );
+			alien_cooldown->Reset();
+		}
+	}
+
+	// update aliens
 	updateAliens();
+
+	// update the alien missiles
+	updateAlienMissiles();
 
 	return core->updateAndRender();
 }
@@ -171,9 +190,9 @@ void PolycodeTemplateApp::processPlayerInput() {
 	}
 	if ( key_space ) {
 		//
-		if ( (weapon_cooldown->getElapsedf() * 1000) >= weapon_cooldown_time ) {
+		if ( (player_cooldown->getElapsedf() * 1000) >= player_weapon_cooldown ) {
 			firePlayerMissile();
-			weapon_cooldown->Reset();
+			player_cooldown->Reset();
 		}
 	}
 }
@@ -252,5 +271,22 @@ void PolycodeTemplateApp::updateAliens() {
 		//
 		main_screen->removeChild( dead_aliens[i] );
 		aliens->removeAlien( dead_aliens[i] );
+	}
+}
+
+void PolycodeTemplateApp::updateAlienMissiles() {
+	//
+	const int num_missiles = alien_missiles.size();
+	for ( int i = num_missiles - 1; i >= 0; --i ) {
+		//
+		unsigned y_pos = alien_missiles[i]->getPosition().y;
+		if ( (y_pos > 0) && (y_pos < screen_height) ) {
+			//
+			alien_missiles[i]->Translate( Vector3( 0, alien_missile_speed, 0 ) );
+		} else {
+			// remove the missile
+			main_screen->removeChild( alien_missiles[i] );
+			alien_missiles.erase( alien_missiles.begin() + i );
+		}
 	}
 }

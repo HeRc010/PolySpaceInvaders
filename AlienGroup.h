@@ -16,6 +16,12 @@ public:
 	// direction values
 	enum Direction { left, right };
 
+	// get current direction
+	Direction getCurrentDirection() const;
+
+	// reverse the direction of the row
+	void reverseDirection();
+
 	// get the number of rows
 	unsigned getNumberOfAliens() const;
 
@@ -28,20 +34,14 @@ public:
 	// change the animation frame for the aliens
 	void changeAnimationFrame();
 
-	// get the list of aliens which need to be removed
-	vector<Alien*> getDeadAliens();
-
-	// get current direction
-	Direction getCurrentDirection() const;
-
-	// reverse the direction of the row
-	void reverseDirection();
-
 	// get the left-most element of the group
 	Alien * getLeftMostAlien();
 
 	// get the right-most element of the group
 	Alien * getRightMostAlien();
+
+	// get the list of aliens which need to be removed
+	vector<Alien*> getDeadAliens();
 
 	// kill the given alien
 	void killAlien( ScreenEntity * to_kill );
@@ -49,7 +49,13 @@ public:
 	// remove the given alien entity
 	void removeAlien( ScreenEntity * to_remove );
 
+	// fire a missile
+	ScreenSprite * fireMissile() const;
+
 private:
+	// get the lowest aliens in each column
+	vector<Alien*> getLowestAliens() const;
+
 	// the current direction
 	Direction _current_dir;
 
@@ -61,6 +67,9 @@ private:
 	
 	// the set of aliens
 	vector<Alien*> _aliens;
+
+	// the number of aliens per row
+	unsigned _num_aliens_per_row;
 };
 
 #endif ALIEN_GROUP_H

@@ -44,6 +44,9 @@ public:
 	// update aliens
 	void updateAliens();
 
+	// update the aliens' missiles
+	void updateAlienMissiles();
+
 private:
     Core *core;
 
@@ -79,17 +82,22 @@ private:
 	unsigned player_yoffset;
 
 	// timers
-	Timer *timer;
-	Timer *weapon_cooldown;
+	Timer * timer;
+	Timer * player_cooldown;
+	Timer * alien_cooldown;
 
 	// duration parameter between alien row translations - in milliseconds
 	unsigned duration;
 
 	// duration parameter for weapon cooldown - in milliseconds
-	static const unsigned weapon_cooldown_time = 700;
+	unsigned player_weapon_cooldown;
 
-	// missile speed
+	// duration parameter for the alien weapon cooldown - in milliseconds
+	unsigned alien_weapon_cooldown;
+
+	// missile speeds
 	static const int player_missile_speed = 10;
+	static const int alien_missile_speed = 5;
 
 	// the fighter/player
 	Fighter *player;
@@ -104,5 +112,5 @@ private:
 	vector<ScreenSprite*> player_missiles;
 
 	// a list of the missiles fired by the aliens
-	vector<SpaceInvadersEntity*> alien_missles;
+	vector<ScreenSprite*> alien_missiles;
 };
