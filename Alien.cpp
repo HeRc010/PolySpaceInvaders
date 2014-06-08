@@ -15,15 +15,8 @@ Alien::Alien( const String &file_name, const unsigned &sprite_width, const unsig
 
 	playAnimation( "frame_0", 0, false );
 
-	_current_frame = 0;
-	_elapsed_frames = 0;
-
-	// not sure why(if) this is necessary...
-	_state = alive;
 	_timer = 0;
-
-	//_timer = new Timer( false, 0 );
-	//_timer->Pause( true );
+	_current_frame = 0;
 }
 
 // CC
@@ -39,6 +32,22 @@ Alien::~Alien()
 	if ( _timer ) delete _timer;
 }
 
+void Alien::Update() {
+	// call the base update function - to update the animations normally
+	ScreenSprite::Update();
+
+	// if the alien is exploding; if past the explosion duration; kill the alien
+	if ( _state == exploding ) {
+		// if timer not initialized; do so
+		if ( !_timer ) _timer = new Timer( false, 0 );
+		
+		if ( (_timer->getElapsedf() * 1000) >= _explosion_duration ) {
+			//
+			_state = dead;
+		}
+	}
+}
+
 void Alien::changeAnimationFrame() {
 	// if the alien is not dead
 	if ( _state == alive ) {
@@ -49,14 +58,6 @@ void Alien::changeAnimationFrame() {
 		itoa( _current_frame, buffer, 10 );
 
 		playAnimation( "frame_" + String( buffer ), _current_frame, false );
-	} else if ( _state == exploding ) {
-		// if timer not initialized; do so
-		if ( !_timer ) _timer = new Timer( false, 0 );
-		
-		if ( (_timer->getElapsedf() * 1000) >= _explosion_duration ) {
-			//
-			_state = dead;
-		}
 	}
 }
 
