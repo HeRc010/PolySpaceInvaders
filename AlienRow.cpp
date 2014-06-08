@@ -57,6 +57,9 @@ void AlienRow::getAliens( vector<Alien*> &list ) const {
 
 Alien * AlienRow::getLeftMostAlien() {
 	//
+	if ( _num_aliens == 0 ) return 0;
+
+	//
 	Alien * result = _aliens[0];
 	for ( unsigned i = 1; i < _num_aliens; ++i ) {
 		//
@@ -71,6 +74,9 @@ Alien * AlienRow::getLeftMostAlien() {
 
 Alien * AlienRow::getRightMostAlien() {
 	//
+	if ( _num_aliens == 0 ) return 0;
+
+	//
 	Alien * result = _aliens[0];
 	for ( unsigned i = 1; i < _num_aliens; ++i ) {
 		//
@@ -81,4 +87,31 @@ Alien * AlienRow::getRightMostAlien() {
 	}
 
 	return result;
+}
+
+bool AlienRow::containsAlien( ScreenEntity * to_remove ) const {
+	//
+	for ( unsigned i = 0; i < _num_aliens; ++i ) {
+		//
+		if ( _aliens[i] == to_remove ) {
+			//
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void AlienRow::removeAlien( ScreenEntity * to_remove ) {
+	//
+	for ( unsigned i = 0; i < _num_aliens; ++i ) {
+		//
+		if ( _aliens[i] == to_remove ) {
+			//
+			_aliens.erase( _aliens.begin() + i );
+			--_num_aliens;
+
+			return;
+		}
+	}
 }

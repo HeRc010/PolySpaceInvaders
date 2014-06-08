@@ -101,8 +101,6 @@ bool PolycodeTemplateApp::Update() {
 	
 	// translate the aliens - if the necessary time has elapsed
 	if ( (timer->getElapsedf() * 1000) >= duration ) {
-		aliens->translate();
-		
 		// change the current frame/translate the rows
 		aliens->translate();
 
@@ -134,6 +132,10 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 					weapon_cooldown->Reset();
 				}
 				break;
+			case KEY_BACKSLASH:
+				// this is for debugging
+				int temp = 10;
+				break;
 			}
 			break;
 		case InputEvent::EVENT_KEYUP:
@@ -161,9 +163,11 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			if ( pe->entity1->hasTag("alien") ) {
 				//
 				main_screen->removeChild( pe->entity1 );
+				aliens->removeAlien( pe->entity1 );
 			} else if ( pe->entity2->hasTag("alien") ) {
 				//
 				main_screen->removeChild( pe->entity2 );
+				aliens->removeAlien( pe->entity2 );
 			}
 
 			if ( pe->entity1->hasTag("p_missile") ) {
@@ -172,32 +176,10 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 				main_screen->removeChild( pe->entity2 );
 			}
 
-			/* if ( isAlien( pe->entity1 ) ) {
-				removeAlien( pe->entity1 );
-
-				// display an explosion sprite at the alien's location
-				Vector3 loc( pe->entity1->getPosition() );
-
-				ScreenImage *explosion = new ScreenImage("Resources/alien_explosion.png");
-				loc.x += -explosion->getImageWidth();
-				loc.y += -explosion->getImageHeight();
-				explosion->Translate( loc );
-
-				main_screen->addChild( explosion );
-				//main_screen->removeChild( explosion );
-			} else if ( isAlien( pe->entity2 ) ) {
-				removeAlien( pe->entity2 );
-
-				// display an explosion sprite at the alien's location
-				Vector3 loc( pe->entity1->getPosition() );
-
-				ScreenImage *explosion = new ScreenImage("Resources/alien_explosion.png");
-				loc.x += -explosion->getImageWidth();
-				loc.y += -explosion->getImageHeight();
-				explosion->Translate( loc );
-
-				main_screen->addChild( explosion );
-				//main_screen->removeChild( explosion );
+			/* if ( pe->entity1->hasTag("fighter") ) {
+				main_screen->removeChild( pe->entity1 );
+			} else if ( pe->entity2->hasTag("fighter") ) {
+				main_screen->removeChild( pe->entity2 );
 			} */
 			break; 
 		}
@@ -253,10 +235,16 @@ void PolycodeTemplateApp::firePlayerMissile() {
 
 void PolycodeTemplateApp::updatePlayerMissiles() {
 	//
-	const unsigned num_missiles = player_missiles.size();
-	for ( unsigned i = 0; i < num_missiles; ++i ) {
+	const int num_missiles = player_missiles.size();
+	for ( int i = num_missiles - 1; i >= 0; --i ) {
 		//
 		player_missiles[i]->Translate( Vector3( 0, -player_missile_speed, 0 ) );
+
+		if ( player_missiles[i]->getPosition().y < 0 ) {
+			//
+			main_screen->removeChild( player_missiles[i] );
+			player_missiles.erase( player_missiles.begin() + i );
+		}
 	}
 }
 
@@ -266,6 +254,9 @@ void PolycodeTemplateApp::updateAliens( AlienGroup * aliens ) {
 	switch ( aliens->getCurrentDirection() ) {
 	case AlienGroup::Direction::left:
 		bound_alien = aliens->getLeftMostAlien();
+
+		if ( !bound_alien ) break;
+
 		if ( bound_alien->getPosition().x < (50 + alien_xoffset) ) {
 			//
 			aliens->reverseDirection();
@@ -273,6 +264,9 @@ void PolycodeTemplateApp::updateAliens( AlienGroup * aliens ) {
 		break;
 	case AlienGroup::Direction::right:
 		bound_alien = aliens->getRightMostAlien();
+
+		if ( !bound_alien ) break;
+
 		if ( bound_alien->getPosition().x > (screen_width - alien_xoffset) ) {
 			//
 			aliens->reverseDirection();
@@ -280,261 +274,3 @@ void PolycodeTemplateApp::updateAliens( AlienGroup * aliens ) {
 		break;
 	}
 }
-
-/* void PolycodeTemplateApp::cleanPlayerMissiles() {
-	//
-	const unsigned num_missiles = player->getNumberOfMissiles();
-	vector<SpaceInvadersEntity*> missile_list;
-	player->getMissiles( missile_list );
-	for ( unsigned i = 0; i < num_missiles; ++i ) {
-		//
-		Vector3 pos( missile_list[i]->getPosition() );
-		if ( (pos.y <= 0) ) { //|| (pos.y >= screen_height) ) {
-			//
-			player->removeMissile( i );
-			main_screen->removeChild( missile_list[i]->getSprite() );
-		}
-	}
-} */
-
-/*
-	Memory leak here? not deleting the pointers?... of the sprites?...
-*/
-/* SpaceInvadersEntity * PolycodeTemplateApp::createAlienOne() {
-	// only take half the width; the other half is the second anim. frame
-	ScreenSprite * alien_sprite = ScreenSprite::ScreenSpriteFromImageFile( "Resources/Alien_1.png", Number(alien_width_1/2), Number(alien_height_1) );
-	alien_sprite->setScale( *alien_sprite_scale );
-
-	// add animations
-	alien_sprite->addAnimation( "frame_0", "0", 1 );
-	alien_sprite->addAnimation( "frame_1", "1", 1 );
-	alien_sprite->playAnimation( "frame_1", 0, false );
-
-	return new SpaceInvadersEntity( alien_sprite, new Vector3(0, 0, 0), initial_HP );
-}
-
-SpaceInvadersEntity * PolycodeTemplateApp::createPlayerMissile() {
-	//
-	ScreenSprite * player_missile_sprite = ScreenSprite::ScreenSpriteFromImageFile( "Resources/alien_1.png", pmissile_width*2, pmissile_height*2 );
-	player_missile_sprite->setScale( *player_missile_scale );
-
-	return new SpaceInvadersEntity( player_missile_sprite, new Vector3(0, 0, 0), initial_HP );
-}
-
-AlienRow * PolycodeTemplateApp::createAlienRow( Vector3 &start_pos, unsigned num_aliens, unsigned spacing ) {
-	//
-	return new AlienRow( *( createAlienOne() ), start_pos, num_aliens, spacing );
-}
-
-vector<AlienRow*> PolycodeTemplateApp::createAliens( Vector3 &start_pos, unsigned num_rows, unsigned row_spacing, unsigned num_aliens_per_row, unsigned sprite_spacing ) {
-	//
-	vector<AlienRow*> result;
-	Vector3 row_offset( start_pos );
-	for ( unsigned i = 0; i < num_rows; ++i ) {
-		//
-		result.push_back( createAlienRow( row_offset, num_aliens_per_row, sprite_spacing ) );
-
-		row_offset += Vector3( 0, row_spacing, 0 );
-	}
-
-	return result;
-}
-
-void PolycodeTemplateApp::addAlienRowToScreen( AlienRow * row ) {
-	//
-	const unsigned num_aliens = row->getNumAliens();
-	vector<SpaceInvadersEntity*> aliens;
-	row->getAliens( aliens );
-	for ( unsigned i = 0; i < num_aliens; ++i ) {
-		//
-		main_screen->addCollisionChild( aliens[i]->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
-		//main_screen->addChild( aliens[i]->getSprite() );
-	}
-}
-
-void PolycodeTemplateApp::addAliensToScreen( vector<AlienRow*> aliens ) {
-	//
-	const unsigned num_rows = aliens.size();
-	for ( unsigned i = 0; i < num_rows; ++i ) {
-		//
-		addAlienRowToScreen( aliens[i] );
-	}
-}
-
-void PolycodeTemplateApp::changeAlienFrame( unsigned next_frame ) {
-	// make sure the frame is either 0 or 1
-	assert( next_frame < 2 );
-
-	// create the frame string
-	Polycode::String str = "frame_";
-	char temp[256];
-
-	itoa(next_frame, temp, 10);
-	Polycode::String *val = new String(temp);
-	
-	Polycode::String res = str + *val;
-	str = res;
-
-	//
-	const unsigned num_rows = aliens.size();
-	for ( unsigned i = 0; i < num_rows; ++i ) {
-		//
-		const unsigned num_aliens = aliens[i]->getNumAliens();
-		vector<SpaceInvadersEntity*> alien_list;
-		aliens[i]->getAliens( alien_list );
-		for ( unsigned i = 0; i < num_aliens; ++i ) {
-			//
-			alien_list[i]->getSprite()->playAnimation( str, next_frame, false );
-		}
-	}
-}
-
-void PolycodeTemplateApp::translateAlienRow( AlienRow *row ) {
-	// if there are now aliens in the row; return
-	if ( row->getNumAliens() == 0 ) return;
-	
-	// variable to reverse the delta direction if need be
-	int reverse = 1;
-
-	// list for retrieval
-	vector<SpaceInvadersEntity*> alien_list;
-	row->getAliens( alien_list );
-
-	// a pointer to the entity at the front of the list
-	// with respect to the direction the row is moving
-	SpaceInvadersEntity *front_entity;
-
-	// alter parameters based on direction
-	switch( current_dir ) {
-	default:
-		break;
-	case PolycodeTemplateApp::direction::left:
-		reverse *= -1;
-		front_entity = alien_list.at(0);
-		break;
-	case PolycodeTemplateApp::direction::right:
-		front_entity = alien_list.at( alien_list.size() - 1 );
-		break;
-	}
-
-	// delta vector
-	Vector3 *delta_vec = new Vector3( delta * reverse, 0, 0 );
-
-	// check if the front element will escape the bound(s) if incremented
-	// by the offset, if so, reverse the direction
-	Vector3 next_position = front_entity->getPosition() + *delta_vec;
-	if ( ( next_position.x > (screen_width - alien_offset) ) || ( next_position.x < alien_offset ) ) {
-		reverse *= -1;
-
-		switch( current_dir ) {
-		default:
-			break;
-		case PolycodeTemplateApp::direction::right:
-			current_dir = left;
-			front_entity = alien_list.at(0);
-			break;
-		case PolycodeTemplateApp::direction::left:
-			current_dir = right;
-			front_entity = alien_list.at( alien_list.size() - 1 );
-			break;
-		}
-	}
-
-	// translate
-	row->translate( Vector3( delta * reverse, 0, 0 ) );
-}
-
-
-void PolycodeTemplateApp::translateAliens( vector<AlienRow*> &aliens ) {
-	//
-	const unsigned num_rows = aliens.size();
-	for ( unsigned i = 0; i < num_rows; ++i ) {
-		//
-		translateAlienRow( aliens[i] );
-	}
-}
-
-// Issue: adding the sprite as a collision child shifts it's position slightly; in a manner not see when adding as a normal child
-void PolycodeTemplateApp::playerFireMissile() {
-	//
-	SpaceInvadersEntity *new_missile = createPlayerMissile();
-	new_missile->translate( player->getPosition() + Vector3( -(new_missile->getSprite()->getWidth() * pmissile_sprite_xscale / 2), -( ((player->getSprite()->getHeight()/2) * player_sprite_yscale) + (new_missile->getSprite()->getHeight() * pmissile_sprite_yscale) ), 0 ) );
-
-	main_screen->addCollisionChild( new_missile->getSprite(), PhysicsScreenEntity::ENTITY_RECT );
-	
-	// see issue above
-	//main_screen->addChild( new_missile->getSprite() );
-
-	player_missiles.push_back( new_missile );
-}
-
-void PolycodeTemplateApp::updatePlayerMissles( vector<SpaceInvadersEntity*> player_missles, int player_missile_speed ) {
-	//
-	unsigned num_missiles = player_missles.size();
-	for ( unsigned i = 0; i < num_missiles; ++i ) {
-		//
-		player_missles[i]->translate( Vector3( 0, -player_missile_speed, 0 ) );
-
-		if ( player_missiles[i]->getSprite()->getPosition().y < 0 ) {
-			// remove from the screen
-			main_screen->removeChild( player_missiles[i]->getSprite() );
-
-			player_missiles.erase( player_missiles.begin() + i );
-			--num_missiles;
-		}
-	}
-}
-
-bool PolycodeTemplateApp::isPlayerMissile( ScreenEntity * entity  ) {
-	//
-	const unsigned num_missiles = player_missiles.size();
-	for ( unsigned i = 0; i < num_missiles; ++i ) {
-		//
-		if ( player_missiles[i]->getSprite() == entity  ) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void PolycodeTemplateApp::removePlayerMissile( ScreenEntity * to_remove ) {
-	//
-	main_screen->removeChild( to_remove );
-
-	const unsigned num_missiles = player_missiles.size();
-	for ( unsigned i = 0; i < num_missiles; ++i ) {
-		//
-		if ( to_remove == player_missiles[i]->getSprite() ) {
-			player_missiles.erase( player_missiles.begin() + i );
-			break;
-		}
-	}
-}
-
-bool PolycodeTemplateApp::isAlien( ScreenEntity * entity ) {
-	//
-	const unsigned num_rows = aliens.size();
-	for ( unsigned i = 0; i < num_rows; ++i ) {
-		//
-		if ( aliens[i]->containsAlien( entity ) ) return true;
-	}
-
-	return false;
-}
-
-void PolycodeTemplateApp::removeAlien( ScreenEntity * to_remove ) {
-	//
-	assert( isAlien( to_remove ) );
-
-	main_screen->removeChild( to_remove );
-
-	const unsigned num_rows = aliens.size();
-	for ( unsigned i = 0; i < num_rows; ++i ) {
-		//
-		if ( aliens[i]->containsAlien( to_remove ) ) {
-			aliens[i]->removeAlien( to_remove );
-			break;
-		}
-	}
-} */

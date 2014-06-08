@@ -36,10 +36,13 @@ public:
 	// get the right-most element of the row
 	Alien * getRightMostAlien();
 
-private:
-	// translation speed
-	int _speed;
+	// does this row contain the given alien entity?
+	bool containsAlien( ScreenEntity * to_remove ) const;
 
+	// remove the given alien entity
+	void removeAlien( ScreenEntity * to_remove );
+
+private:
 	// the number of aliens in the row
 	unsigned _num_aliens;
 

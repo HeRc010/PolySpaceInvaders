@@ -80,7 +80,9 @@ Alien * AlienGroup::getLeftMostAlien() {
 		//
 		temp = _aliens[i]->getLeftMostAlien();
 
-		if ( temp->getPosition().x < result->getPosition().x ) {
+		if ( !temp ) continue;
+
+		if ( (temp->getPosition().x < result->getPosition().x) || ( (temp != 0) && (result == 0) ) ) {
 			//
 			result = temp;
 		}
@@ -100,11 +102,25 @@ Alien * AlienGroup::getRightMostAlien() {
 		//
 		temp = _aliens[i]->getRightMostAlien();
 
-		if ( temp->getPosition().x > result->getPosition().x ) {
+		if ( !temp ) continue;
+
+		if ( (temp->getPosition().x > result->getPosition().x) || ( (temp != 0) && (result == 0) ) ) {
 			//
 			result = temp;
 		}
 	}
 
 	return result;
+}
+
+void AlienGroup::removeAlien( ScreenEntity * to_remove ) {
+	//
+	for ( unsigned i = 0; i < _num_rows; ++i ) {
+		//
+		if ( _aliens[i]->containsAlien( to_remove ) ) {
+			//
+			_aliens[i]->removeAlien( to_remove );
+			return;
+		}
+	}
 }

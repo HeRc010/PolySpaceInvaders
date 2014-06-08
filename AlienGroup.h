@@ -36,6 +36,9 @@ public:
 	// get the right-most element of the group
 	Alien * getRightMostAlien();
 
+	// remove the given alien entity
+	void removeAlien( ScreenEntity * to_remove );
+
 private:
 	// the current direction
 	Direction _current_dir;
