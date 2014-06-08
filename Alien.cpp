@@ -20,6 +20,7 @@ Alien::Alien( const String &file_name, const unsigned &sprite_width, const unsig
 
 	// not sure why(if) this is necessary...
 	_state = alive;
+	_timer = 0;
 
 	//_timer = new Timer( false, 0 );
 	//_timer->Pause( true );
@@ -35,7 +36,7 @@ Alien::Alien( const Alien &rhs ) : SpaceInvadersEntity( rhs ) {
 Alien::~Alien()
 {
 	//
-	//if ( _timer ) delete _timer;
+	if ( _timer ) delete _timer;
 }
 
 void Alien::changeAnimationFrame() {
@@ -49,11 +50,13 @@ void Alien::changeAnimationFrame() {
 
 		playAnimation( "frame_" + String( buffer ), _current_frame, false );
 	} else if ( _state == exploding ) {
-		// increment the number of frames elapsed, compared to the threshold
-		playAnimation( "explode", 2, false );
-		_elapsed_frames += 1;
-
-		if ( _elapsed_frames > _explosion_duration ) {
+		// if timer not initialized; do so
+		if ( !_timer ) _timer = new Timer( false, 0 );
+		
+		if ( _timer->getElapsedf() < _explosion_duration ) {
+			//
+			playAnimation( "explode", 2, false );
+		} else {
 			_state = dead;
 		}
 	}

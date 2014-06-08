@@ -24,6 +24,9 @@ public:
 	// translate the aliens
 	void translate();
 
+	// change the animation frame for the aliens
+	void changeAnimationFrame();
+
 	// get the list of aliens which need to be removed
 	vector<Alien*> getDeadAliens();
 
@@ -54,12 +57,8 @@ private:
 
 	// the number of aliens
 	unsigned _num_aliens;
-
-	// the set of alien rows
-	//vector<AlienRow*> _aliens;
 	
 	// the set of aliens
-	//vector< vector<Alien*> > _aliens;
 	vector<Alien*> _aliens;
 };
 

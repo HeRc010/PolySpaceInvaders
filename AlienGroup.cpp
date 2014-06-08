@@ -47,16 +47,6 @@ unsigned AlienGroup::getNumberOfAliens() const {
 
 void AlienGroup::getAliens( vector<Alien*> &alien_list ) const {
 	//
-	/* vector<Alien*> result;
-	for ( unsigned i = 0; i < _num_rows; ++i ) {
-		//
-		const unsigned num_aliens = _aliens[i].size();
-		for ( unsigned j = 0; j < num_aliens; ++j ) {
-			//
-			result.push_back( _aliens[i][j] );
-		}
-	} */
-
 	alien_list = _aliens;
 }
 
@@ -67,12 +57,6 @@ void AlienGroup::translate() {
 		// translate every alien by delta
 		for ( unsigned i = 0; i < _num_aliens; ++i ) {
 			//
-			//_aliens[i]->translate( -_speed );
-			/* const unsigned num_aliens = _aliens[i].size();
-			for ( unsigned j = 0; j < num_aliens; ++j ) {
-				//
-				_aliens[i][j]->Translate( -_speed );
-			} */
 			_aliens[i]->Translate( Vector3( -_speed, 0, 0 ) );
 		}
 		break;
@@ -80,15 +64,17 @@ void AlienGroup::translate() {
 		// translate every alien by delta
 		for ( int i = 0; i < _num_aliens; ++i ) {
 			//
-			//_aliens[i]->translate( _speed );
-			/* const unsigned num_aliens = _aliens[i].size();
-			for ( unsigned j = 0; j < num_aliens; ++j ) {
-				//
-				_aliens[i][j]->Translate( _speed );
-			} */
 			_aliens[i]->Translate( Vector3( _speed, 0, 0 ) );
 		}
 		break;
+	}
+}
+
+void AlienGroup::changeAnimationFrame() {
+	//
+	for ( unsigned i = 0; i < _num_aliens; ++i ) {
+		//
+		_aliens[i]->changeAnimationFrame();
 	}
 }
 
@@ -97,22 +83,6 @@ vector<Alien*> AlienGroup::getDeadAliens() {
 	vector<Alien*> result;
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
 		//
-		/* vector<Alien*> next = _aliens[i]->getDeadAliens();
-		
-		vector<Alien*> temp;
-		temp.reserve( result.size() + next.size() );
-		temp.insert( temp.end(), result.begin(), result.end() );
-		temp.insert( temp.end(), next.begin(), next.end() );
-
-		result = temp; */
-		/* const unsigned num_aliens = _aliens[i].size();
-		for ( unsigned j = 0; j < num_aliens; ++j ) {
-			//
-			if ( _aliens[i][j]->getState() == SpaceInvadersEntity::EntityState::dead ) {
-				//
-				result.push_back( _aliens[i][j] );
-			}
-		} */
 		if ( _aliens[i]->getState() == SpaceInvadersEntity::EntityState::dead ) {
 			//
 			result.push_back( _aliens[i] );
@@ -141,34 +111,9 @@ void AlienGroup::reverseDirection() {
 
 Alien * AlienGroup::getLeftMostAlien() {
 	//
-	/* if ( _num_rows == 0 ) return 0;
-
-	Alien * result = _aliens[0]->getLeftMostAlien();
-
-	Alien * temp;
-	for ( unsigned i = 1; i < _num_rows; ++i ) {
-		//
-		temp = _aliens[i]->getLeftMostAlien();
-
-		if ( !temp ) continue;
-
-		if ( (temp->getPosition().x < result->getPosition().x) || ( (temp != 0) && (result == 0) ) ) {
-			//
-			result = temp;
-		}
-	} */
-	
 	Alien * result = 0;
 	for ( unsigned i = 0; i < _num_aliens; ++i  ) {
 		//
-		/* const unsigned num_aliens = _aliens[i].size();
-		for ( unsigned j = 0; j < num_aliens; ++j ) {
-			//
-			if ( ((result == 0) && (_aliens[i][j] != 0)) || (result->getPosition().x > _aliens[i][j]->getPosition().x) ) {
-				//
-				result = _aliens[i][j];
-			} 
-		} */
 		if ( ((result == 0) && (_aliens[i] != 0)) || (result->getPosition().x > _aliens[i]->getPosition().x) ) {
 			//
 			result = _aliens[i];
@@ -180,29 +125,9 @@ Alien * AlienGroup::getLeftMostAlien() {
 
 Alien * AlienGroup::getRightMostAlien() {
 	//
-	//if ( _num_rows == 0 ) return 0;
-	//Alien * result = _aliens[0]->getRightMostAlien();
-	//Alien * temp;
-
 	Alien * result = 0;
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
 		//
-		/* temp = _aliens[i]->getRightMostAlien();
-
-		if ( !temp ) continue;
-
-		if ( (temp->getPosition().x > result->getPosition().x) || ( (temp != 0) && (result == 0) ) ) {
-			//
-			result = temp;
-		} */
-		/* const unsigned num_aliens = _aliens[i].size();
-		for ( unsigned j = 0; j < num_aliens; ++j ) {
-			//
-			if ( ((result == 0) && (_aliens[i][j] != 0)) || (result->getPosition().x < _aliens[i][j]->getPosition().x) ) {
-				//
-				result = _aliens[i][j];
-			} 
-		} */
 		if ( ((result == 0) && (_aliens[i] != 0)) || (result->getPosition().x < _aliens[i]->getPosition().x) ) {
 			//
 			result = _aliens[i];
@@ -216,20 +141,6 @@ void AlienGroup::killAlien( ScreenEntity * to_kill ) {
 	//
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
 		//
-		/* if ( _aliens[i]->containsAlien( to_kill ) ) {
-			//
-			_aliens[i]->killAlien( to_kill );
-
-			return;
-		} */
-		/* const unsigned num_aliens = _aliens[i].size();
-		for ( unsigned j = 0; j < num_aliens; ++j ) {
-			//
-			if ( _aliens[i][j] == to_kill ) {
-				//
-				_aliens[i][j]->kill();
-			}
-		} */
 		if ( _aliens[i] == to_kill ) {
 			//
 			_aliens[i]->kill();
@@ -241,23 +152,10 @@ void AlienGroup::removeAlien( ScreenEntity * to_remove ) {
 	//
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
 		//
-		/* if ( _aliens[i]->containsAlien( to_remove ) ) {
-			//
-			_aliens[i]->removeAlien( to_remove );
-
-			return;
-		} */
-		/* const unsigned num_aliens = _aliens[i].size();
-		for ( unsigned j = 0; j < num_aliens; ++j ) {
-			//
-			if ( _aliens[i][j] == to_remove ) {
-				//
-				_aliens[i].erase( _aliens[i].begin() + j );
-			}
-		} */
 		if ( _aliens[i] == to_remove ) {
 			//
 			_aliens.erase( _aliens.begin() + i );
+			--_num_aliens;
 		}
 	}
 }

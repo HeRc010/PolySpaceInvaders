@@ -26,6 +26,9 @@ public:
 	void kill();
 
 protected:
+	// timer
+	Timer *_timer;
+
 	// the current animation frame
 	unsigned _current_frame;
 

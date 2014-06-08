@@ -103,11 +103,12 @@ bool PolycodeTemplateApp::Update() {
 	if ( (timer->getElapsedf() * 1000) >= duration ) {
 		// change the current frame/translate the rows
 		aliens->translate();
+		aliens->changeAnimationFrame();
 
 		timer->Reset();
 	}
 
-	//updateAliens( aliens );
+	updateAliens( aliens );
 
 	return core->updateAndRender();
 }
@@ -159,12 +160,6 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			} else if ( pe->entity2->hasTag("p_missile") ) {
 				main_screen->removeChild( pe->entity2 );
 			}
-
-			/* if ( pe->entity1->hasTag("fighter") ) {
-				main_screen->removeChild( pe->entity1 );
-			} else if ( pe->entity2->hasTag("fighter") ) {
-				main_screen->removeChild( pe->entity2 );
-			} */
 			break; 
 		}
 	}
