@@ -16,6 +16,13 @@ Alien::Alien( const String &file_name, const unsigned &sprite_width, const unsig
 	playAnimation( "frame_0", 0, false );
 
 	_current_frame = 0;
+	_elapsed_frames = 0;
+
+	// not sure why(if) this is necessary...
+	_state = alive;
+
+	//_timer = new Timer( false, 0 );
+	//_timer->Pause( true );
 }
 
 // CC
@@ -32,14 +39,24 @@ Alien::~Alien()
 }
 
 void Alien::changeAnimationFrame() {
-	//
-	++_current_frame;
-	_current_frame %= 2;
+	// if the alien is not dead
+	if ( _state == alive ) {
+		++_current_frame;
+		_current_frame %= 2;
 	
-	char buffer[256];
-	itoa( _current_frame, buffer, 10 );
+		char buffer[256];
+		itoa( _current_frame, buffer, 10 );
 
-	playAnimation( "frame_" + String( buffer ), _current_frame, false );
+		playAnimation( "frame_" + String( buffer ), _current_frame, false );
+	} else if ( _state == exploding ) {
+		// increment the number of frames elapsed, compared to the threshold
+		playAnimation( "explode", 2, false );
+		_elapsed_frames += 1;
+
+		if ( _elapsed_frames > _explosion_duration ) {
+			_state = dead;
+		}
+	}
 }
 
 unsigned Alien::getFrame() const {
@@ -50,4 +67,10 @@ unsigned Alien::getFrame() const {
 float Alien::getExplosionDuration() const {
 	//
 	return _explosion_duration;
+}
+
+void Alien::kill() {
+	//
+	playAnimation( "explode", 2, false );
+	_state = exploding;
 }

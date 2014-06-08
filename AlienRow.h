@@ -39,6 +39,12 @@ public:
 	// does this row contain the given alien entity?
 	bool containsAlien( ScreenEntity * to_remove ) const;
 
+	// kill the given alien; set it's animation to "explosion"
+	void killAlien( ScreenEntity * to_kill );
+
+	// get the dead aliens
+	vector<Alien*> getDeadAliens();
+
 	// remove the given alien entity
 	void removeAlien( ScreenEntity * to_remove );
 

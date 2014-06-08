@@ -27,6 +27,9 @@ public:
 	// enumerated values for state
 	enum EntityState { alive, exploding, dead };
 
+	// get the entity's state
+	EntityState getState() const;
+
 protected:
 	//
 	EntityState _state;

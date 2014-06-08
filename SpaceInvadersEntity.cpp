@@ -4,7 +4,7 @@ SpaceInvadersEntity::SpaceInvadersEntity( const String &file_name, const unsigne
 	: ScreenSprite( *( ScreenSprite::ScreenSpriteFromImageFile( file_name, sprite_width, sprite_height ) ) )
 {
 	//
-	_state = EntityState::alive;
+	_state = alive;
 }
 
 // CC
@@ -17,4 +17,9 @@ SpaceInvadersEntity::~SpaceInvadersEntity()
 {
 	//
 
+}
+
+SpaceInvadersEntity::EntityState SpaceInvadersEntity::getState() const {
+	//
+	return _state;
 }

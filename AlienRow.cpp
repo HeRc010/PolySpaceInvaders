@@ -16,7 +16,7 @@ AlienRow::AlienRow( const Alien &clone, const Vector3 &initial_pos, unsigned num
 	//
 	for ( int i = 0; i < num_aliens; ++i ) {
 		//
-		Alien* next = new Alien( clone );
+		Alien * next = (Alien*) clone.Clone( true, false );
 
 		// move to the initial position
 		next->Translate( initial_pos - next->getPosition() );
@@ -103,6 +103,33 @@ bool AlienRow::containsAlien( ScreenEntity * to_remove ) const {
 	}
 
 	return false;
+}
+
+void AlienRow::killAlien( ScreenEntity * to_kill ) {
+	//
+	for ( unsigned i = 0; i < _num_aliens; ++i ) {
+		//
+		if ( _aliens[i] == to_kill ) {
+			//
+			_aliens[i]->kill();
+			
+			return;
+		}
+	}
+}
+
+vector<Alien*> AlienRow::getDeadAliens() {
+	//
+	vector<Alien*> result;
+	for ( unsigned i = 0; i < _num_aliens; ++i ) {
+		//
+		if ( _aliens[i]->getState() == SpaceInvadersEntity::EntityState::dead ) {
+			//
+			result.push_back( _aliens[i] );
+		}
+	}
+
+	return result;
 }
 
 void AlienRow::removeAlien( ScreenEntity * to_remove ) {

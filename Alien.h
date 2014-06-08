@@ -8,13 +8,10 @@ class Alien : public SpaceInvadersEntity
 public:
 	Alien( const String &file_name, const unsigned &sprite_width, const unsigned &sprite_height, const float &explosion_duration = 1000 );
 
-	// copy constructor
+	// copy constructor - DEPRECATED
 	Alien( const Alien &rhs );
 
 	~Alien();
-
-	// override update function
-	//void Update();
 
 	// change the current animation frame
 	void changeAnimationFrame();
@@ -25,14 +22,17 @@ public:
 	// get explosion duration
 	float getExplosionDuration() const;
 
-protected:
-	// timer
-	//Timer *_timer;
+	// kill the alien - set state to exploding
+	void kill();
 
-	//
+protected:
+	// the current animation frame
 	unsigned _current_frame;
 
-	// the duration of the explosion frame
+	// elapsed frames
+	unsigned _elapsed_frames;
+
+	// the duration of the explosion frame - in number of elapsed frames
 	float _explosion_duration;
 };
 

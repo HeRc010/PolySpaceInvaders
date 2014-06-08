@@ -16,13 +16,16 @@ public:
 	enum Direction { left, right };
 
 	// get the number of rows
-	unsigned getNumberOfRows() const;
+	unsigned getNumberOfAliens() const;
 
 	// get the aliens
-	void getAliens( vector<AlienRow*> &alien_list ) const;
+	void getAliens( vector<Alien*> &alien_list ) const;
 
 	// translate the aliens
 	void translate();
+
+	// get the list of aliens which need to be removed
+	vector<Alien*> getDeadAliens();
 
 	// get current direction
 	Direction getCurrentDirection() const;
@@ -36,6 +39,9 @@ public:
 	// get the right-most element of the group
 	Alien * getRightMostAlien();
 
+	// kill the given alien
+	void killAlien( ScreenEntity * to_kill );
+
 	// remove the given alien entity
 	void removeAlien( ScreenEntity * to_remove );
 
@@ -46,11 +52,15 @@ private:
 	// the aliens' speed
 	int _speed;
 
-	// the number of rows
-	unsigned _num_rows;
+	// the number of aliens
+	unsigned _num_aliens;
 
 	// the set of alien rows
-	vector<AlienRow*> _aliens;
+	//vector<AlienRow*> _aliens;
+	
+	// the set of aliens
+	//vector< vector<Alien*> > _aliens;
+	vector<Alien*> _aliens;
 };
 
 #endif ALIEN_GROUP_H
