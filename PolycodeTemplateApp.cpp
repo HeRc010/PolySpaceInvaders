@@ -1,14 +1,13 @@
 /*
 	The main template file/runtime file.
 
-	TODO(high level stuffs):
+	TODO:
 	primary:
-	- add missile death mechanics - missiles for the aliens; death for the player
-
-	secondary:
-	- add lives for the fighter
 	- add score mechanics
 		-> win/lose conditions
+	- allowing the player to continue after all the aliens are killed or after a game over
+
+	secondary:
 	- add the red ufo going accross the top
 	- need to add the barriers too :S
 		-> this could be really challenging...
@@ -64,15 +63,47 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 
 	main_screen->addChild( background );
 
+	// score label
+	_score = 0;
+
+	char buffer[256];
+	itoa( _score, buffer, 10 );
+
+	score_label = new ScreenLabel( "Score: " + String( buffer ), 30 );
+	score_label->setPosition( Vector3( 200, 10, 0 ) );
+
+	main_screen->addChild( score_label );
+
+	// lives' label
+	_num_lives = 2;
+
+	// base location
+	Vector3 base_loc( 500, 10, 0 );
+
+	ScreenLabel * score_label = new ScreenLabel( "Lives: ", 30 );
+	score_label->setPosition( base_loc );
+
+	main_screen->addChild( score_label );
+
+	base_loc += Vector3( 150, 25, 0 );
+	for ( unsigned i = 0; i < _num_lives + 1; ++i ) {
+		//
+		ScreenSprite * new_sprite = new ScreenSprite( "Resources/fighter_1.png", 85, 53 );
+		new_sprite->setScale( Vector3( 0.5, 0.5, 0 ) );
+		new_sprite->setPosition( base_loc );
+
+		main_screen->addChild( new_sprite );
+		
+		life_sprites.push_back( new_sprite );
+		base_loc += Vector3( 50, 0, 0 );
+	}
+
 	// initialize fighter/player entity
 	player = new Fighter();
 	player->setScale( Vector3( 0.75, 0.75, 0 ) );
 	player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
 
 	main_screen->addCollisionChild( player, PhysicsScreenEntity::ENTITY_RECT );
-
-	// set the number of lives the player has
-	_num_lives = 2;
 
 	// initialize aliens
 	aliens = new AlienGroup( Vector3( 100, 100, 0 ), 5, 75, 11, 75, alien_delta );
@@ -102,9 +133,12 @@ bool PolycodeTemplateApp::Update() {
 				//
 				--_num_lives;
 				player->revive();
+
+				// remove a life from the lives' label
+				removeLife();
 			} else {
 				// game over
-
+				gameOver();
 			}
 		}
 
@@ -178,9 +212,15 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			if ( pe->entity1->hasTag("alien") ) {
 				//
 				aliens->killAlien( pe->entity1 );
+
+				// increment score
+				updateScore( getPoints( pe->entity1 ) );
 			} else if ( pe->entity2->hasTag("alien") ) {
 				//
 				aliens->killAlien( pe->entity2 );
+
+				// increment score
+				updateScore( getPoints( pe->entity2 ) );
 			}
 
 			if ( pe->entity1->hasTag("p_missile") ) {
@@ -319,6 +359,41 @@ void PolycodeTemplateApp::updateAlienMissiles() {
 			alien_missiles.erase( alien_missiles.begin() + i );
 		}
 	}
+}
+
+unsigned PolycodeTemplateApp::getPoints( ScreenEntity * entity ) const {
+	//
+	if ( entity->hasTag( "alien_one" ) ) {
+		//
+		return 10;
+	} else if ( entity->hasTag( "alien_two" ) ) {
+		//
+		return 20;
+	} else if ( entity->hasTag( "alien_three" )  ) {
+		//
+		return 40;
+	} else {
+		return 0;	
+	}
+}
+
+void PolycodeTemplateApp::updateScore( unsigned inc ) {
+	// increase the value
+	_score += inc; 
+
+	// update the label
+	char buffer[ 256 ];
+	itoa( _score, buffer, 10 );
+
+	score_label->setText( "Score: " + String( buffer ) );
+}
+
+void PolycodeTemplateApp::removeLife() {
+	//
+	const unsigned idx = life_sprites.size() - 1;
+
+	main_screen->removeChild( life_sprites[idx] );
+	life_sprites.erase( life_sprites.begin() + idx );
 }
 
 void PolycodeTemplateApp::gameOver() {

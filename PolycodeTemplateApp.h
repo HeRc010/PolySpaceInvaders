@@ -47,6 +47,15 @@ public:
 	// update the aliens' missiles
 	void updateAlienMissiles();
 
+	// get the points associated with killing the given entity
+	unsigned getPoints( ScreenEntity * entity ) const;
+
+	// update the score; increment by the parameter
+	void updateScore( unsigned inc );
+
+	// remove a life from the lives' label
+	void removeLife();
+
 	// game over function
 	void gameOver();
 
@@ -112,6 +121,15 @@ private:
 
 	// the number of lives the player has
 	unsigned _num_lives;
+
+	// sprites for the lives label
+	vector<ScreenSprite*> life_sprites;
+
+	// the players score
+	unsigned _score;
+
+	// the score label
+	ScreenLabel * score_label;
 
 	// a list of the missiles fired by the player
 	vector<ScreenSprite*> player_missiles;
