@@ -3,11 +3,10 @@
 
 	TODO:
 	primary:
-	- add score mechanics
-		-> win/lose conditions
-	- allowing the player to continue after all the aliens are killed or after a game over
+	- add win condition(s) - allowing the player to continue after all the aliens are killed( or after a game over )
 
 	secondary:
+	- functionality for lowering all rows when they hit the edge of the screen
 	- add the red ufo going accross the top
 	- need to add the barriers too :S
 		-> this could be really challenging...
@@ -19,20 +18,11 @@
 
 void PolycodeTemplateApp::initializeGUIParameters() {
 	// assign GUI parameters
-	alien_sprite_xscale = 1;
-	alien_sprite_yscale = 1;
-	alien_sprite_scale = new Vector3( alien_sprite_xscale, alien_sprite_yscale, 0 );
-
-	alien_xoffset = 100;
-
-	player_sprite_xscale = 0.5;
-	player_sprite_yscale = 0.5;
-	player_sprite_scale = new Vector3( player_sprite_xscale, player_sprite_yscale, 0 );
-
-	player_missile_scale = new Vector3( pmissile_sprite_xscale, pmissile_sprite_yscale, 0 );
-
 	player_xoffset = 50;
 	player_yoffset = 50;
+
+	alien_xoffset = 150;
+	alien_delta = 50;
 
 	// initialize timers/timer parameters
 	timer = new Timer( false, 0 );
@@ -47,22 +37,7 @@ void PolycodeTemplateApp::initializeGUIParameters() {
 	player_delta = Vector3( 0, 0, 0 );
 }
 
-PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
-	// initialization
-	core = new Win32Core(view, screen_width,screen_height,false, false, 0, 0, 60);
-	CoreServices::getInstance()->getResourceManager()->addArchive("default.pak");
-	CoreServices::getInstance()->getResourceManager()->addDirResource("default", false);
-
-	initializeGUIParameters();
-
-	// Create screen
-	main_screen = new PhysicsScreen( 10, 50 );
-
-	// add background
-	ScreenSprite *background = ScreenSprite::ScreenSpriteFromImageFile("Resources/background.png", Number(screen_width*2), Number(screen_height*2) );
-
-	main_screen->addChild( background );
-
+void PolycodeTemplateApp::setup() {
 	// score label
 	_score = 0;
 
@@ -111,6 +86,25 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	// initialize aliens
 	aliens = new AlienGroup( Vector3( 100, 100, 0 ), 5, 75, 11, 75, alien_delta );
 	addAliensToScreen();
+}
+
+PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
+	// initialization
+	core = new Win32Core(view, screen_width,screen_height,false, false, 0, 0, 60);
+	CoreServices::getInstance()->getResourceManager()->addArchive("default.pak");
+	CoreServices::getInstance()->getResourceManager()->addDirResource("default", false);
+
+	initializeGUIParameters();
+
+	// Create screen
+	main_screen = new PhysicsScreen( 10, 50 );
+
+	// add background
+	ScreenSprite *background = ScreenSprite::ScreenSpriteFromImageFile("Resources/background.png", Number(screen_width*2), Number(screen_height*2) );
+
+	main_screen->addChild( background );
+
+	setup();
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
@@ -285,7 +279,7 @@ void PolycodeTemplateApp::addAliensToScreen() {
 void PolycodeTemplateApp::firePlayerMissile() {
 	//
 	ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
-	new_missile->setScale( *( player_missile_scale ) );
+	new_missile->setScale( Vector3( 1, 1, 0 ) );
 	new_missile->Translate( player->getPosition() + Vector3( 0, - ( (new_missile->getHeight()*2) * new_missile->getScale().y ), 0 ) );
 	new_missile->addTag("p_missile");
 
@@ -402,7 +396,7 @@ void PolycodeTemplateApp::removeLife() {
 void PolycodeTemplateApp::gameOver() {
 	//
 	if ( !game_over_label ) {
-		game_over_label = new ScreenLabel( "GAME OVER :(", 50 );
+		game_over_label = new ScreenLabel( "GAME OVER", 50 );
 		game_over_label->setPosition( Vector3( (screen_width / 2) - (game_over_label->getWidth() / 2), (screen_height / 2) - (game_over_label->getHeight() / 2), 0 ) );
 
 		main_screen->addChild( game_over_label );

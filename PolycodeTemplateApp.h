@@ -23,6 +23,9 @@ public:
 	// initialize the GUI paramters
 	void initializeGUIParameters();
 
+	// setup the game
+	void setup();
+
 	//
     bool Update();
 	
@@ -63,31 +66,20 @@ private:
     Core *core;
 
 	// main screen
-	PhysicsScreen *main_screen;
+	PhysicsScreen * main_screen;
 
 	// GUI parameters
 	static const unsigned screen_width = 1580;
 	static const unsigned screen_height = 800;
 
-	float alien_sprite_xscale;
-	float alien_sprite_yscale;
-	Vector3 *alien_sprite_scale;
-	
+	// the offset from both sides of the screen for the alien rows
 	int alien_xoffset;
 
 	// delta for alien translation
-	static const int alien_delta = 50;
+	int alien_delta;
 
 	// set of aliens rows
 	AlienGroup * aliens;
-
-	float player_sprite_xscale;
-	float player_sprite_yscale;
-	Vector3 *player_sprite_scale;
-
-	static const unsigned pmissile_sprite_xscale = 1;
-	static const unsigned pmissile_sprite_yscale = 1;
-	Vector3 *player_missile_scale;
 
 	unsigned player_xoffset;
 	unsigned player_yoffset;

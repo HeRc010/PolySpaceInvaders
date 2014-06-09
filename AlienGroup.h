@@ -1,6 +1,8 @@
 #ifndef ALIEN_GROUP_H
 #define ALIEN_GROUP_H
 
+#include <cstdlib>
+#include <ctime>
 #include <cmath>
 
 #include "AlienOne.h"

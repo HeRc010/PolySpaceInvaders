@@ -169,14 +169,6 @@ vector<Alien*> AlienGroup::getLowestAliens() const {
 	unsigned diff = getRightMostAlien()->getPosition().x - getLeftMostAlien()->getPosition().x;
 
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
-		//
-		/* unsigned idx = i % _num_aliens_per_row;
-
-		if ( (!result[idx]) || (result[idx]->getPosition().y < _aliens[i]->getPosition().y) ) {
-			//
-			result[idx] = _aliens[i];
-		} */
-		
 		// calculate the difference between the entity and the left-most entity
 		unsigned current_diff = _aliens[i]->getPosition().x - getLeftMostAlien()->getPosition().x;
 		
@@ -209,6 +201,9 @@ ScreenSprite* AlienGroup::fireMissile() const {
 		//
 		if ( !lowest_aliens[i] ) lowest_aliens.erase( lowest_aliens.begin() + i );
 	}
+
+	// seed the random number generator
+	srand( time(NULL) );
 
 	// fire a missile from a random alien
 	unsigned idx = rand() % lowest_aliens.size();
