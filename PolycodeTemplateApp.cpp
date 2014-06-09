@@ -71,6 +71,9 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 
 	main_screen->addCollisionChild( player, PhysicsScreenEntity::ENTITY_RECT );
 
+	// set the number of lives the player has
+	_num_lives = 2;
+
 	// initialize aliens
 	aliens = new AlienGroup( Vector3( 100, 100, 0 ), 5, 75, 11, 75, alien_delta );
 	addAliensToScreen();
@@ -90,6 +93,24 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 }
 
 bool PolycodeTemplateApp::Update() {
+	// check if the player is still alive
+	if ( player->getState() != SpaceInvadersEntity::EntityState::alive ) {
+		// decrement the players lives(if there are any left) if the player has died
+		if ( player->getState() == SpaceInvadersEntity::EntityState::dead ) {
+			//
+			if ( _num_lives != 0 ) {
+				//
+				--_num_lives;
+				player->revive();
+			} else {
+				// game over
+
+			}
+		}
+
+		return core->updateAndRender();
+	}
+
 	// process translation input
 	processPlayerInput();
 
@@ -156,11 +177,9 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		case PhysicsScreenEvent::EVENT_NEW_SHAPE_COLLISION:
 			if ( pe->entity1->hasTag("alien") ) {
 				//
-				//main_screen->removeChild( pe->entity1 );
 				aliens->killAlien( pe->entity1 );
 			} else if ( pe->entity2->hasTag("alien") ) {
 				//
-				//main_screen->removeChild( pe->entity2 );
 				aliens->killAlien( pe->entity2 );
 			}
 
@@ -168,6 +187,18 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 				main_screen->removeChild( pe->entity1 );
 			} else if ( pe->entity2->hasTag("p_missile") ) {
 				main_screen->removeChild( pe->entity2 );
+			}
+
+			if ( pe->entity1->hasTag("a_missile") ) {
+				main_screen->removeChild( pe->entity1 );
+			} else if ( pe->entity2->hasTag("a_missile") ) {
+				main_screen->removeChild( pe->entity2 );
+			}
+
+			if ( pe->entity1->hasTag("fighter") ) {
+				player->kill();
+			} else if ( pe->entity2->hasTag("fighter") ) {
+				player->kill();
 			}
 			break; 
 		}
@@ -288,4 +319,9 @@ void PolycodeTemplateApp::updateAlienMissiles() {
 			alien_missiles.erase( alien_missiles.begin() + i );
 		}
 	}
+}
+
+void PolycodeTemplateApp::gameOver() {
+	//
+
 }

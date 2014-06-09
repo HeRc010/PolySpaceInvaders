@@ -75,6 +75,8 @@ float Alien::getExplosionDuration() const {
 
 void Alien::kill() {
 	//
-	playAnimation( "explode", 2, false );
+	//SpaceInvadersEntity::kill();
 	_state = exploding;
+	
+	playAnimation( "explode", 2, false );
 }

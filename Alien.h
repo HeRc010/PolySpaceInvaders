@@ -26,6 +26,8 @@ public:
 	float getExplosionDuration() const;
 
 	// kill the alien - set state to exploding
+
+	// override the kill method
 	void kill();
 
 protected:

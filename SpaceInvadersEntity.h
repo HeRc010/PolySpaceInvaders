@@ -30,6 +30,9 @@ public:
 	// get the entity's state
 	EntityState getState() const;
 
+	// kill the entity
+	virtual void kill();
+
 protected:
 	//
 	EntityState _state;

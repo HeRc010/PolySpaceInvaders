@@ -23,3 +23,8 @@ SpaceInvadersEntity::EntityState SpaceInvadersEntity::getState() const {
 	//
 	return _state;
 }
+
+void SpaceInvadersEntity::kill() {
+	//
+
+}

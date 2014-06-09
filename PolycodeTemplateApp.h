@@ -47,6 +47,9 @@ public:
 	// update the aliens' missiles
 	void updateAlienMissiles();
 
+	// game over function
+	void gameOver();
+
 private:
     Core *core;
 
@@ -67,8 +70,7 @@ private:
 	static const int alien_delta = 50;
 
 	// set of aliens rows
-	//vector<AlienRow*> _aliens;
-	AlienGroup *aliens;
+	AlienGroup * aliens;
 
 	float player_sprite_xscale;
 	float player_sprite_yscale;
@@ -107,6 +109,9 @@ private:
 
 	// the delta vector for the player
 	Vector3 player_delta;
+
+	// the number of lives the player has
+	unsigned _num_lives;
 
 	// a list of the missiles fired by the player
 	vector<ScreenSprite*> player_missiles;
