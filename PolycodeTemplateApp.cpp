@@ -16,7 +16,7 @@
 
 #include "PolycodeTemplateApp.h"
 
-void PolycodeTemplateApp::initializeGUIParameters() {
+void PolycodeTemplateApp::setup() {
 	// assign GUI parameters
 	player_xoffset = 50;
 	player_yoffset = 50;
@@ -35,9 +35,7 @@ void PolycodeTemplateApp::initializeGUIParameters() {
 
 	// initialize player delta
 	player_delta = Vector3( 0, 0, 0 );
-}
 
-void PolycodeTemplateApp::setup() {
 	// score label
 	_score = 0;
 
@@ -93,8 +91,6 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	core = new Win32Core(view, screen_width,screen_height,false, false, 0, 0, 60);
 	CoreServices::getInstance()->getResourceManager()->addArchive("default.pak");
 	CoreServices::getInstance()->getResourceManager()->addDirResource("default", false);
-
-	initializeGUIParameters();
 
 	// Create screen
 	main_screen = new PhysicsScreen( 10, 50 );

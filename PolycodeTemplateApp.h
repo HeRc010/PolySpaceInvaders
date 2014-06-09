@@ -20,16 +20,11 @@ public:
     PolycodeTemplateApp(PolycodeView *view);
     ~PolycodeTemplateApp();
 
-	// initialize the GUI paramters
-	void initializeGUIParameters();
-
 	// setup the game
 	void setup();
 
-	//
     bool Update();
 	
-	//
 	void handleEvent( Event *e );
 
 	// process input for player translation
@@ -72,6 +67,28 @@ private:
 	static const unsigned screen_width = 1580;
 	static const unsigned screen_height = 800;
 
+	// the fighter/player
+	Fighter *player;
+
+	// fighter gui offsets
+	unsigned player_xoffset;
+	unsigned player_yoffset;
+
+	// the player delta amount when translating
+	static const int player_delta_x = 5;
+
+	// the delta vector for the player
+	Vector3 player_delta;
+
+	// duration parameter for weapon cooldown - in milliseconds
+	unsigned player_weapon_cooldown;
+
+	// player missile speed
+	static const int player_missile_speed = 10;
+
+	// a list of the missiles fired by the player
+	vector<ScreenSprite*> player_missiles;
+
 	// the offset from both sides of the screen for the alien rows
 	int alien_xoffset;
 
@@ -81,35 +98,22 @@ private:
 	// set of aliens rows
 	AlienGroup * aliens;
 
-	unsigned player_xoffset;
-	unsigned player_yoffset;
+	// duration parameter between alien row translations - in milliseconds
+	unsigned duration;
+
+	// duration parameter for the alien weapon cooldown - in milliseconds
+	unsigned alien_weapon_cooldown;
+
+	// alien missile speed
+	static const int alien_missile_speed = 5;
+
+	// a list of the missiles fired by the aliens
+	vector<ScreenSprite*> alien_missiles;
 
 	// timers
 	Timer * timer;
 	Timer * player_cooldown;
 	Timer * alien_cooldown;
-
-	// duration parameter between alien row translations - in milliseconds
-	unsigned duration;
-
-	// duration parameter for weapon cooldown - in milliseconds
-	unsigned player_weapon_cooldown;
-
-	// duration parameter for the alien weapon cooldown - in milliseconds
-	unsigned alien_weapon_cooldown;
-
-	// missile speeds
-	static const int player_missile_speed = 10;
-	static const int alien_missile_speed = 5;
-
-	// the fighter/player
-	Fighter *player;
-
-	// the player delta amount when translating
-	static const int player_delta_x = 5;
-
-	// the delta vector for the player
-	Vector3 player_delta;
 
 	// the number of lives the player has
 	unsigned _num_lives;
@@ -124,10 +128,4 @@ private:
 	ScreenLabel * score_label;
 
 	ScreenLabel * game_over_label;
-
-	// a list of the missiles fired by the player
-	vector<ScreenSprite*> player_missiles;
-
-	// a list of the missiles fired by the aliens
-	vector<ScreenSprite*> alien_missiles;
 };
