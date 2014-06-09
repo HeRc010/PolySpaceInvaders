@@ -98,6 +98,9 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 		base_loc += Vector3( 50, 0, 0 );
 	}
 
+	// set game over label to null
+	game_over_label = 0;
+
 	// initialize fighter/player entity
 	player = new Fighter();
 	player->setScale( Vector3( 0.75, 0.75, 0 ) );
@@ -398,5 +401,10 @@ void PolycodeTemplateApp::removeLife() {
 
 void PolycodeTemplateApp::gameOver() {
 	//
+	if ( !game_over_label ) {
+		game_over_label = new ScreenLabel( "GAME OVER :(", 50 );
+		game_over_label->setPosition( Vector3( (screen_width / 2) - (game_over_label->getWidth() / 2), (screen_height / 2) - (game_over_label->getHeight() / 2), 0 ) );
 
+		main_screen->addChild( game_over_label );
+	}
 }

@@ -131,6 +131,8 @@ private:
 	// the score label
 	ScreenLabel * score_label;
 
+	ScreenLabel * game_over_label;
+
 	// a list of the missiles fired by the player
 	vector<ScreenSprite*> player_missiles;
 
