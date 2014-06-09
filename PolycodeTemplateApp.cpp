@@ -110,8 +110,7 @@ bool PolycodeTemplateApp::Update() {
 		ScreenSprite * new_missile = aliens->fireMissile();
 		
 		if ( new_missile ) {
-			//main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
-			main_screen->addChild( new_missile );
+			main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
 
 			alien_missiles.push_back( new_missile );
 			alien_cooldown->Reset();

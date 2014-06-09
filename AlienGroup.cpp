@@ -96,7 +96,7 @@ void AlienGroup::changeAnimationFrame() {
 	}
 }
 
-Alien * AlienGroup::getLeftMostAlien() {
+Alien * AlienGroup::getLeftMostAlien() const {
 	//
 	Alien * result = 0;
 	for ( unsigned i = 0; i < _num_aliens; ++i  ) {
@@ -110,7 +110,7 @@ Alien * AlienGroup::getLeftMostAlien() {
 	return result;
 }
 
-Alien * AlienGroup::getRightMostAlien() {
+Alien * AlienGroup::getRightMostAlien() const {
 	//
 	Alien * result = 0;
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
@@ -162,15 +162,35 @@ void AlienGroup::removeAlien( ScreenEntity * to_remove ) {
 }
 
 vector<Alien*> AlienGroup::getLowestAliens() const {
-	//
+	// find the lowest aliens
 	vector<Alien*> result( _num_aliens_per_row, 0 );
+
+	// calculate the difference between the left-most and right-most enitity
+	unsigned diff = getRightMostAlien()->getPosition().x - getLeftMostAlien()->getPosition().x;
+
 	for ( unsigned i = 0; i < _num_aliens; ++i ) {
 		//
-		unsigned idx = i % _num_aliens_per_row;
+		/* unsigned idx = i % _num_aliens_per_row;
 
 		if ( (!result[idx]) || (result[idx]->getPosition().y < _aliens[i]->getPosition().y) ) {
 			//
 			result[idx] = _aliens[i];
+		} */
+		
+		// calculate the difference between the entity and the left-most entity
+		unsigned current_diff = _aliens[i]->getPosition().x - getLeftMostAlien()->getPosition().x;
+		
+		unsigned col_idx ;
+		if ( current_diff == 0 ) {
+			//
+			col_idx = 0;
+		} else {
+			col_idx = floorf( float( diff ) / current_diff );
+		}
+
+		if ( (!result[col_idx]) || (result[col_idx]->getPosition().y < _aliens[i]->getPosition().y) ) {
+			//
+			result[col_idx] = _aliens[i];
 		}
 	}
 
@@ -194,8 +214,9 @@ ScreenSprite* AlienGroup::fireMissile() const {
 	unsigned idx = rand() % lowest_aliens.size();
 
 	ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/alien_missile.png", 20, 39 );
-	new_missile->setPosition( lowest_aliens[ idx ]->getPosition() );
-	
+	new_missile->setPosition( lowest_aliens[ idx ]->getPosition() + Vector3( 0, new_missile->getHeight(), 0 ) );
+	new_missile->setScale( Vector3( 0.5, 0.5, 0 ) );
+
 	new_missile->addTag("a_missile");
 
 	return new_missile;

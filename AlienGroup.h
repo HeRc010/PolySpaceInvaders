@@ -1,6 +1,8 @@
 #ifndef ALIEN_GROUP_H
 #define ALIEN_GROUP_H
 
+#include <cmath>
+
 #include "AlienOne.h"
 #include "AlienTwo.h"
 #include "AlienThree.h"
@@ -35,10 +37,10 @@ public:
 	void changeAnimationFrame();
 
 	// get the left-most element of the group
-	Alien * getLeftMostAlien();
+	Alien * getLeftMostAlien() const;
 
 	// get the right-most element of the group
-	Alien * getRightMostAlien();
+	Alien * getRightMostAlien() const;
 
 	// get the list of aliens which need to be removed
 	vector<Alien*> getDeadAliens();
