@@ -3,15 +3,21 @@
 
 	TODO:
 	primary:
+	-  move the cooldown timing functionality(for the player at least) to the appropriate class
+	- animations for the alien missiles
 
 	secondary:
-	- animations for the alien missiles
 	- add the red ufo going accross the top
 	- need to add the barriers too :S
 		-> this could be really challenging...
 		-> i'm thinking custom sprite sheets
 	- sound for when the space invaders move
 		-> there also needs to be sound for the red ufo
+
+	BUGS:
+	- the lives' label will not update correctly after you win, then lose
+	- upon killing the last alien; if an alien missile was shot; it will not be removed from the screen
+		-> due to the deletion of the aliengroup class?
 */
 
 #include "PolycodeTemplateApp.h"
@@ -32,11 +38,11 @@ void PolycodeTemplateApp::setup() {
 
 	// initialize timer parameters; set timer pointers to zero
 	timer = 0;
-	player_cooldown = 0;
+	//player_cooldown = 0;
 	alien_cooldown = 0;
 
 	duration = 500;
-	player_weapon_cooldown = 700;
+	//player_weapon_cooldown = 700;
 	alien_weapon_cooldown = 2000;
 
 	// score label - set to null
@@ -55,11 +61,11 @@ void PolycodeTemplateApp::initializeGame() {
 		timer->Reset();
 	}
 	
-	if ( !player_cooldown ) {
+	/* if ( !player_cooldown ) {
 		player_cooldown = new Timer( false, 0 );
 	} else {
 		player_cooldown->Reset();
-	}
+	} */
 
 	if ( !alien_cooldown ) {
 		alien_cooldown = new Timer( false, 0 );
@@ -69,7 +75,7 @@ void PolycodeTemplateApp::initializeGame() {
 
 	// initialize fighter/player entity
 	if ( !player ) {
-		player = new Fighter( player_missile_speed );
+		player = new Fighter();
 		player->setScale( Vector3( 0.75, 0.75, 0 ) );
 		player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
 
@@ -108,27 +114,17 @@ void PolycodeTemplateApp::initializeGame() {
 	}
 
 	// initialize the lives' label
+	
+	// base location
+	Vector3 base_loc( 500, 10, 0 );
 	if ( !lives_label ) {
-		// base location
-		Vector3 base_loc( 500, 10, 0 );
-
+		//
 		ScreenLabel * lives_label = new ScreenLabel( "Lives: ", 30 );
 		lives_label->setPosition( base_loc );
 
 		main_screen->addChild( lives_label );
 
-		base_loc += Vector3( 150, 25, 0 );
-		for ( unsigned i = 0; i < player->getNumLives(); ++i ) {
-			//
-			ScreenSprite * new_sprite = new ScreenSprite( "Resources/fighter_1.png", 85, 53 );
-			new_sprite->setScale( Vector3( 0.5, 0.5, 0 ) );
-			new_sprite->setPosition( base_loc );
-
-			main_screen->addChild( new_sprite );
-		
-			life_sprites.push_back( new_sprite );
-			base_loc += Vector3( 50, 0, 0 );
-		}
+		drawLifeSprites( base_loc );
 	} else if ( _game_over ) {
 		// remove the existing sprites
 		unsigned num_sprites = life_sprites.size();
@@ -138,20 +134,7 @@ void PolycodeTemplateApp::initializeGame() {
 			life_sprites.erase( life_sprites.begin() + i );
 		}
 
-		// base location
-		Vector3 base_loc( 500, 10, 0 );
-		base_loc += Vector3( 150, 25, 0 );
-		for ( unsigned i = 0; i < player->getNumLives(); ++i ) {
-			//
-			ScreenSprite * new_sprite = new ScreenSprite( "Resources/fighter_1.png", 85, 53 );
-			new_sprite->setScale( Vector3( 0.5, 0.5, 0 ) );
-			new_sprite->setPosition( base_loc );
-
-			main_screen->addChild( new_sprite );
-		
-			life_sprites.push_back( new_sprite );
-			base_loc += Vector3( 50, 0, 0 );
-		}
+		drawLifeSprites( base_loc );
 	}
 
 	// set game over labels to null
@@ -367,11 +350,9 @@ void PolycodeTemplateApp::processPlayerInput() {
 	}
 	if ( key_space ) {
 		//
-		if ( (player_cooldown->getElapsedf() * 1000) >= player_weapon_cooldown ) {
-			//firePlayerMissile();
-			main_screen->addCollisionChild( player->fireMissile(), PhysicsScreenEntity::ENTITY_RECT );
-			player_cooldown->Reset();
-		}
+		ScreenSprite * new_missile = player->fireMissile();
+
+		if ( new_missile ) main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );\
 	}
 }
 
@@ -406,7 +387,7 @@ void PolycodeTemplateApp::updatePlayerMissiles() {
 	
 	for ( int i = missiles.size() - 1; i >= 0; --i ) {
 		//
-		missiles[i]->Translate( Vector3( 0, -player_missile_speed, 0 ) );
+		//missiles[i]->Translate( Vector3( 0, -player_missile_speed, 0 ) );
 
 		if ( missiles[i]->getPosition().y < 0 ) {
 			//
@@ -527,6 +508,22 @@ void PolycodeTemplateApp::removeLife() {
 
 	main_screen->removeChild( life_sprites[idx] );
 	life_sprites.erase( life_sprites.begin() + idx );
+}
+
+void PolycodeTemplateApp::drawLifeSprites( Vector3 base_loc ) {
+	//
+	base_loc += Vector3( 150, 25, 0 );
+	for ( unsigned i = 0; i < player->getNumLives(); ++i ) {
+		//
+		ScreenSprite * new_sprite = new ScreenSprite( "Resources/fighter_1.png", 85, 53 );
+		new_sprite->setScale( Vector3( 0.5, 0.5, 0 ) );
+		new_sprite->setPosition( base_loc );
+
+		main_screen->addChild( new_sprite );
+		
+		life_sprites.push_back( new_sprite );
+		base_loc += Vector3( 50, 0, 0 );
+	}
 }
 
 void PolycodeTemplateApp::drawGameOverLabel() {

@@ -1,7 +1,7 @@
 #include "Fighter.h"
 
-Fighter::Fighter( const int missile_speed )
-	: SpaceInvadersEntity( "Resources/fighter_1_test.png", 85, 53 ), _missile_speed( missile_speed )
+Fighter::Fighter()
+	: SpaceInvadersEntity( "Resources/fighter_1_test.png", 85, 53 )
 {
 	//
 	addTag("fighter");
@@ -15,6 +15,7 @@ Fighter::Fighter( const int missile_speed )
 	_explosion_duration = 1000;
 
 	_timer = new Timer( false, 0 );
+	_cooldown_timer = new Timer( false, 0 );
 
 	_timer->Pause( true );
 
@@ -79,16 +80,22 @@ void Fighter::revive() {
 	_timer->Pause( true );
 }
 
-ScreenEntity * Fighter::fireMissile() {
+ScreenSprite * Fighter::fireMissile() {
 	//
-	ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
-	new_missile->setScale( Vector3( 1, 1, 0 ) );
-	new_missile->Translate( getPosition() + Vector3( 0, - ( (new_missile->getHeight()*2) * new_missile->getScale().y ), 0 ) );
-	new_missile->addTag("p_missile");
+	if ( (_cooldown_timer->getElapsedf() * 1000) >= _cooldown_duration ) {
+		ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
+		new_missile->setScale( Vector3( 1, 1, 0 ) );
+		new_missile->Translate( getPosition() + Vector3( 0, - ( (new_missile->getHeight()*2) * new_missile->getScale().y ), 0 ) );
+		new_missile->addTag("p_missile");
 
-	_missiles.push_back( new_missile );
+		_missiles.push_back( new_missile );
 
-	return new_missile;
+		_cooldown_timer->Reset();
+
+		return new_missile;
+	}
+
+	return 0;
 }
 
 vector<ScreenSprite*> Fighter::getMissiles() const {

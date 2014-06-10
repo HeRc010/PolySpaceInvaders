@@ -7,7 +7,7 @@
 class Fighter : public SpaceInvadersEntity
 {
 public:
-	Fighter( const int missile_speed );
+	Fighter();
 	~Fighter();
 
 	// override the update function
@@ -26,7 +26,7 @@ public:
 	void revive();
 
 	// fire a missile
-	ScreenEntity * fireMissile();
+	ScreenSprite * fireMissile();
 
 	// get the missiles
 	vector<ScreenSprite*> getMissiles() const;
@@ -44,8 +44,14 @@ private:
 	// the number of lives the fighter has
 	unsigned _num_lives;
 
+	// timer for weapon cooldown
+	Timer * _cooldown_timer;
+
+	// the duration for the cooldown; in milliseconds
+	static const unsigned _cooldown_duration = 700;
+
 	// the speed of the missiles
-	int _missile_speed;
+	static const int _missile_speed = 10;
 
 	// the missiles the player has fired
 	vector<ScreenSprite*> _missiles;
