@@ -54,6 +54,9 @@ public:
 	// update the aliens' missiles
 	void updateAlienMissiles();
 
+	// clear alien and player missiles
+	void clearMissiles();
+
 	// get the points associated with killing the given entity
 	unsigned getPoints( ScreenEntity * entity ) const;
 

@@ -6,6 +6,7 @@
 	- need to empty the alien and player and missile arrays when the player is killed; or when the game ends
 
 	secondary:
+	- fix the issue where player missiles can destroy alien missiles
 	- animations for the alien missiles
 	- add the red ufo going accross the top
 	- need to add the barriers too :S
@@ -170,6 +171,9 @@ void PolycodeTemplateApp::initializeGame() {
 	// set game over labels to null
 	game_over_label = 0;
 	replay_label = 0;
+
+	// clear the missiles
+	clearMissiles();
 
 	_been_initialized = true;
 }
@@ -346,8 +350,13 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 
 			if ( pe->entity1->hasTag("fighter") ) {
 				player->kill();
+
+				// empty the missile arrays
+				clearMissiles();
 			} else if ( pe->entity2->hasTag("fighter") ) {
 				player->kill();
+				// empty the missile arrays
+				clearMissiles();				
 			}
 			break; 
 		}
@@ -483,6 +492,24 @@ void PolycodeTemplateApp::updateAlienMissiles() {
 			main_screen->removeChild( alien_missiles[i] );
 			alien_missiles.erase( alien_missiles.begin() + i );
 		}
+	}
+}
+
+void PolycodeTemplateApp::clearMissiles() {
+	// player missiles
+	const unsigned num_player_missiles = player_missiles.size();
+	for ( unsigned i = 0; i < num_player_missiles; ++i ) {
+		//
+		main_screen->removeChild( player_missiles[i] );
+		player_missiles.erase( player_missiles.begin() + i );
+	}
+
+	// alien missiles
+	const unsigned num_alien_missiles = alien_missiles.size();
+	for ( unsigned i = 0; i < num_alien_missiles; ++i ) {
+		//
+		main_screen->removeChild( alien_missiles[i] );
+		alien_missiles.erase( alien_missiles.begin() + i );
 	}
 }
 
