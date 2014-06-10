@@ -42,9 +42,6 @@ public:
 	// remove the aliens from the screen
 	void removeAliensFromScreen();
 
-	// fire player missile
-	void firePlayerMissile();
-
 	// update the player's missiles
 	void updatePlayerMissiles();
 
@@ -102,10 +99,7 @@ private:
 	unsigned player_weapon_cooldown;
 
 	// player missile speed
-	static const int player_missile_speed = 10;
-
-	// a list of the missiles fired by the player
-	vector<ScreenSprite*> player_missiles;
+	static const int player_missile_speed = 5;
 
 	// the offset from both sides of the screen for the alien rows
 	static const int alien_xoffset = 150;

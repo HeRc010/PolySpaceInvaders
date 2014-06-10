@@ -1,7 +1,7 @@
 #include "Fighter.h"
 
-Fighter::Fighter(  )
-	: SpaceInvadersEntity( "Resources/fighter_1_test.png", 85, 53 )
+Fighter::Fighter( const int missile_speed )
+	: SpaceInvadersEntity( "Resources/fighter_1_test.png", 85, 53 ), _missile_speed( missile_speed )
 {
 	//
 	addTag("fighter");
@@ -44,6 +44,13 @@ void Fighter::Update() {
 			_state = dead;
 		}
 	}
+
+	// update the missiles
+	const unsigned num_missiles = _missiles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
+		//
+		_missiles[i]->Translate( Vector3( 0, -_missile_speed, 0 ) );
+	}
 }
 
 unsigned Fighter::getNumLives() const {
@@ -70,4 +77,33 @@ void Fighter::revive() {
 	playAnimation( "frame_0", 0, false );
 
 	_timer->Pause( true );
+}
+
+ScreenEntity * Fighter::fireMissile() {
+	//
+	ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
+	new_missile->setScale( Vector3( 1, 1, 0 ) );
+	new_missile->Translate( getPosition() + Vector3( 0, - ( (new_missile->getHeight()*2) * new_missile->getScale().y ), 0 ) );
+	new_missile->addTag("p_missile");
+
+	_missiles.push_back( new_missile );
+
+	return new_missile;
+}
+
+vector<ScreenSprite*> Fighter::getMissiles() const {
+	//
+	return _missiles;
+}
+
+void Fighter::removeMissile( ScreenEntity * to_remove ) {
+	//
+	const unsigned num_missiles = _missiles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
+		//
+		if ( _missiles[i] == to_remove ) {
+			_missiles.erase( _missiles.begin() + i );
+			break;
+		}
+	}
 }

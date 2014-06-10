@@ -7,7 +7,7 @@
 class Fighter : public SpaceInvadersEntity
 {
 public:
-	Fighter();
+	Fighter( const int missile_speed );
 	~Fighter();
 
 	// override the update function
@@ -19,26 +19,23 @@ public:
 	// restore the players lives
 	void restoreLives();
 
-	// take one of the players lives
-	//void takeLife();
-
-	/*
-	
-	void Fighter::takeLife() {
-		//
-		if ( _num_lives != 0 ) --_num_lives;
-	}
-
-	*/
-
 	// kill the fighter; play the explode frame
 	void kill();
 
 	// revive the fighter
 	void revive();
 
+	// fire a missile
+	ScreenEntity * fireMissile();
+
+	// get the missiles
+	vector<ScreenSprite*> getMissiles() const;
+
+	// remove the given missile
+	void removeMissile( ScreenEntity * to_remove );
+
 private:
-	//
+	// timer for explosion
 	Timer * _timer;
 
 	// explosion duration
@@ -46,4 +43,10 @@ private:
 
 	// the number of lives the fighter has
 	unsigned _num_lives;
+
+	// the speed of the missiles
+	int _missile_speed;
+
+	// the missiles the player has fired
+	vector<ScreenSprite*> _missiles;
 };

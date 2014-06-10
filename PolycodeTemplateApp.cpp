@@ -69,7 +69,7 @@ void PolycodeTemplateApp::initializeGame() {
 
 	// initialize fighter/player entity
 	if ( !player ) {
-		player = new Fighter();
+		player = new Fighter( player_missile_speed );
 		player->setScale( Vector3( 0.75, 0.75, 0 ) );
 		player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
 
@@ -368,7 +368,8 @@ void PolycodeTemplateApp::processPlayerInput() {
 	if ( key_space ) {
 		//
 		if ( (player_cooldown->getElapsedf() * 1000) >= player_weapon_cooldown ) {
-			firePlayerMissile();
+			//firePlayerMissile();
+			main_screen->addCollisionChild( player->fireMissile(), PhysicsScreenEntity::ENTITY_RECT );
 			player_cooldown->Reset();
 		}
 	}
@@ -399,29 +400,18 @@ void PolycodeTemplateApp::removeAliensFromScreen() {
 	}
 }
 
-
-void PolycodeTemplateApp::firePlayerMissile() {
-	//
-	ScreenSprite * new_missile = ScreenSprite::ScreenSpriteFromImageFile( "Resources/player_missile.png", 3, 15 );
-	new_missile->setScale( Vector3( 1, 1, 0 ) );
-	new_missile->Translate( player->getPosition() + Vector3( 0, - ( (new_missile->getHeight()*2) * new_missile->getScale().y ), 0 ) );
-	new_missile->addTag("p_missile");
-
-	main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
-	player_missiles.push_back( new_missile );
-}
-
 void PolycodeTemplateApp::updatePlayerMissiles() {
 	//
-	const int num_missiles = player_missiles.size();
-	for ( int i = num_missiles - 1; i >= 0; --i ) {
+	vector<ScreenSprite*> missiles = player->getMissiles();
+	
+	for ( int i = missiles.size() - 1; i >= 0; --i ) {
 		//
-		player_missiles[i]->Translate( Vector3( 0, -player_missile_speed, 0 ) );
+		missiles[i]->Translate( Vector3( 0, -player_missile_speed, 0 ) );
 
-		if ( player_missiles[i]->getPosition().y < 0 ) {
+		if ( missiles[i]->getPosition().y < 0 ) {
 			//
-			main_screen->removeChild( player_missiles[i] );
-			player_missiles.erase( player_missiles.begin() + i );
+			main_screen->removeChild( missiles[i] );
+			player->removeMissile( missiles[i] );
 		}
 	}
 }
@@ -483,21 +473,21 @@ void PolycodeTemplateApp::updateAlienMissiles() {
 
 void PolycodeTemplateApp::clearMissiles() {
 	//
-	vector<ScreenSprite*> missiles;
+	vector<ScreenSprite*> missiles = player->getMissiles();
 
 	// player missiles
-	const unsigned num_player_missiles = player_missiles.size();
-	for ( unsigned i = 0; i < num_player_missiles; ++i ) {
+	unsigned num_missiles = missiles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
 		//
-		main_screen->removeChild( player_missiles[i] );
-		player_missiles.erase( player_missiles.begin() + i );
+		main_screen->removeChild( missiles[i] );
+		player->removeMissile( missiles[i] );
 	}
 
 	// alien missiles
 	missiles = aliens->getMissiles();
 
-	const unsigned num_alien_missiles = missiles.size();
-	for ( unsigned i = 0; i < num_alien_missiles; ++i ) {
+	num_missiles = missiles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
 		//
 		main_screen->removeChild( missiles[i] );
 		aliens->removeMissile( missiles[i] );
