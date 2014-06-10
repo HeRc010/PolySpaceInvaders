@@ -3,9 +3,7 @@
 
 	TODO:
 	primary:
-	- add win condition(s) - allowing the player to continue after all the aliens are killed
-	- functionality for lowering all rows when they hit the edge of the screen
-	- make aliens stop hitting each other - move aliens slower; aliens missiles faster
+	- need to empty the alien and player and missile arrays when the player is killed; or when the game ends
 
 	secondary:
 	- animations for the alien missiles
@@ -29,7 +27,8 @@ void PolycodeTemplateApp::setup() {
 	player_yoffset = 50;
 
 	alien_xoffset = 150;
-	alien_delta = 50;
+	alien_yoffset = 15;
+	alien_delta = 15;
 
 	// initialize timer parameters; set timer pointers to zero
 	timer = 0;
@@ -144,9 +143,18 @@ void PolycodeTemplateApp::initializeGame() {
 			base_loc += Vector3( 50, 0, 0 );
 		}
 	} else if ( _game_over ) {
-		// add the missing lives to the screen
-		Vector3 base_loc( life_sprites[ life_sprites.size() - 1 ]->getPosition() );
-		for ( unsigned i = life_sprites.size(); i < player->getNumLives(); ++i ) {
+		// remove the existing sprites
+		unsigned num_sprites = life_sprites.size();
+		for ( unsigned i = 0; i < num_sprites; ++i ) {
+			//
+			main_screen->removeChild( life_sprites[i] );
+			life_sprites.erase( life_sprites.begin() + i );
+		}
+
+		// base location
+		Vector3 base_loc( 500, 10, 0 );
+		base_loc += Vector3( 150, 25, 0 );
+		for ( unsigned i = 0; i < player->getNumLives(); ++i ) {
 			//
 			ScreenSprite * new_sprite = new ScreenSprite( "Resources/fighter_1.png", 85, 53 );
 			new_sprite->setScale( Vector3( 0.5, 0.5, 0 ) );
@@ -267,7 +275,7 @@ bool PolycodeTemplateApp::Update() {
 
 void PolycodeTemplateApp::handleEvent( Event *e ) {
 	//
-	
+	int temp = 0;
 	if ( e->getDispatcher() == core->getInput() ) {
 		//
 		InputEvent *ie = (InputEvent*) e;
@@ -277,6 +285,7 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			switch( ie->keyCode() ) {
 			case KEY_BACKSLASH:
 				// this is for debugging
+				temp = 1;
 				break;
 			case KEY_RETURN:
 				if ( _game_over ) {
@@ -290,6 +299,10 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 					initializeGame();
 					_game_over = false;
 				}
+				break;
+			case KEY_k:
+				// cheat; use to kill all the aliens
+				removeAliensFromScreen();
 				break;
 			}
 			break;
@@ -427,6 +440,7 @@ void PolycodeTemplateApp::updateAliens() {
 		if ( bound_alien->getPosition().x < (50 + alien_xoffset) ) {
 			//
 			aliens->reverseDirection();
+			aliens->translate( Vector3( 0, alien_yoffset, 0 ) );
 		}
 		break;
 	case AlienGroup::Direction::right:
@@ -437,6 +451,7 @@ void PolycodeTemplateApp::updateAliens() {
 		if ( bound_alien->getPosition().x > (screen_width - alien_xoffset) ) {
 			//
 			aliens->reverseDirection();
+			aliens->translate( Vector3( 0, alien_yoffset, 0 ) );
 		}
 		break;
 	}

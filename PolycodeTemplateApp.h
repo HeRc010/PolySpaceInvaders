@@ -23,6 +23,9 @@ public:
 	// setup the game variables for the first time
 	void setup();
 
+	// initialize the timer provided
+	void initializeTimer( Timer * timer );
+
 	// initialize the game state
 	void initializeGame();
 
@@ -103,6 +106,9 @@ private:
 
 	// the offset from both sides of the screen for the alien rows
 	int alien_xoffset;
+
+	// the amount by which the alien rows lower when they hit the edge of the screen
+	int alien_yoffset;
 
 	// delta for alien translation
 	int alien_delta;
