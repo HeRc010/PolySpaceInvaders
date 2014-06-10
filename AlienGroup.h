@@ -32,8 +32,11 @@ public:
 	// get the aliens
 	void getAliens( vector<Alien*> &alien_list ) const;
 
+	// shift the aliens to the left or right
+	void shift();
+
 	// translate the aliens
-	void translate();
+	void translate( const Vector3 &delta );
 
 	// change the animation frame for the aliens
 	void changeAnimationFrame();

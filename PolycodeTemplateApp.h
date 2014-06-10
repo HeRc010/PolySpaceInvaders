@@ -20,8 +20,11 @@ public:
     PolycodeTemplateApp(PolycodeView *view);
     ~PolycodeTemplateApp();
 
-	// setup the game
+	// setup the game variables for the first time
 	void setup();
+
+	// initialize the game state
+	void initializeGame();
 
     bool Update();
 	
@@ -32,6 +35,9 @@ public:
 
 	// add aliens to screen
 	void addAliensToScreen();
+
+	// remove the aliens from the screen
+	void removeAliensFromScreen();
 
 	// fire player missile
 	void firePlayerMissile();
@@ -54,14 +60,20 @@ public:
 	// remove a life from the lives' label
 	void removeLife();
 
-	// game over function
-	void gameOver();
+	// draw the game over labels
+	void drawGameOverLabel();
 
 private:
     Core *core;
 
 	// main screen
 	PhysicsScreen * main_screen;
+
+	// has the game been initialized
+	bool _been_initialized;
+
+	// is the game over?
+	bool _game_over;
 
 	// GUI parameters
 	static const unsigned screen_width = 1580;
@@ -115,17 +127,17 @@ private:
 	Timer * player_cooldown;
 	Timer * alien_cooldown;
 
-	// the number of lives the player has
-	unsigned _num_lives;
-
 	// sprites for the lives label
+	ScreenLabel * lives_label;
 	vector<ScreenSprite*> life_sprites;
 
 	// the players score
-	unsigned _score;
+	int _score;
 
 	// the score label
 	ScreenLabel * score_label;
 
+	// game over labels
 	ScreenLabel * game_over_label;
+	ScreenLabel * replay_label;
 };

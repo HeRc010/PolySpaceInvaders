@@ -68,7 +68,7 @@ void AlienGroup::getAliens( vector<Alien*> &alien_list ) const {
 	alien_list = _aliens;
 }
 
-void AlienGroup::translate() {
+void AlienGroup::shift() {
 	//
 	switch( _current_dir ) {
 	case left:
@@ -85,6 +85,14 @@ void AlienGroup::translate() {
 			_aliens[i]->Translate( Vector3( _speed, 0, 0 ) );
 		}
 		break;
+	}
+}
+
+void AlienGroup::translate( const Vector3 &delta ) {
+	//
+	for ( unsigned i = 0; i < _num_aliens; ++i ) {
+		//
+		_aliens[i]->Translate( delta );
 	}
 }
 

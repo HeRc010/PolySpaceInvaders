@@ -7,9 +7,12 @@
 
 	secondary:
 	- functionality for lowering all rows when they hit the edge of the screen
+	- make aliens stop hitting each other - move aliens slower; aliens missiles faster
+	- animations for the alien missiles
 	- add the red ufo going accross the top
 	- need to add the barriers too :S
 		-> this could be really challenging...
+		-> i'm thinking custom sprite sheets
 	- sound for when the space invaders move
 		-> there also needs to be sound for the red ufo
 */
@@ -17,6 +20,10 @@
 #include "PolycodeTemplateApp.h"
 
 void PolycodeTemplateApp::setup() {
+	// boolean runtime values
+	_been_initialized = false;
+	_game_over = false;
+
 	// assign GUI parameters
 	player_xoffset = 50;
 	player_yoffset = 50;
@@ -24,10 +31,10 @@ void PolycodeTemplateApp::setup() {
 	alien_xoffset = 150;
 	alien_delta = 50;
 
-	// initialize timers/timer parameters
-	timer = new Timer( false, 0 );
-	player_cooldown = new Timer( false, 0 );
-	alien_cooldown = new Timer( false, 0 );
+	// initialize timer parameters; set timer pointers to zero
+	timer = 0;
+	player_cooldown = 0;
+	alien_cooldown = 0;
 
 	duration = 500;
 	player_weapon_cooldown = 700;
@@ -36,54 +43,113 @@ void PolycodeTemplateApp::setup() {
 	// initialize player delta
 	player_delta = Vector3( 0, 0, 0 );
 
-	// score label
+	// score label - set to null
 	_score = 0;
+	score_label = 0;
 
-	char buffer[256];
-	itoa( _score, buffer, 10 );
+	// lives' label - set to null
+	lives_label = 0;
 
-	score_label = new ScreenLabel( "Score: " + String( buffer ), 30 );
-	score_label->setPosition( Vector3( 200, 10, 0 ) );
+	// set fighter/player entity to null
+	player = 0;
 
-	main_screen->addChild( score_label );
+	// initialize aliens' pointer to zero
+	aliens = 0;
+}
 
-	// lives' label
-	_num_lives = 2;
-
-	// base location
-	Vector3 base_loc( 500, 10, 0 );
-
-	ScreenLabel * score_label = new ScreenLabel( "Lives: ", 30 );
-	score_label->setPosition( base_loc );
-
-	main_screen->addChild( score_label );
-
-	base_loc += Vector3( 150, 25, 0 );
-	for ( unsigned i = 0; i < _num_lives + 1; ++i ) {
-		//
-		ScreenSprite * new_sprite = new ScreenSprite( "Resources/fighter_1.png", 85, 53 );
-		new_sprite->setScale( Vector3( 0.5, 0.5, 0 ) );
-		new_sprite->setPosition( base_loc );
-
-		main_screen->addChild( new_sprite );
-		
-		life_sprites.push_back( new_sprite );
-		base_loc += Vector3( 50, 0, 0 );
-	}
-
-	// set game over label to null
-	game_over_label = 0;
+void PolycodeTemplateApp::initializeGame() {
+	// initialize timers/timer parameters
+	if ( !timer ) timer = new Timer( false, 0 );
+	if ( !player_cooldown ) player_cooldown = new Timer( false, 0 );
+	if ( !alien_cooldown ) alien_cooldown = new Timer( false, 0 );
 
 	// initialize fighter/player entity
-	player = new Fighter();
-	player->setScale( Vector3( 0.75, 0.75, 0 ) );
-	player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
+	if ( !player ) {
+		player = new Fighter();
+		player->setScale( Vector3( 0.75, 0.75, 0 ) );
+		player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
 
-	main_screen->addCollisionChild( player, PhysicsScreenEntity::ENTITY_RECT );
+		main_screen->addCollisionChild( player, PhysicsScreenEntity::ENTITY_RECT );
+	} else {
+		if ( player->getState() != SpaceInvadersEntity::EntityState::alive ) {
+			player->revive();
+			player->restoreLives();
+		}
+	
+		player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) - player->getPosition() );
+	}
 
-	// initialize aliens
-	aliens = new AlienGroup( Vector3( 100, 100, 0 ), 5, 75, 11, 75, alien_delta );
-	addAliensToScreen();
+	// initilize aliens
+	if ( !aliens ) {
+		aliens = new AlienGroup( Vector3( 100, 100, 0 ), 5, 75, 11, 75, alien_delta );
+		addAliensToScreen();
+	} else {
+		// remove the aliens from the screen if there are any
+		if ( aliens->getNumberOfAliens() != 0 ) removeAliensFromScreen();
+
+		delete aliens;
+
+		aliens = new AlienGroup( Vector3( 100, 100, 0 ), 5, 75, 11, 75, alien_delta );
+		addAliensToScreen();
+	}
+
+	// initialize the score label
+	if ( !score_label ) {
+		char buffer[256];
+		itoa( _score, buffer, 10 );
+
+		score_label = new ScreenLabel( "Score: " + String( buffer ), 30 );
+		score_label->setPosition( Vector3( 200, 10, 0 ) );
+
+		main_screen->addChild( score_label );
+	} else {
+		// reset score to zero
+		updateScore( -_score );
+	}
+
+	// initialize the lives' label
+	if ( !lives_label ) {
+		// base location
+		Vector3 base_loc( 500, 10, 0 );
+
+		ScreenLabel * lives_label = new ScreenLabel( "Lives: ", 30 );
+		lives_label->setPosition( base_loc );
+
+		main_screen->addChild( lives_label );
+
+		base_loc += Vector3( 150, 25, 0 );
+		for ( unsigned i = 0; i < player->getNumLives(); ++i ) {
+			//
+			ScreenSprite * new_sprite = new ScreenSprite( "Resources/fighter_1.png", 85, 53 );
+			new_sprite->setScale( Vector3( 0.5, 0.5, 0 ) );
+			new_sprite->setPosition( base_loc );
+
+			main_screen->addChild( new_sprite );
+		
+			life_sprites.push_back( new_sprite );
+			base_loc += Vector3( 50, 0, 0 );
+		}
+	} else {
+		// add the missing lives to the screen
+		Vector3 base_loc( life_sprites[ life_sprites.size() - 1 ]->getPosition() );
+		for ( unsigned i = life_sprites.size(); i < player->getNumLives(); ++i ) {
+			//
+			ScreenSprite * new_sprite = new ScreenSprite( "Resources/fighter_1.png", 85, 53 );
+			new_sprite->setScale( Vector3( 0.5, 0.5, 0 ) );
+			new_sprite->setPosition( base_loc );
+
+			main_screen->addChild( new_sprite );
+		
+			life_sprites.push_back( new_sprite );
+			base_loc += Vector3( 50, 0, 0 );
+		}
+	}
+
+	// set game over labels to null
+	game_over_label = 0;
+	replay_label = 0;
+
+	_been_initialized = true;
 }
 
 PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
@@ -117,59 +183,71 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 }
 
 bool PolycodeTemplateApp::Update() {
-	// check if the player is still alive
-	if ( player->getState() != SpaceInvadersEntity::EntityState::alive ) {
-		// decrement the players lives(if there are any left) if the player has died
-		if ( player->getState() == SpaceInvadersEntity::EntityState::dead ) {
+	//
+	if ( !_game_over ) {
+		// if the game hasn't been initialized do so
+		if ( !_been_initialized ) {
 			//
-			if ( _num_lives != 0 ) {
-				//
-				--_num_lives;
-				player->revive();
+			initializeGame();
+			return core->updateAndRender();
+		}
 
-				// remove a life from the lives' label
-				removeLife();
-			} else {
-				// game over
-				gameOver();
+		// check if the player is still alive
+		if ( player->getState() != SpaceInvadersEntity::EntityState::alive ) {
+			// decrement the players lives(if there are any left) if the player has died
+			if ( player->getState() == SpaceInvadersEntity::EntityState::dead ) {
+				//
+				if ( player->getNumLives() != 0 ) {
+					//
+					player->revive();
+
+					// remove a life from the lives' label
+					removeLife();
+				} else {
+					// game over
+					_game_over = true;
+				}
+			}
+
+			return core->updateAndRender();
+		}
+
+		// process translation input
+		processPlayerInput();
+
+		// update the player missiles
+		updatePlayerMissiles();
+
+		// translate the aliens - if the necessary time has elapsed
+		if ( (timer->getElapsedf() * 1000) >= duration ) {
+			// change the current frame/translate the rows
+			aliens->shift();
+			aliens->changeAnimationFrame();
+
+			timer->Reset();
+		}
+
+		if ( (alien_cooldown->getElapsedf() * 1000) >= alien_weapon_cooldown ) {
+			//
+			ScreenSprite * new_missile = aliens->fireMissile();
+		
+			if ( new_missile ) {
+				main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
+
+				alien_missiles.push_back( new_missile );
+				alien_cooldown->Reset();
 			}
 		}
 
-		return core->updateAndRender();
-	}
+		// update aliens
+		updateAliens();
 
-	// process translation input
-	processPlayerInput();
-
-	// update the player missiles
-	updatePlayerMissiles();
-
-	// translate the aliens - if the necessary time has elapsed
-	if ( (timer->getElapsedf() * 1000) >= duration ) {
-		// change the current frame/translate the rows
-		aliens->translate();
-		aliens->changeAnimationFrame();
-
-		timer->Reset();
-	}
-
-	if ( (alien_cooldown->getElapsedf() * 1000) >= alien_weapon_cooldown ) {
+		// update the alien missiles
+		updateAlienMissiles();
+	} else {
 		//
-		ScreenSprite * new_missile = aliens->fireMissile();
-		
-		if ( new_missile ) {
-			main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
-
-			alien_missiles.push_back( new_missile );
-			alien_cooldown->Reset();
-		}
+		drawGameOverLabel();
 	}
-
-	// update aliens
-	updateAliens();
-
-	// update the alien missiles
-	updateAlienMissiles();
 
 	return core->updateAndRender();
 }
@@ -186,7 +264,20 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 			switch( ie->keyCode() ) {
 			case KEY_BACKSLASH:
 				// this is for debugging
-				int temp = 10;
+				break;
+			case KEY_RETURN:
+				if ( _game_over ) {
+					_game_over = false;
+
+					// delete the game over labels
+					main_screen->removeChild( game_over_label );
+					main_screen->removeChild( replay_label );
+
+					delete game_over_label;
+					delete replay_label;
+
+					initializeGame();
+				}
 				break;
 			}
 			break;
@@ -271,6 +362,20 @@ void PolycodeTemplateApp::addAliensToScreen() {
 		main_screen->addCollisionChild( alien_list[i], PhysicsScreenEntity::ENTITY_RECT );
 	}
 }
+void PolycodeTemplateApp::removeAliensFromScreen() {
+	//
+	vector<Alien*> alien_list;
+	aliens->getAliens( alien_list );
+
+	const unsigned num_aliens = alien_list.size();
+	for ( unsigned i = 0; i < num_aliens; ++i ) {
+		//
+		main_screen->removeChild( alien_list[i] );
+		
+		aliens->removeAlien( alien_list[i] );
+	}
+}
+
 
 void PolycodeTemplateApp::firePlayerMissile() {
 	//
@@ -389,12 +494,20 @@ void PolycodeTemplateApp::removeLife() {
 	life_sprites.erase( life_sprites.begin() + idx );
 }
 
-void PolycodeTemplateApp::gameOver() {
+void PolycodeTemplateApp::drawGameOverLabel() {
 	//
 	if ( !game_over_label ) {
 		game_over_label = new ScreenLabel( "GAME OVER", 50 );
 		game_over_label->setPosition( Vector3( (screen_width / 2) - (game_over_label->getWidth() / 2), (screen_height / 2) - (game_over_label->getHeight() / 2), 0 ) );
 
 		main_screen->addChild( game_over_label );
+	}
+
+	if ( !replay_label ) {
+		//
+		replay_label = new ScreenLabel( "Press enter to play again", 50 );
+		replay_label->setPosition( Vector3( (screen_width / 2) - (replay_label->getWidth() / 2), (screen_height / 2) - (replay_label->getHeight() / 2) + (100), 0 ) );
+
+		main_screen->addChild( replay_label );
 	}
 }

@@ -17,6 +17,8 @@ Fighter::Fighter(  )
 	_timer = new Timer( false, 0 );
 
 	_timer->Pause( true );
+
+	_num_lives = 3;
 }
 
 Fighter::~Fighter()
@@ -44,10 +46,22 @@ void Fighter::Update() {
 	}
 }
 
+unsigned Fighter::getNumLives() const {
+	//
+	return _num_lives;
+}
+
+void Fighter::restoreLives() {
+	//
+	_num_lives = 3;
+}
+
 void Fighter::kill() {
 	//
 	_state = exploding;
 	playAnimation( "explode", 1, false );
+
+	--_num_lives;
 }
 
 void Fighter::revive() {
