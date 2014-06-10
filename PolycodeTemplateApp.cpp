@@ -3,11 +3,11 @@
 
 	TODO:
 	primary:
-	- add win condition(s) - allowing the player to continue after all the aliens are killed( or after a game over )
-
-	secondary:
+	- add win condition(s) - allowing the player to continue after all the aliens are killed
 	- functionality for lowering all rows when they hit the edge of the screen
 	- make aliens stop hitting each other - move aliens slower; aliens missiles faster
+
+	secondary:
 	- animations for the alien missiles
 	- add the red ufo going accross the top
 	- need to add the barriers too :S
@@ -59,9 +59,23 @@ void PolycodeTemplateApp::setup() {
 
 void PolycodeTemplateApp::initializeGame() {
 	// initialize timers/timer parameters
-	if ( !timer ) timer = new Timer( false, 0 );
-	if ( !player_cooldown ) player_cooldown = new Timer( false, 0 );
-	if ( !alien_cooldown ) alien_cooldown = new Timer( false, 0 );
+	if ( !timer ) {
+		timer = new Timer( false, 0 );
+	} else {
+		timer->Reset();
+	}
+	
+	if ( !player_cooldown ) {
+		player_cooldown = new Timer( false, 0 );
+	} else {
+		player_cooldown->Reset();
+	}
+
+	if ( !alien_cooldown ) {
+		alien_cooldown = new Timer( false, 0 );
+	} else {
+		alien_cooldown->Reset();
+	}
 
 	// initialize fighter/player entity
 	if ( !player ) {
@@ -70,7 +84,7 @@ void PolycodeTemplateApp::initializeGame() {
 		player->Translate( Vector3( screen_width / 2, screen_height - player_yoffset, 0 ) );
 
 		main_screen->addCollisionChild( player, PhysicsScreenEntity::ENTITY_RECT );
-	} else {
+	} else if ( _game_over ) {
 		if ( player->getState() != SpaceInvadersEntity::EntityState::alive ) {
 			player->revive();
 			player->restoreLives();
@@ -102,7 +116,7 @@ void PolycodeTemplateApp::initializeGame() {
 		score_label->setPosition( Vector3( 200, 10, 0 ) );
 
 		main_screen->addChild( score_label );
-	} else {
+	} else if( _game_over ) {
 		// reset score to zero
 		updateScore( -_score );
 	}
@@ -129,7 +143,7 @@ void PolycodeTemplateApp::initializeGame() {
 			life_sprites.push_back( new_sprite );
 			base_loc += Vector3( 50, 0, 0 );
 		}
-	} else {
+	} else if ( _game_over ) {
 		// add the missing lives to the screen
 		Vector3 base_loc( life_sprites[ life_sprites.size() - 1 ]->getPosition() );
 		for ( unsigned i = life_sprites.size(); i < player->getNumLives(); ++i ) {
@@ -183,15 +197,14 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 }
 
 bool PolycodeTemplateApp::Update() {
-	//
-	if ( !_game_over ) {
-		// if the game hasn't been initialized do so
-		if ( !_been_initialized ) {
-			//
-			initializeGame();
-			return core->updateAndRender();
-		}
-
+	// if the game hasn't been initialized do so
+	if ( !_been_initialized ) {
+		//
+		initializeGame();
+	} else if ( aliens->getNumberOfAliens() == 0 ) {
+		// WON! YAY! - keep going
+		_been_initialized = false;
+	} else if ( !_game_over ) {
 		// check if the player is still alive
 		if ( player->getState() != SpaceInvadersEntity::EntityState::alive ) {
 			// decrement the players lives(if there are any left) if the player has died
@@ -267,8 +280,6 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 				break;
 			case KEY_RETURN:
 				if ( _game_over ) {
-					_game_over = false;
-
 					// delete the game over labels
 					main_screen->removeChild( game_over_label );
 					main_screen->removeChild( replay_label );
@@ -277,6 +288,7 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 					delete replay_label;
 
 					initializeGame();
+					_game_over = false;
 				}
 				break;
 			}
