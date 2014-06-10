@@ -3,21 +3,14 @@
 
 	TODO:
 	primary:
-	-  move the cooldown timing functionality(for the player at least) to the appropriate class
-	- animations for the alien missiles
+	- add the red ufo going accross the top
 
 	secondary:
-	- add the red ufo going accross the top
 	- need to add the barriers too :S
 		-> this could be really challenging...
 		-> i'm thinking custom sprite sheets
 	- sound for when the space invaders move
 		-> there also needs to be sound for the red ufo
-
-	BUGS:
-	- the lives' label will not update correctly after you win, then lose
-	- upon killing the last alien; if an alien missile was shot; it will not be removed from the screen
-		-> due to the deletion of the aliengroup class?
 */
 
 #include "PolycodeTemplateApp.h"
@@ -60,12 +53,6 @@ void PolycodeTemplateApp::initializeGame() {
 	} else {
 		timer->Reset();
 	}
-	
-	/* if ( !player_cooldown ) {
-		player_cooldown = new Timer( false, 0 );
-	} else {
-		player_cooldown->Reset();
-	} */
 
 	if ( !alien_cooldown ) {
 		alien_cooldown = new Timer( false, 0 );
@@ -119,7 +106,7 @@ void PolycodeTemplateApp::initializeGame() {
 	Vector3 base_loc( 500, 10, 0 );
 	if ( !lives_label ) {
 		//
-		ScreenLabel * lives_label = new ScreenLabel( "Lives: ", 30 );
+		lives_label = new ScreenLabel( "Lives: ", 30 );
 		lives_label->setPosition( base_loc );
 
 		main_screen->addChild( lives_label );
@@ -140,9 +127,6 @@ void PolycodeTemplateApp::initializeGame() {
 	// set game over labels to null
 	game_over_label = 0;
 	replay_label = 0;
-
-	// clear the missiles
-	clearMissiles();
 
 	_initialized = true;
 }
@@ -184,6 +168,7 @@ bool PolycodeTemplateApp::Update() {
 		initializeGame();
 	} else if ( aliens->getNumberOfAliens() == 0 ) {
 		// WON! YAY! - keep going
+		clearMissiles();
 		_initialized = false;
 	} else if ( !_game_over ) {
 		// check if the player is still alive
@@ -231,7 +216,6 @@ bool PolycodeTemplateApp::Update() {
 			if ( new_missile ) {
 				main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
 
-				//alien_missiles.push_back( new_missile );
 				alien_cooldown->Reset();
 			}
 		}
@@ -387,8 +371,6 @@ void PolycodeTemplateApp::updatePlayerMissiles() {
 	
 	for ( int i = missiles.size() - 1; i >= 0; --i ) {
 		//
-		//missiles[i]->Translate( Vector3( 0, -player_missile_speed, 0 ) );
-
 		if ( missiles[i]->getPosition().y < 0 ) {
 			//
 			main_screen->removeChild( missiles[i] );

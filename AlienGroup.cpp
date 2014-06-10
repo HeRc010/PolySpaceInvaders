@@ -229,6 +229,10 @@ ScreenSprite* AlienGroup::fireMissile() {
 	new_missile->setPosition( lowest_aliens[ idx ]->getPosition() + Vector3( 0, new_missile->getHeight(), 0 ) );
 	new_missile->setScale( Vector3( 0.5, 0.5, 0 ) );
 
+	// animations
+	new_missile->addAnimation( "default", "0,1,2,3,4", 0.2 );
+	new_missile->playAnimation( "default", 0, false );
+
 	new_missile->addTag("a_missile");
 
 	_missiles.push_back( new_missile );

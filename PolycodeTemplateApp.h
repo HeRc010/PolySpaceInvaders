@@ -98,12 +98,6 @@ private:
 	// the delta vector for the player
 	Vector3 player_delta;
 
-	// duration parameter for weapon cooldown - in milliseconds
-	//unsigned player_weapon_cooldown;
-
-	// player missile speed
-	//static const int player_missile_speed = 5;
-
 	// the offset from both sides of the screen for the alien rows
 	static const int alien_xoffset = 150;
 
@@ -124,7 +118,6 @@ private:
 
 	// timers
 	Timer * timer;
-	//Timer * player_cooldown;
 	Timer * alien_cooldown;
 
 	// sprites for the lives label
