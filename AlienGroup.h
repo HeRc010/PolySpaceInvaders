@@ -13,9 +13,12 @@ class AlienGroup
 {
 public:
 	//
-	AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const unsigned row_spacing, const unsigned num_row_aliens, const unsigned sprite_spacing, const int alien_speed );
+	AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const unsigned row_spacing, const unsigned num_row_aliens, const unsigned sprite_spacing, const int alien_speed, const unsigned missile_speed );
 
 	~AlienGroup(  );
+
+	// function to be called every frame
+	void update();
 
 	// direction values
 	enum Direction { left, right };
@@ -23,7 +26,7 @@ public:
 	// get current direction
 	Direction getCurrentDirection() const;
 
-	// reverse the direction of the row
+	// reverse the direction of the rows
 	void reverseDirection();
 
 	// get the number of rows
@@ -41,10 +44,10 @@ public:
 	// change the animation frame for the aliens
 	void changeAnimationFrame();
 
-	// get the left-most element of the group
+	// get the left-most alien of the group
 	Alien * getLeftMostAlien() const;
 
-	// get the right-most element of the group
+	// get the right-most alien of the group
 	Alien * getRightMostAlien() const;
 
 	// get the list of aliens which need to be removed
@@ -57,7 +60,13 @@ public:
 	void removeAlien( ScreenEntity * to_remove );
 
 	// fire a missile
-	ScreenSprite * fireMissile() const;
+	ScreenSprite * fireMissile();
+
+	// get the set of missiles
+	vector<ScreenSprite*> getMissiles() const;
+
+	// remove the given missile
+	void removeMissile( ScreenEntity * to_remove );
 
 private:
 	// get the lowest aliens in each column
@@ -75,8 +84,14 @@ private:
 	// the set of aliens
 	vector<Alien*> _aliens;
 
-	// the number of aliens per row
+	// the number of aliens per row - initially
 	unsigned _num_aliens_per_row;
+
+	// the speed of the missiles
+	unsigned _missile_speed;
+
+	// the set of missiles the aliens have fired
+	vector<ScreenSprite*> _missiles;
 };
 
 #endif ALIEN_GROUP_H

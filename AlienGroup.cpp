@@ -1,7 +1,7 @@
 #include "AlienGroup.h"
 
-AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const unsigned row_spacing, const unsigned num_row_aliens, const unsigned sprite_spacing, const int alien_speed )
-	: _num_aliens( num_rows * num_row_aliens ), _num_aliens_per_row( num_row_aliens ), _speed( alien_speed )
+AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const unsigned row_spacing, const unsigned num_row_aliens, const unsigned sprite_spacing, const int alien_speed, const unsigned missile_speed )
+	: _num_aliens( num_rows * num_row_aliens ), _num_aliens_per_row( num_row_aliens ), _speed( alien_speed ), _missile_speed( missile_speed )
 {
 	// initialize alien vectors
 	Vector3 next_pos( start_pos );
@@ -39,6 +39,15 @@ AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const
 AlienGroup::~AlienGroup(  )
 {
 	//
+}
+
+void AlienGroup::update() {
+	// translate all the missiles
+	const unsigned num_missiles = _missiles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
+		//
+		_missiles[i]->Translate( Vector3( 0, _missile_speed, 0 ) );
+	}
 }
 
 AlienGroup::Direction AlienGroup::getCurrentDirection() const {
@@ -197,7 +206,7 @@ vector<Alien*> AlienGroup::getLowestAliens() const {
 	return result;
 }
 
-ScreenSprite* AlienGroup::fireMissile() const {
+ScreenSprite* AlienGroup::fireMissile() {
 	//
 	if ( _num_aliens == 0 ) return 0;
 
@@ -222,5 +231,24 @@ ScreenSprite* AlienGroup::fireMissile() const {
 
 	new_missile->addTag("a_missile");
 
+	_missiles.push_back( new_missile );
+
 	return new_missile;
+}
+
+vector<ScreenSprite*> AlienGroup::getMissiles() const {
+	//
+	return _missiles;
+}
+
+void AlienGroup::removeMissile( ScreenEntity * to_remove ) {
+	//
+	const unsigned num_missiles = _missiles.size();
+	for ( unsigned i = 0; i < num_missiles; ++i ) {
+		//
+		if ( _missiles[i] == to_remove ) {
+			_missiles.erase( _missiles.begin() + i );
+			break;
+		}
+	}
 }

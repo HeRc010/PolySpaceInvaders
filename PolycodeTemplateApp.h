@@ -75,8 +75,8 @@ private:
 	// main screen
 	PhysicsScreen * main_screen;
 
-	// has the game been initialized
-	bool _been_initialized;
+	// has the game been initialized?
+	bool _initialized;
 
 	// is the game over?
 	bool _game_over;
@@ -89,8 +89,8 @@ private:
 	Fighter *player;
 
 	// fighter gui offsets
-	unsigned player_xoffset;
-	unsigned player_yoffset;
+	static const unsigned player_xoffset = 50;
+	static const unsigned player_yoffset = 50;
 
 	// the player delta amount when translating
 	static const int player_delta_x = 5;
@@ -108,13 +108,13 @@ private:
 	vector<ScreenSprite*> player_missiles;
 
 	// the offset from both sides of the screen for the alien rows
-	int alien_xoffset;
+	static const int alien_xoffset = 150;
 
 	// the amount by which the alien rows lower when they hit the edge of the screen
-	int alien_yoffset;
+	static const int alien_yoffset = 15;
 
 	// delta for alien translation
-	int alien_delta;
+	static const int alien_delta = 15;
 
 	// set of aliens rows
 	AlienGroup * aliens;
@@ -124,12 +124,6 @@ private:
 
 	// duration parameter for the alien weapon cooldown - in milliseconds
 	unsigned alien_weapon_cooldown;
-
-	// alien missile speed
-	static const int alien_missile_speed = 5;
-
-	// a list of the missiles fired by the aliens
-	vector<ScreenSprite*> alien_missiles;
 
 	// timers
 	Timer * timer;
