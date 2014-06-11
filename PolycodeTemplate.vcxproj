@@ -87,6 +87,7 @@
     <ClCompile Include="PolycodeTemplate.cpp" />
     <ClCompile Include="PolycodeTemplateApp.cpp" />
     <ClCompile Include="AlienOne.cpp" />
+    <ClCompile Include="RedUfo.cpp" />
     <ClCompile Include="SpaceInvadersEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +98,7 @@
     <ClInclude Include="AlienThree.h" />
     <ClInclude Include="AlienTwo.h" />
     <ClInclude Include="Fighter.h" />
+    <ClInclude Include="RedUfo.h" />
     <ClInclude Include="SpaceInvadersEntity.h" />
     <ClInclude Include="PolycodeTemplateApp.h" />
   </ItemGroup>

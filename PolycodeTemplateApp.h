@@ -12,6 +12,7 @@
 #include "SpaceInvadersEntity.h"
 #include "Fighter.h"
 #include "AlienGroup.h"
+#include "RedUfo.h"
 
 using namespace Polycode;
 
@@ -54,6 +55,9 @@ public:
 	// clear alien and player missiles
 	void clearMissiles();
 
+	// update the red ufo
+	void updateRedUfo();
+
 	// get the points associated with killing the given entity
 	unsigned getPoints( ScreenEntity * entity ) const;
 
@@ -80,6 +84,9 @@ private:
 
 	// is the game over?
 	bool _game_over;
+
+	// if the game paused
+	bool _paused;
 
 	// GUI parameters
 	static const unsigned screen_width = 1580;
@@ -111,14 +118,21 @@ private:
 	AlienGroup * aliens;
 
 	// duration parameter between alien row translations - in milliseconds
-	unsigned duration;
+	unsigned alien_shift_pause;
 
 	// duration parameter for the alien weapon cooldown - in milliseconds
 	unsigned alien_weapon_cooldown;
 
+	// the red ufo that goes accross the top every once in a while
+	RedUfo * red_ufo;
+
+	// duration parameter to control how often the red ufo appears - in milliseconds
+	unsigned _red_ufo_duration;
+
 	// timers
-	Timer * timer;
+	Timer * alien_shift_timer;
 	Timer * alien_cooldown;
+	Timer * red_ufo_timer;
 
 	// sprites for the lives label
 	ScreenLabel * lives_label;

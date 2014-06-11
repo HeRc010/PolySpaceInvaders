@@ -3,14 +3,14 @@
 
 	TODO:
 	primary:
-	- add the red ufo going accross the top
+	- add barriers
+	- accelerate aliens' speed
+	- add... something...
 
 	secondary:
-	- need to add the barriers too :S
-		-> this could be really challenging...
-		-> i'm thinking custom sprite sheets
 	- sound for when the space invaders move
 		-> there also needs to be sound for the red ufo
+	- should pause the timers when the game is paused
 */
 
 #include "PolycodeTemplateApp.h"
@@ -19,6 +19,7 @@ void PolycodeTemplateApp::setup() {
 	// boolean runtime values
 	_initialized = false;
 	_game_over = false;
+	_paused = false;
 
 	// set fighter/player entity to null
 	player = 0;
@@ -29,14 +30,17 @@ void PolycodeTemplateApp::setup() {
 	// initialize aliens' pointer to zero
 	aliens = 0;
 
-	// initialize timer parameters; set timer pointers to zero
-	timer = 0;
-	//player_cooldown = 0;
-	alien_cooldown = 0;
+	// initialize the red ufo pointer to zero
+	red_ufo = 0;
 
-	duration = 500;
-	//player_weapon_cooldown = 700;
+	// initialize timer parameters; set timer pointers to zero
+	alien_shift_timer = 0;
+	alien_cooldown = 0;
+	red_ufo_timer = 0;
+
+	alien_shift_pause = 500;
 	alien_weapon_cooldown = 2000;
+	_red_ufo_duration = 10000;
 
 	// score label - set to null
 	_score = 0;
@@ -48,16 +52,22 @@ void PolycodeTemplateApp::setup() {
 
 void PolycodeTemplateApp::initializeGame() {
 	// initialize timers/timer parameters
-	if ( !timer ) {
-		timer = new Timer( false, 0 );
+	if ( !alien_shift_timer ) {
+		alien_shift_timer = new Timer( false, 0 );
 	} else {
-		timer->Reset();
+		alien_shift_timer->Reset();
 	}
 
 	if ( !alien_cooldown ) {
 		alien_cooldown = new Timer( false, 0 );
 	} else {
 		alien_cooldown->Reset();
+	}
+
+	if ( !red_ufo_timer ) {
+		red_ufo_timer = new Timer( false, 0 );
+	} else {
+		red_ufo_timer->Reset();
 	}
 
 	// initialize fighter/player entity
@@ -83,8 +93,16 @@ void PolycodeTemplateApp::initializeGame() {
 		delete aliens;
 	}
 
-	aliens = new AlienGroup( Vector3( 100, 100, 0 ), 5, 75, 11, 75, alien_delta, 5 );
+	aliens = new AlienGroup( Vector3( 100, 150, 0 ), 5, 75, 11, 75, alien_delta, 5 );
 	addAliensToScreen();
+
+	// if the red_ufo's pointer is not zero; set to zero
+	if ( red_ufo ) {
+		main_screen->removeChild( red_ufo );
+
+		delete red_ufo;
+		red_ufo = 0;
+	}
 
 	// initialize the score label
 	if ( !score_label ) {
@@ -163,7 +181,9 @@ PolycodeTemplateApp::~PolycodeTemplateApp() {
 
 bool PolycodeTemplateApp::Update() {
 	// if the game hasn't been initialized do so
-	if ( !_initialized ) {
+	if ( _paused ) { 
+		return core->updateAndRender();
+	} else if( !_initialized ) {
 		//
 		initializeGame();
 	} else if ( aliens->getNumberOfAliens() == 0 ) {
@@ -173,6 +193,11 @@ bool PolycodeTemplateApp::Update() {
 	} else if ( !_game_over ) {
 		// check if the player is still alive
 		if ( player->getState() != SpaceInvadersEntity::EntityState::alive ) {
+			// pause the red ufo if not paused
+			if ( red_ufo ) {
+				if ( !red_ufo->isPaused() )  red_ufo->togglePause();
+			}
+
 			// decrement the players lives(if there are any left) if the player has died
 			if ( player->getState() == SpaceInvadersEntity::EntityState::dead ) {
 				//
@@ -198,12 +223,12 @@ bool PolycodeTemplateApp::Update() {
 		updatePlayerMissiles();
 
 		// translate the aliens - if the necessary time has elapsed
-		if ( (timer->getElapsedf() * 1000) >= duration ) {
+		if ( (alien_shift_timer->getElapsedf() * 1000) >= alien_shift_pause ) {
 			// change the current frame/translate the rows
 			aliens->shift();
 			aliens->changeAnimationFrame();
 
-			timer->Reset();
+			alien_shift_timer->Reset();
 		}
 
 		// update the aliens
@@ -225,6 +250,20 @@ bool PolycodeTemplateApp::Update() {
 
 		// update the alien missiles
 		updateAlienMissiles();
+
+		// spawn a new red ufo if there isn't one already and the timer permits
+		if ( !red_ufo && ( (red_ufo_timer->getElapsedf() * 1000) >= _red_ufo_duration ) ) {
+			//
+			red_ufo = new RedUfo( screen_width );
+			main_screen->addCollisionChild( red_ufo, PhysicsScreenEntity::ENTITY_RECT );
+
+			red_ufo_timer->Reset();
+		} else if ( red_ufo ) {
+			//
+			if ( red_ufo->isPaused() ) red_ufo->togglePause();
+
+			updateRedUfo();
+		}
 	} else {
 		//
 		drawGameOverLabel();
@@ -243,13 +282,13 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 		{
 		case InputEvent::EVENT_KEYDOWN:
 			switch( ie->keyCode() ) {
-			case KEY_BACKSLASH:
-				// this is for debugging
-				temp = 1;
+			case KEY_p:
+				// pause the game
+				_paused = !_paused;
 				break;
 			case KEY_RETURN:
 				if ( _game_over ) {
-					// delete the game over labels
+					// delete the game over labels 
 					main_screen->removeChild( game_over_label );
 					main_screen->removeChild( replay_label );
 
@@ -292,12 +331,6 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 				updateScore( getPoints( pe->entity2 ) );
 			}
 
-			if ( pe->entity1->hasTag("p_missile") ) {
-				if ( !pe->entity2->hasTag("a_missile") ) main_screen->removeChild( pe->entity1 );
-			} else if ( pe->entity2->hasTag("p_missile") ) {
-				if ( !pe->entity1->hasTag("a_missile") ) main_screen->removeChild( pe->entity2 );
-			}
-
 			if ( pe->entity1->hasTag("a_missile") ) {
 				if ( !pe->entity2->hasTag("p_missile") ) main_screen->removeChild( pe->entity1 );
 			} else if ( pe->entity2->hasTag("a_missile") ) {
@@ -313,6 +346,31 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 				player->kill();
 				// empty the missile arrays
 				clearMissiles();				
+			}
+
+			if ( pe->entity1->hasTag("p_missile") ) {
+				if ( !pe->entity2->hasTag("a_missile") ) main_screen->removeChild( pe->entity1 );
+			} else if ( pe->entity2->hasTag("p_missile") ) {
+				if ( !pe->entity1->hasTag("a_missile") ) main_screen->removeChild( pe->entity2 );
+			}
+
+			if ( pe->entity1->hasTag("redUFO")  ) {
+				//
+				main_screen->removeChild( pe->entity1 );
+
+				// increment score
+				updateScore( getPoints( pe->entity1 ) );
+
+				delete red_ufo;
+				red_ufo = 0;
+			} else if ( pe->entity2->hasTag("redUFO") ) {
+				main_screen->removeChild( pe->entity2 );
+
+				// increment score
+				updateScore( getPoints( pe->entity2 ) );
+
+				delete red_ufo;
+				red_ufo = 0;
 			}
 			break; 
 		}
@@ -336,7 +394,7 @@ void PolycodeTemplateApp::processPlayerInput() {
 		//
 		ScreenSprite * new_missile = player->fireMissile();
 
-		if ( new_missile ) main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );\
+		if ( new_missile ) main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
 	}
 }
 
@@ -457,6 +515,18 @@ void PolycodeTemplateApp::clearMissiles() {
 	}
 }
 
+void PolycodeTemplateApp::updateRedUfo() {
+	// ensure the red ufo does not go outside the bounds of the screen
+	unsigned x_pos = red_ufo->getPosition().x;
+	if ( (x_pos > screen_width) || (x_pos < 0) ) {
+		//
+		main_screen->removeChild( red_ufo );
+
+		delete red_ufo;
+		red_ufo = 0;
+	}
+}
+
 unsigned PolycodeTemplateApp::getPoints( ScreenEntity * entity ) const {
 	//
 	if ( entity->hasTag( "alien_one" ) ) {
@@ -468,6 +538,9 @@ unsigned PolycodeTemplateApp::getPoints( ScreenEntity * entity ) const {
 	} else if ( entity->hasTag( "alien_three" )  ) {
 		//
 		return 40;
+	} else if ( entity->hasTag( "redUFO" )  ) {
+		// 50, 100, or 150
+		return (rand() % 3) * 50;
 	} else {
 		return 0;	
 	}
