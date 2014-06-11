@@ -83,6 +83,8 @@
     <ClCompile Include="AlienRow.cpp" />
     <ClCompile Include="AlienThree.cpp" />
     <ClCompile Include="AlienTwo.cpp" />
+    <ClCompile Include="Barrier.cpp" />
+    <ClCompile Include="Block.cpp" />
     <ClCompile Include="Fighter.cpp" />
     <ClCompile Include="PolycodeTemplate.cpp" />
     <ClCompile Include="PolycodeTemplateApp.cpp" />
@@ -97,6 +99,8 @@
     <ClInclude Include="AlienRow.h" />
     <ClInclude Include="AlienThree.h" />
     <ClInclude Include="AlienTwo.h" />
+    <ClInclude Include="Barrier.h" />
+    <ClInclude Include="Block.h" />
     <ClInclude Include="Fighter.h" />
     <ClInclude Include="RedUfo.h" />
     <ClInclude Include="SpaceInvadersEntity.h" />
