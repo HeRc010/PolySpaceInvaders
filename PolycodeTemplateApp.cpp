@@ -284,9 +284,9 @@ bool PolycodeTemplateApp::Update() {
 			const unsigned num_blocks = destroyed_blocks.size();
 			for ( unsigned j = 0; j < num_blocks; ++j ) {
 				//
-				main_screen->removeChild( destroyed_blocks[i] );
+				main_screen->removeChild( destroyed_blocks[j] );
 
-				_barriers[i]->removeBlock( destroyed_blocks[i] );
+				_barriers[i]->removeBlock( destroyed_blocks[j] );
 			}
 		}
 	} else {
@@ -379,6 +379,18 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 				if ( !pe->entity1->hasTag("a_missile") ) main_screen->removeChild( pe->entity2 );
 			}
 
+			if ( pe->entity1->hasTag("block") ) {
+				// find the barrier which contains the block
+				if ( !pe->entity2->hasTag("block")  ) {
+					hitBlock( pe->entity1 );
+				}
+			} else if ( pe->entity2->hasTag("block") ) {
+				// find the barrier which contains the block
+				if ( !pe->entity1->hasTag("block") ) {
+					hitBlock( pe->entity2 );
+				}
+			}
+
 			if ( pe->entity1->hasTag("redUFO")  ) {
 				//
 				main_screen->removeChild( pe->entity1 );
@@ -396,18 +408,6 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 
 				delete red_ufo;
 				red_ufo = 0;
-			}
-
-			if ( pe->entity1->hasTag("block") ) {
-				// find the barrier which contains the block
-				if ( !pe->entity2->hasTag("block")  ) {
-					hitBlock( pe->entity1 );
-				}
-			} else if ( pe->entity2->hasTag("block") ) {
-				// find the barrier which contains the block
-				if ( !pe->entity1->hasTag("block")  ) {
-					hitBlock( pe->entity2 );
-				}
 			}
 			break; 
 		}
