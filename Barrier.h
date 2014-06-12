@@ -16,7 +16,7 @@ public:
 	vector<Block*> getBlocks() const;
 	
 	// change the state of the given block
-	void Barrier::hitBlock( Block * to_hit );
+	void hitBlock( ScreenEntity * to_hit );
 
 	// get destroyed blocks
 	vector<Block*> getDestroyedBlocks() const;

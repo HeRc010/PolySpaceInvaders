@@ -168,8 +168,10 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	// spawn the barriers
 	Vector3 start_pos( 300, 600, 0 );
 	for ( unsigned i = 0; i < 4; ++i ) {
-		Barrier * test = new Barrier( start_pos, 12, 4, 0 );
-		addBarrierToScreen( test );
+		Barrier * next_barrier = new Barrier( start_pos, 12, 4, i );
+		addBarrierToScreen( next_barrier );
+
+		_barriers.push_back( next_barrier );
 
 		start_pos += Vector3( 300, 0, 0 );
 	}
@@ -204,7 +206,7 @@ bool PolycodeTemplateApp::Update() {
 		if ( player->getState() != SpaceInvadersEntity::EntityState::alive ) {
 			// pause the red ufo if not paused
 			if ( red_ufo ) {
-				if ( !red_ufo->isPaused() )  red_ufo->togglePause();
+				if ( !red_ufo->isPaused() ) red_ufo->togglePause();
 			}
 
 			// decrement the players lives(if there are any left) if the player has died
@@ -272,6 +274,20 @@ bool PolycodeTemplateApp::Update() {
 			if ( red_ufo->isPaused() ) red_ufo->togglePause();
 
 			updateRedUfo();
+		}
+
+		// check for destroyed blocks
+		const unsigned num_barriers = _barriers.size();
+		for ( unsigned i = 0; i < num_barriers; ++i ) {
+			//
+			vector<Block*> destroyed_blocks = _barriers[i]->getDestroyedBlocks();
+			const unsigned num_blocks = destroyed_blocks.size();
+			for ( unsigned j = 0; j < num_blocks; ++j ) {
+				//
+				main_screen->removeChild( destroyed_blocks[i] );
+
+				_barriers[i]->removeBlock( destroyed_blocks[i] );
+			}
 		}
 	} else {
 		//
@@ -380,6 +396,18 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 
 				delete red_ufo;
 				red_ufo = 0;
+			}
+
+			if ( pe->entity1->hasTag("block") ) {
+				// find the barrier which contains the block
+				if ( !pe->entity2->hasTag("block")  ) {
+					hitBlock( pe->entity1 );
+				}
+			} else if ( pe->entity2->hasTag("block") ) {
+				// find the barrier which contains the block
+				if ( !pe->entity1->hasTag("block")  ) {
+					hitBlock( pe->entity2 );
+				}
 			}
 			break; 
 		}
@@ -543,6 +571,24 @@ void PolycodeTemplateApp::addBarrierToScreen( Barrier * to_add ) {
 	for ( unsigned i = 0; i < num_blocks; ++i ) {
 		//
 		main_screen->addCollisionChild( blocks[i], PhysicsScreenEntity::ENTITY_RECT );
+	}
+}
+
+void PolycodeTemplateApp::hitBlock( ScreenEntity * to_hit ) {
+	//
+	const unsigned num_barriers = _barriers.size();
+	for ( unsigned i = 0; i < num_barriers; ++i ) {
+		//
+		char buff[256];
+
+		itoa( i, buff, 10 );
+
+		if ( to_hit->hasTag( "barrier_" + String( buff ) ) ) {
+			//
+			_barriers[i]->hitBlock( to_hit );
+
+			return;
+		}
 	}
 }
 

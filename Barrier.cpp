@@ -8,7 +8,7 @@ Barrier::Barrier( const Vector3 &start_pos, unsigned num_blocks, unsigned num_bl
 
 	itoa( barrier_index, idx_buff, 10 );
 
-	_barrier_idx = String( idx_buff );
+	_barrier_idx = "barrier_" + String( idx_buff );
 
 	// initialize the blocks
 	Vector3 next_pos( start_pos );
@@ -53,7 +53,7 @@ vector<Block*> Barrier::getBlocks() const {
 	return _blocks;
 }
 
-void Barrier::hitBlock( Block * to_hit ) {
+void Barrier::hitBlock( ScreenEntity * to_hit ) {
 	//
 	for ( unsigned i = 0; i < _num_blocks; ++i ) {
 		//
@@ -69,6 +69,11 @@ void Barrier::hitBlock( Block * to_hit ) {
 			return;
 		}
 	}
+}
+
+vector<Block*> Barrier::getDestroyedBlocks() const {
+	//
+	return _destroyed_blocks;
 }
 
 void Barrier::removeBlock( Block * to_remove ) {

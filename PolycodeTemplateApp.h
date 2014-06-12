@@ -62,6 +62,9 @@ public:
 	// add the given barrier to the screen
 	void addBarrierToScreen( Barrier * to_add );
 
+	// remove the given block from the barrier which contains it
+	void hitBlock( ScreenEntity * to_remove );
+
 	// get the points associated with killing the given entity
 	unsigned getPoints( ScreenEntity * entity ) const;
 
@@ -132,6 +135,9 @@ private:
 
 	// duration parameter to control how often the red ufo appears - in milliseconds
 	unsigned _red_ufo_duration;
+
+	// the set of barriers
+	vector<Barrier*> _barriers;
 
 	// timers
 	Timer * alien_shift_timer;
