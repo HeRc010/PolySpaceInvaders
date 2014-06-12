@@ -11,6 +11,9 @@ Block::Block( const String &file_name, unsigned x, unsigned y )
 
 	playAnimation( "condition_0", 0, false );
 
+	// add the block tag
+	addTag("block");
+
 	//
 	_condition = 0;
 	_index = Vector2( x, y );

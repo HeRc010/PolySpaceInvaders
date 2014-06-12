@@ -15,7 +15,7 @@ public:
 	//
 	AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const unsigned row_spacing, const unsigned num_row_aliens, const unsigned sprite_spacing, const int alien_speed, const unsigned missile_speed );
 
-	~AlienGroup(  );
+	~AlienGroup();
 
 	// function to be called every frame
 	void update();

@@ -1,8 +1,15 @@
 #include "Barrier.h"
 
-Barrier::Barrier( const Vector3 &start_pos, unsigned num_blocks, unsigned num_blocks_row )
+Barrier::Barrier( const Vector3 &start_pos, unsigned num_blocks, unsigned num_blocks_row, unsigned barrier_index )
 	: _num_blocks_row( num_blocks_row ), _num_blocks( num_blocks - 2 )
 {
+	// define the barrier index member
+	char idx_buff[256];
+
+	itoa( barrier_index, idx_buff, 10 );
+
+	_barrier_idx = String( idx_buff );
+
 	// initialize the blocks
 	Vector3 next_pos( start_pos );
 	for ( unsigned i = 0; i < num_blocks / _num_blocks_row; ++i ) {
@@ -20,6 +27,8 @@ Barrier::Barrier( const Vector3 &start_pos, unsigned num_blocks, unsigned num_bl
 			Block * next_block = new Block( "Resources/barrier_" + String( j_buff ) + "_" + String( i_buff ) + ".png" , j, i );
 
 			next_block->Translate( next_pos + Vector3( next_block->getWidth() * j, 0, 0 ) );
+
+			next_block->addTag( _barrier_idx );
 
 			_blocks.push_back( next_block );
 		}

@@ -6,7 +6,7 @@
 class Barrier {
 public:
 	// these elements may not be needed in the constructor if they're static
-	Barrier( const Vector3 &start_pos, unsigned num_blocks, unsigned num_blocks_row );
+	Barrier( const Vector3 &start_pos, unsigned num_blocks, unsigned num_blocks_row, unsigned barrier_idx );
 	~Barrier();
 
 	// get the number of blocks
@@ -25,6 +25,9 @@ public:
 	void removeBlock( Block * to_remove );
 
 private:
+	// the index of the barrier
+	String _barrier_idx;
+
 	// the number of blocks in the barrier
 	unsigned _num_blocks;
 

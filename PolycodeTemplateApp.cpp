@@ -165,9 +165,14 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 
 	setup();
 
-	// test
-	Barrier * test = new Barrier( Vector3( 250, 250, 0 ), 12, 4 );
-	addBarrierToScreen( test );
+	// spawn the barriers
+	Vector3 start_pos( 300, 600, 0 );
+	for ( unsigned i = 0; i < 4; ++i ) {
+		Barrier * test = new Barrier( start_pos, 12, 4, 0 );
+		addBarrierToScreen( test );
+
+		start_pos += Vector3( 300, 0, 0 );
+	}
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
