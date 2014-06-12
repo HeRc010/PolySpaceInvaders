@@ -165,6 +165,10 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 
 	setup();
 
+	// test
+	Barrier * test = new Barrier( Vector3( 250, 250, 0 ), 12, 4 );
+	addBarrierToScreen( test );
+
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYUP );
@@ -524,6 +528,16 @@ void PolycodeTemplateApp::updateRedUfo() {
 
 		delete red_ufo;
 		red_ufo = 0;
+	}
+}
+
+void PolycodeTemplateApp::addBarrierToScreen( Barrier * to_add ) {
+	//
+	vector<Block*> blocks = to_add->getBlocks();
+	const unsigned num_blocks = to_add->getNumBlocks();
+	for ( unsigned i = 0; i < num_blocks; ++i ) {
+		//
+		main_screen->addCollisionChild( blocks[i], PhysicsScreenEntity::ENTITY_RECT );
 	}
 }
 

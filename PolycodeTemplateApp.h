@@ -13,6 +13,7 @@
 #include "Fighter.h"
 #include "AlienGroup.h"
 #include "RedUfo.h"
+#include "Barrier.h"
 
 using namespace Polycode;
 
@@ -57,6 +58,9 @@ public:
 
 	// update the red ufo
 	void updateRedUfo();
+
+	// add the given barrier to the screen
+	void addBarrierToScreen( Barrier * to_add );
 
 	// get the points associated with killing the given entity
 	unsigned getPoints( ScreenEntity * entity ) const;
