@@ -379,14 +379,14 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 
 			if ( pe->entity1->hasTag("block") ) {
 				// find the barrier which contains the block
-				//if ( !pe->entity2->hasTag("block")  ) {
+				if ( !pe->entity2->hasTag("block")  ) {
 					hitBlock( pe->entity1 );
-				//}
+				}
 			} else if ( pe->entity2->hasTag("block") ) {
 				// find the barrier which contains the block
-				//if ( !pe->entity1->hasTag("block") ) {
+				if ( !pe->entity1->hasTag("block") ) {
 					hitBlock( pe->entity2 );
-				//}
+				}
 			}
 
 			if ( pe->entity1->hasTag("redUFO")  ) {
