@@ -46,15 +46,9 @@ void Block::Update() {
 		itoa( _condition, buffer, 10 );
 		playAnimation( "condition_" + String( buffer ), _condition, false ); */
 
-		// compute the current file
-		char buffer[256];
-
-		itoa( _condition, buffer, 10 );
-
-		String current_file = "Resources/barrier_" + String( buffer );
-
-		if ( fileName != current_file ) {
-			fileName = current_file;
+		if ( fileName != String("") ) {
+			//fileName = current_file;
+			int temp = 1;
 		}
 
 		playAnimation( "base", _condition, false );
@@ -69,4 +63,18 @@ Block::Condition Block::getCondition() const {
 void Block::hit() {
 	//
 	_condition = ++_condition % 5;
+
+	// compute the current file
+	char buffer[256];
+
+	itoa( _condition, buffer, 10 );
+
+	//loadFromFile( "Resources/barrier_" + String( buffer ) + ".png" );
+	loadTexture( "Resources/barrier_" + String( buffer ) + ".png" );
+
+	// re add the animation...
+	/* unsigned idx = _index.x + _index.y * _row_width;
+
+	addAnimation( "base", String( buffer ), 1 );
+	playAnimation( "base", idx, false ); */
 }
