@@ -7,7 +7,7 @@
 
 class Block : public ScreenSprite {
 public:
-	Block( const String &file_name, unsigned x, unsigned y );
+	Block( const String &file_name, unsigned x, unsigned y, unsigned row_width );
 	~Block();
 
 	// override the update method
@@ -24,6 +24,9 @@ public:
 private:
 	// the condition of the block
 	unsigned _condition;
+
+	// the width of the barrier in number of blocks
+	unsigned _row_width;
 
 	// the index of the block in the would-be barrier
 	Vector2 _index;
