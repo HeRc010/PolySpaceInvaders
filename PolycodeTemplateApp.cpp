@@ -31,6 +31,12 @@ void PolycodeTemplateApp::setup() {
 	// initialize the red ufo pointer to zero
 	red_ufo = 0;
 
+	// initialize the barrier pointers to zero
+	for ( unsigned i = 0; i < 4; ++i ) {
+		//
+		_barriers.push_back( 0 );
+	}
+
 	// initialize timer parameters; set timer pointers to zero
 	alien_shift_timer = 0;
 	alien_cooldown = 0;
@@ -102,6 +108,35 @@ void PolycodeTemplateApp::initializeGame() {
 		red_ufo = 0;
 	}
 
+	// initialize the barriers
+	Vector3 start_pos( 300, 600, 0 );
+	const unsigned _num_barriers = _barriers.size();
+	for ( unsigned i = 0; i < _num_barriers; ++i ) {
+		//
+		if ( !_barriers[i] ) {
+			//
+			Barrier * next_barrier = new Barrier( start_pos, 12, 4, i );
+			addBarrierToScreen( next_barrier );
+
+			_barriers[i] = next_barrier;
+
+			start_pos += Vector3( 300, 0, 0 );
+		} else if ( _game_over ) {
+			//
+			removeBarrierFromScreen( _barriers[i] );
+			
+			delete _barriers[i];
+			//_barriers.erase( _barriers.begin() + i );
+
+			Barrier * next_barrier = new Barrier( start_pos, 12, 4, i );
+			addBarrierToScreen( next_barrier );
+
+			_barriers[i] = next_barrier;
+
+			start_pos += Vector3( 300, 0, 0 );
+		}
+	}
+
 	// initialize the score label
 	if ( !score_label ) {
 		char buffer[256];
@@ -164,7 +199,7 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 	setup();
 
 	// spawn the barriers
-	Vector3 start_pos( 300, 600, 0 );
+	/* Vector3 start_pos( 300, 600, 0 );
 	for ( unsigned i = 0; i < 4; ++i ) {
 		Barrier * next_barrier = new Barrier( start_pos, 12, 4, i );
 		addBarrierToScreen( next_barrier );
@@ -172,7 +207,7 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 		_barriers.push_back( next_barrier );
 
 		start_pos += Vector3( 300, 0, 0 );
-	}
+	} */
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
@@ -569,6 +604,16 @@ void PolycodeTemplateApp::addBarrierToScreen( Barrier * to_add ) {
 	for ( unsigned i = 0; i < num_blocks; ++i ) {
 		//
 		main_screen->addCollisionChild( blocks[i], PhysicsScreenEntity::ENTITY_RECT );
+	}
+}
+
+void PolycodeTemplateApp::removeBarrierFromScreen( Barrier * to_remove ) {
+	//
+	vector<Block*> blocks = to_remove->getBlocks();
+	const unsigned num_blocks = blocks.size();
+	for ( unsigned i = 0; i < num_blocks; ++i ) {
+		//
+		main_screen->removeChild( blocks[i] );
 	}
 }
 

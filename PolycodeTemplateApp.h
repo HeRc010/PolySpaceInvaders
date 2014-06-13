@@ -62,6 +62,9 @@ public:
 	// add the given barrier to the screen
 	void addBarrierToScreen( Barrier * to_add );
 
+	// remove the given barrier from the screen
+	void removeBarrierFromScreen( Barrier * to_remove );
+
 	// remove the given block from the barrier which contains it
 	void hitBlock( ScreenEntity * to_remove );
 
