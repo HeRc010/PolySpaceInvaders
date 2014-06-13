@@ -3,15 +3,7 @@
 Block::Block( const String &file_name, unsigned x, unsigned y, unsigned row_width )
 	: ScreenSprite( file_name, 35, 35 ), _row_width( row_width )
 {
-	// configure animations
-	/* addAnimation( "condition_0", "0", 1 );
-	addAnimation( "condition_1", "1", 1 );
-	addAnimation( "condition_2", "2", 1 );
-	addAnimation( "condition_3", "3", 1 );
-
-	playAnimation( "condition_0", 0, false ); */
-
-	// compute index
+	// compute one dimensional index
 	unsigned idx = x + y * _row_width;
 
 	char buffer[256];
@@ -41,16 +33,6 @@ void Block::Update() {
 	// if not destroyed, play the appropriate state frame
 	if ( Condition( _condition ) != destroyed ) {
 		//
-		/* char buffer[256];
-
-		itoa( _condition, buffer, 10 );
-		playAnimation( "condition_" + String( buffer ), _condition, false ); */
-
-		if ( fileName != String("") ) {
-			//fileName = current_file;
-			int temp = 1;
-		}
-
 		playAnimation( "base", _condition, false );
 	}
 }
@@ -69,12 +51,5 @@ void Block::hit() {
 
 	itoa( _condition, buffer, 10 );
 
-	//loadFromFile( "Resources/barrier_" + String( buffer ) + ".png" );
-	loadTexture( "Resources/barrier_" + String( buffer ) + ".png" );
-
-	// re add the animation...
-	/* unsigned idx = _index.x + _index.y * _row_width;
-
-	addAnimation( "base", String( buffer ), 1 );
-	playAnimation( "base", idx, false ); */
+	if ( _condition < 4 ) loadTexture( "Resources/barrier_" + String( buffer ) + ".png" );
 }

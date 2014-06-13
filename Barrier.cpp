@@ -24,7 +24,6 @@ Barrier::Barrier( const Vector3 &start_pos, unsigned num_blocks, unsigned num_bl
 			itoa( i, i_buff, 10 );
 			itoa( j, j_buff, 10 );
 
-			//Block * next_block = new Block( "Resources/barrier_" + String( j_buff ) + "_" + String( i_buff ) + "_test.png" , j, i, _num_blocks_row );
 			Block * next_block = new Block( "Resources/barrier_0.png", j, i, _num_blocks_row );
 
 			next_block->Translate( next_pos + Vector3( next_block->getWidth() * j, 0, 0 ) );
