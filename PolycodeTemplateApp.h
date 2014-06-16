@@ -132,6 +132,9 @@ private:
 	// how ofter the aliens increase speed - in milliseconds
 	float alien_acceleration;
 
+	// initial alien row translations - in milliseconds
+	static const unsigned alien_shift_pause_initial = 500;
+
 	// alien row translations - in milliseconds
 	float alien_shift_pause;
 

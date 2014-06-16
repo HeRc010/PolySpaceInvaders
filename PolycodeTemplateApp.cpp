@@ -42,7 +42,6 @@ void PolycodeTemplateApp::setup() {
 	red_ufo_timer = 0;
 
 	alien_acceleration = 20000;
-	alien_shift_pause = 500;
 	alien_weapon_cooldown = 2000;
 	_red_ufo_duration = 10000;
 
@@ -85,6 +84,9 @@ void PolycodeTemplateApp::initializeGame() {
 	} else {
 		red_ufo_timer->Reset();
 	}
+
+	// initialize the alien shift time
+	alien_shift_pause = float( alien_shift_pause_initial );
 
 	// initialize fighter/player entity
 	if ( !player ) {
@@ -453,6 +455,9 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 				// increment score
 				updateScore( getPoints( pe->entity1 ) );
 
+				// stop the audio
+				red_ufo_audio->Stop();
+
 				delete red_ufo;
 				red_ufo = 0;
 			} else if ( pe->entity2->hasTag("redUFO") ) {
@@ -460,6 +465,9 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 
 				// increment score
 				updateScore( getPoints( pe->entity2 ) );
+
+				// stop the audio
+				red_ufo_audio->Stop();
 
 				delete red_ufo;
 				red_ufo = 0;
