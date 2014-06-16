@@ -240,6 +240,7 @@ bool PolycodeTemplateApp::Update() {
 			// pause the red ufo if not paused
 			if ( red_ufo ) {
 				if ( !red_ufo->isPaused() ) red_ufo->togglePause();
+				red_ufo_audio->Stop();
 			}
 
 			// decrement the players lives(if there are any left) if the player has died
@@ -414,11 +415,17 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 
 				// empty the missile arrays
 				clearMissiles();
+
+				// play audio
+				player_explosion->Play();
 			} else if ( pe->entity2->hasTag("fighter") ) {
 				player->kill();
 
 				// empty the missile arrays
 				clearMissiles();				
+
+				// play audio
+				player_explosion->Play();
 			}
 
 			if ( pe->entity1->hasTag("p_missile") ) {
@@ -615,6 +622,12 @@ void PolycodeTemplateApp::updateRedUfo() {
 
 		delete red_ufo;
 		red_ufo = 0;
+
+		// stop the audio
+		red_ufo_audio->Stop();
+	} else if ( !red_ufo_audio->isPlaying() ) {
+		// play the audio if it isn't playing
+		red_ufo_audio->Play();
 	}
 }
 
