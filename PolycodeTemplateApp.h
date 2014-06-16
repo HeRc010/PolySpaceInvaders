@@ -127,23 +127,29 @@ private:
 	// set of aliens rows
 	AlienGroup * aliens;
 
-	// duration parameter between alien row translations - in milliseconds
-	unsigned alien_shift_pause;
+	// duration parameters:
+	
+	// how ofter the aliens increase speed - in milliseconds
+	float alien_acceleration;
 
-	// duration parameter for the alien weapon cooldown - in milliseconds
-	unsigned alien_weapon_cooldown;
+	// alien row translations - in milliseconds
+	float alien_shift_pause;
+
+	// alien weapon cooldown - in milliseconds
+	float alien_weapon_cooldown;
 
 	// the red ufo that goes accross the top every once in a while
 	RedUfo * red_ufo;
 
 	// duration parameter to control how often the red ufo appears - in milliseconds
-	unsigned _red_ufo_duration;
+	float _red_ufo_duration;
 
 	// the set of barriers
 	vector<Barrier*> _barriers;
 
 	// timers
 	Timer * alien_shift_timer;
+	Timer * alien_acceleration_timer;
 	Timer * alien_cooldown;
 	Timer * red_ufo_timer;
 

@@ -3,8 +3,6 @@
 
 	TODO:
 	primary:
-	- restore barriers after a game over
-	- accelerate aliens' speed
 	- add audio
 
 	secondary:
@@ -38,10 +36,12 @@ void PolycodeTemplateApp::setup() {
 	}
 
 	// initialize timer parameters; set timer pointers to zero
+	alien_acceleration_timer = 0;
 	alien_shift_timer = 0;
 	alien_cooldown = 0;
 	red_ufo_timer = 0;
 
+	alien_acceleration = 20000;
 	alien_shift_pause = 500;
 	alien_weapon_cooldown = 2000;
 	_red_ufo_duration = 10000;
@@ -56,6 +56,12 @@ void PolycodeTemplateApp::setup() {
 
 void PolycodeTemplateApp::initializeGame() {
 	// initialize timers/timer parameters
+	if ( !alien_acceleration_timer ) {
+		alien_acceleration_timer = new Timer( false, 0 );
+	} else {
+		alien_acceleration_timer->Reset();
+	}
+
 	if ( !alien_shift_timer ) {
 		alien_shift_timer = new Timer( false, 0 );
 	} else {
@@ -193,21 +199,9 @@ PolycodeTemplateApp::PolycodeTemplateApp(PolycodeView *view) : EventHandler() {
 
 	// add background
 	ScreenSprite *background = ScreenSprite::ScreenSpriteFromImageFile("Resources/background.png", Number(screen_width*2), Number(screen_height*2) );
-
 	main_screen->addChild( background );
 
 	setup();
-
-	// spawn the barriers
-	/* Vector3 start_pos( 300, 600, 0 );
-	for ( unsigned i = 0; i < 4; ++i ) {
-		Barrier * next_barrier = new Barrier( start_pos, 12, 4, i );
-		addBarrierToScreen( next_barrier );
-
-		_barriers.push_back( next_barrier );
-
-		start_pos += Vector3( 300, 0, 0 );
-	} */
 
 	// listen for input
 	core->getInput()->addEventListener( this, InputEvent::EVENT_KEYDOWN );
@@ -265,6 +259,14 @@ bool PolycodeTemplateApp::Update() {
 
 		// update the player missiles
 		updatePlayerMissiles();
+
+		// increase the aliens' speed if time elapsed
+		if ( (alien_acceleration_timer->getElapsedf() * 1000) >= alien_acceleration ) {
+			// increase speed by a certain proportion
+			alien_shift_pause *= 0.85;
+			
+			alien_acceleration_timer->Reset();
+		}
 
 		// translate the aliens - if the necessary time has elapsed
 		if ( (alien_shift_timer->getElapsedf() * 1000) >= alien_shift_pause ) {
