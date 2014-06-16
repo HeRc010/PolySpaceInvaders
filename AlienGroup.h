@@ -92,6 +92,12 @@ private:
 
 	// the set of missiles the aliens have fired
 	vector<ScreenSprite*> _missiles;
+
+	// the current index of the sound in the audio set
+	unsigned _sound_idx;
+
+	// the set of audio for alien shifts
+	vector<Sound*> _audio;
 };
 
 #endif ALIEN_GROUP_H

@@ -33,6 +33,17 @@ AlienGroup::AlienGroup( const Vector3 &start_pos, const unsigned num_rows, const
 
 	// set the current direction by default to right
 	_current_dir = right;
+
+	// initialize the audio set
+	unsigned _sound_idx = 0;
+	for ( unsigned i = 0; i < 4; ++i ) {
+		//
+		char buffer[256];
+
+		itoa( i + 1, buffer, 10 );
+
+		_audio.push_back( new Sound( "Resources/Audio/fastinvader" + String( buffer ) + "/fastinvader" + String( buffer ) + ".wav" ) );
+	}
 }
 
 
@@ -95,6 +106,10 @@ void AlienGroup::shift() {
 		}
 		break;
 	}
+
+	// play the appropriate audio
+	++_sound_idx %= 4;
+	_audio[ _sound_idx ]->Play();
 }
 
 void AlienGroup::translate( const Vector3 &delta ) {
