@@ -166,4 +166,10 @@ private:
 	// game over labels
 	ScreenLabel * game_over_label;
 	ScreenLabel * replay_label;
+
+	// audio
+	Sound * player_shoot;
+	Sound * player_explosion;
+	Sound * alien_explosion;
+	Sound * red_ufo_audio;
 };

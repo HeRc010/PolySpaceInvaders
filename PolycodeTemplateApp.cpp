@@ -52,6 +52,12 @@ void PolycodeTemplateApp::setup() {
 
 	// lives' label - set to null
 	lives_label = 0;
+
+	// initialize audio
+	player_shoot = new Sound( "Resources/Audio/shoot/shoot.wav" );
+	player_explosion = new Sound( "Resources/Audio/explosion/explosion.wav" );
+	alien_explosion = new Sound( "Resources/Audio/invaderkilled/invaderkilled.wav" );
+	red_ufo_audio = new Sound( "Resources/Audio/ufo_lowpitch/ufo_lowpitch.wav" );
 }
 
 void PolycodeTemplateApp::initializeGame() {
@@ -383,12 +389,18 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 
 				// increment score
 				updateScore( getPoints( pe->entity1 ) );
+
+				// play audio
+				alien_explosion->Play();
 			} else if ( pe->entity2->hasTag("alien") ) {
 				//
 				aliens->killAlien( pe->entity2 );
 
 				// increment score
 				updateScore( getPoints( pe->entity2 ) );
+
+				// play audio
+				alien_explosion->Play();
 			}
 
 			if ( pe->entity1->hasTag("a_missile") ) {
@@ -404,6 +416,7 @@ void PolycodeTemplateApp::handleEvent( Event *e ) {
 				clearMissiles();
 			} else if ( pe->entity2->hasTag("fighter") ) {
 				player->kill();
+
 				// empty the missile arrays
 				clearMissiles();				
 			}
@@ -466,7 +479,13 @@ void PolycodeTemplateApp::processPlayerInput() {
 		//
 		ScreenSprite * new_missile = player->fireMissile();
 
-		if ( new_missile ) main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
+		if ( new_missile ) {
+			//
+			main_screen->addCollisionChild( new_missile, PhysicsScreenEntity::ENTITY_RECT );
+
+			// play audio
+			player_shoot->Play();
+		}
 	}
 }
 
