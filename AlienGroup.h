@@ -1,3 +1,7 @@
+/*
+	A class which represents the group of aliens
+*/
+
 #ifndef ALIEN_GROUP_H
 #define ALIEN_GROUP_H
 

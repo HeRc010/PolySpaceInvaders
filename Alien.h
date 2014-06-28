@@ -1,3 +1,7 @@
+/*
+	A specific entity subclass for the an alien
+*/
+
 #ifndef ALIEN_H
 #define ALIEN_H
 

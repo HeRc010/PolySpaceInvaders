@@ -1,3 +1,7 @@
+/*
+	A specific entity subclass for the Red UFO entity
+*/
+
 #ifndef RED_UFO_H
 #define RED_UFO_H
 

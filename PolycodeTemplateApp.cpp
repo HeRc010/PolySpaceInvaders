@@ -1,12 +1,5 @@
 /*
 	The main template file/runtime file.
-
-	TODO:
-	primary:
-	- found a bug; the alien speed does not go back to normal... after the appropriate events
-
-	secondary:
-	- should pause the timers when the game is paused
 */
 
 #include "PolycodeTemplateApp.h"

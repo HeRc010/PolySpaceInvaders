@@ -1,3 +1,7 @@
+/*
+	A class which represents a block in the Barrier(s)
+*/
+
 #ifndef BLOCK_H
 #define BLOCK_H
 

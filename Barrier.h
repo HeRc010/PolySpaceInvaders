@@ -1,3 +1,7 @@
+/*
+	A class for the barriers which protect the fighter
+*/
+
 #ifndef BARRIER_H
 #define BARRIER_H
 
